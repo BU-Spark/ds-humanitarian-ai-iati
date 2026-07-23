@@ -8,6 +8,15 @@ produced by the iati-hunger-graph pipeline from ./data/ and offers:
 
 No database required.
 """
+try:
+    import spaces  # ZeroGPU runtime requires one decorated function to exist
+
+    @spaces.GPU
+    def _zerogpu_startup_check():
+        pass  # never called; satisfies the startup detector
+except ImportError:
+    pass  # running locally / non-ZeroGPU hardware
+
 import html as html_mod
 from collections import defaultdict
 from pathlib import Path
