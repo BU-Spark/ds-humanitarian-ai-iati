@@ -1,3 +1,15 @@
+---
+title: IATI Hunger Hotspots Knowledge Graph
+emoji: 🕸️
+colorFrom: purple
+colorTo: green
+sdk: gradio
+sdk_version: 6.20.0
+app_file: spaces/app.py
+pinned: false
+license: mit
+---
+
 # IATI Hunger Hotspots Knowledge Graph — Feasibility Prototype
 
 Builds a knowledge graph from IATI activity data (graph-database-ready CSV nodes/edges), scoped to:
