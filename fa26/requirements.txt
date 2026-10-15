@@ -1,5 +1,11 @@
+# offline notebooks (01, 02)
 pandas
 networkx
-# later, for the Neo4j notebook:
-# neo4j>=5.20
-# python-dotenv
+tabulate
+# Graph RAG evaluation and Neo4j load (03, 04): pip install -r requirements.txt
+langgraph
+langchain-core
+langchain-openai
+langchain-anthropic
+neo4j>=5.20
+python-dotenv
