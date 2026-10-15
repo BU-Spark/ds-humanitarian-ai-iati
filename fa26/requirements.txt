@@ -1,0 +1,5 @@
+pandas
+networkx
+# later, for the Neo4j notebook:
+# neo4j>=5.20
+# python-dotenv
