@@ -9,4 +9,16 @@ Naming: `NN_short_description_YYYY-MM-DD.ipynb` (NN = run order).
 | 03 | 03_text2cypher_langgraph_eval_2026-10-15.ipynb | LangGraph Text2Cypher pipeline (generate, guard, execute, compare) run across every model in `.env`; scorecard to data/processed. `DRY_RUN=True` works offline |
 | 04 | 04_neo4j_aura_load_2026-10-15.ipynb | Load schema v0.1 into Neo4j Aura (network). Run once before 03 with `DRY_RUN=False` |
 
+## Environment
+
+Use a dedicated conda env so project packages (langgraph, openai 3.x) do not collide with other work in `base`:
+
+```bash
+conda create -n iati python=3.12 -y && conda activate iati
+pip install -r fa26/requirements.txt ipykernel
+python -m ipykernel install --user --name iati --display-name "Python (iati)"
+```
+
+Select the `Python (iati)` kernel in Cursor / Jupyter.
+
 Rules: notebooks read from `data/raw` or the reference clone and write only to `data/interim` or `data/processed`. Reusable functions move to `src/`. Secrets live in `fa26/.env` (gitignored).
