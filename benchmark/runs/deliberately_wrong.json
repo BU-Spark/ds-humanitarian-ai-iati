@@ -1,0 +1,368 @@
+{
+  "run_name": "deliberately_wrong_control",
+  "snapshot_id": "430caabd5a8ae1d0816a9941a4a8f730484c4c0b35360ee17983a76c3297658f",
+  "answers": [
+    {
+      "id": "Q01",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "oxfamus": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "wfp": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q02",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "oxfamus": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "wfp": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q03",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "oxfamus": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "wfp": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q04",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "US-EIN-23-7069110": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q05",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "1": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "2": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "3": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "4": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q06",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "keyword": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "sector": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q07",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "count": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q08",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "wfp": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q09",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "oxfamus": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "wfp": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q10",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "total": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q11",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "total": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q12",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "total": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q13",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "wfp": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q14",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "total": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q15",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "2:17": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        },
+        "2:2": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q16",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "wfp": {
+          "value": "definitely-not-the-answer",
+          "evidence": [
+            "invented.csv:row:999"
+          ]
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q17",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "unsupported_claim": {
+          "value": "999",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q18",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "unsupported_claim": {
+          "value": "999",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q19",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "unsupported_claim": {
+          "value": "999",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q20",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "unsupported_claim": {
+          "value": "999",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    }
+  ]
+}

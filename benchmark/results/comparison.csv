@@ -1,0 +1,4 @@
+run_name,questions_submitted,questions_total,correctness_pct,evidence_f1_pct,behavior_pct,overall_pct,latency_samples,mean_latency_ms
+sqlite_baseline_not_an_LLM,20,20,100.0,100.0,100.0,100.0,20,3.337
+deliberately_wrong_control,20,20,0.0,0.0,0.0,0.0,0,
+correct_values_without_evidence_control,20,20,100.0,0.0,100.0,76.0,0,
