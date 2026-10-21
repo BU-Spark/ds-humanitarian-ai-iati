@@ -20,3 +20,14 @@
 **What we have not established:** Whether the exported records are complete or factually correct in the real world; whether any LLM performs well; whether the client accepts our initial score weights. The answer key is verified against this export, not against original XML or external needs information.
 
 **Short team message:** “The 20-question set and verified answer key are ready. Send model outputs in the shared format and we can compare correctness, evidence, and handling of missing information.”
+
+## Current team status — October 21, 2026
+
+- George confirmed that he has **not yet run the model APIs or the Neo4j load**. His work provides the implementation; completed validation is offline only.
+- **GLM is the client's preferred candidate** for the first model pilot. The exact model/version, provider endpoint and access limits still need confirmation.
+- Kimi and Qwen remain optional comparison candidates, not equal-priority commitments.
+- Start with verified free-tier access. No API budget, credits or paid access are confirmed; do not assume Brent will cover charges.
+- Memory and reranking remain proposed architecture work, not implemented or evaluated features.
+- No live model results, model ranking or live database validation are claimed.
+
+**Immediate next step:** confirm GLM access, then use the public-input bundle for a controlled pilot. See `fa26/notebooks/00_review_and_next_steps.ipynb` for the consolidated review.

@@ -1,0 +1,12 @@
+# Local credentials and runtime files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.gradio/
+# Personal presentation material stays outside the team handoff
+analysis/PRESENTATION_SPEAKER_NOTES.md

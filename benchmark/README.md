@@ -35,13 +35,7 @@ python benchmark/score.py benchmark/runs/sqlite_baseline.json benchmark/runs/del
 
 `pin_snapshot.py` was run once to initialize the committed snapshot. Do not run it during normal evaluation: it intentionally refuses to overwrite the manifest. To evaluate a changed dataset, create a separately versioned benchmark with a new snapshot, recalculate all answers, and rerun all compared systems on that same version. Do not compare scores across changed snapshots as though the inputs were identical.
 
-On this Windows workstation, the working bundled executable is:
-
-```powershell
-& 'C:\Users\deniz\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' benchmark\test_benchmark.py
-```
-
-The default Windows Store `python.exe` alias was unavailable during this work. Other machines can use their normal Python executable.
+Use the Python executable from your project virtual environment.
 
 ## Give teammates these inputs
 
@@ -112,3 +106,11 @@ The scoring weights and tolerances are initial team choices, not client-approved
 The source is the summer prototype's filtered export: 505 activities and 23,423 transactions. Filtering errors, missing publishers/years, unresolved identities, and repeated participation rows are inherited. The benchmark uses distinct IDs where requested; it does not repair the dataset. It sums signed transaction values only within explicitly selected types, currencies, and periods. Country questions count activity-country relationships rather than estimating country funding. The budget question explicitly sums original committed rows and does not claim to select the currently applicable budget revision.
 
 The baseline uses hand-written SQL and fixed policy rules for the four limitation questions. It is not an AI model and has no measured natural-language understanding. A 100% baseline shows agreement with the separately implemented Python calculations and scorer, not independent verification of humanitarian facts. No live model comparison has been performed.
+
+## Prepare public model inputs
+
+Run `python benchmark/prepare_model_inputs.py /path/to/new/model-inputs` to export the pinned CSVs, public questions, manifest, response template and instructions. The destination must be new and outside `benchmark/`. Answer keys, catalog, baselines, tests and prior results are excluded. Validate this export path with `python benchmark/test_model_inputs.py`. See [the George branch review](../analysis/GEORGE_REVIEW.md) for the separate five-question diagnostic workflow and offline results.
+
+## Pilot status
+
+George confirmed that live API evaluation and the Neo4j load have not run. GLM is the client-preferred first candidate; Kimi and Qwen are optional follow-ups. Confirm exact model access and free-tier quotas first. No budget or credits are confirmed. Current recorded runs are SQL and synthetic controls only.

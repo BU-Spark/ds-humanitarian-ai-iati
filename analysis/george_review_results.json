@@ -1,0 +1,25 @@
+{
+  "george_commit": "e86605bf92f8c5aa98cbb165a3ecf8820b735df1",
+  "snapshot_id": "430caabd5a8ae1d0816a9941a4a8f730484c4c0b35360ee17983a76c3297658f",
+  "live_model_runs": 0,
+  "original_notebooks": {
+    "01": {
+      "nodes": 27279,
+      "relationships": 31484,
+      "isolated_nodes": 55
+    },
+    "02": {
+      "nodes": 27279,
+      "relationships": 58314,
+      "isolated_nodes": 0
+    }
+  },
+  "participation_relationships": {
+    "source_rows": 3457,
+    "overwritten_rows": 807,
+    "endpoint_pairs_with_multiple_roles": 402
+  },
+  "original_guard_allows_custom_procedure": true,
+  "original_execution_failure_marked_correct_when_gold_empty": true,
+  "original_guard_terminal_failure": "KeyError"
+}

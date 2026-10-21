@@ -42,7 +42,7 @@ Suggested opening: “We reproduced the core filtering behavior and reviewed the
 
 17. **Which optional entities matter for the first Neo4j schema?** Results/indicators are not currently extracted, and emergency/region/policy-marker/related-activity exports are empty. Should these be investigated now, or should the first release concentrate on organizations, activities, transactions, geography, and provenance?
 
-18. **What environment and operating budget are actually available for the handoff?** Confirm the owner of Neo4j, scheduled jobs, raw snapshot storage, model access, and monitoring. Who maintains these after December? Is testing Z.AI and comparing multiple models required or exploratory, and which providers/languages are approved?
+18. **What environment and operating budget are actually available for the handoff?** Confirm the owner of Neo4j, scheduled jobs, raw snapshot storage, model access, and monitoring. Who maintains these after December? GLM is the preferred first candidate: which exact model/version and free-tier endpoint are available, and are Kimi/Qwen comparisons needed after the pilot? No API budget or credits are confirmed.
 
 19. **What evidence is sufficient for the raw-versus-cleaned demonstration?** Would one fully traceable three-publisher example plus a bounded broader-corpus sample satisfy the goal? What storage/compute limit should stop the broader experiment? The brief does not require cleaning the complete IATI corpus.
 
