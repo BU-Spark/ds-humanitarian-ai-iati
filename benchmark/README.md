@@ -109,7 +109,7 @@ The baseline uses hand-written SQL and fixed policy rules for the four limitatio
 
 ## Prepare public model inputs
 
-Run `python benchmark/prepare_model_inputs.py /path/to/new/model-inputs` to export the pinned CSVs, public questions, manifest, response template and instructions. The destination must be new and outside `benchmark/`. Answer keys, catalog, baselines, tests and prior results are excluded. Validate this export path with `python benchmark/test_model_inputs.py`. See [the George branch review](../analysis/GEORGE_REVIEW.md) for the separate five-question diagnostic workflow and offline results.
+Run `python benchmark/prepare_model_inputs.py /path/to/new/model-inputs` to export the pinned CSVs, public questions, manifest, response template and instructions. The destination must be new and outside `benchmark/`. Answer keys, catalog, baselines, tests and prior results are excluded. Validate this export path with `python benchmark/test_model_inputs.py`. See [the review](../analysis/review.md) for the separate five-question diagnostic workflow and offline results.
 
 ## Pilot status
 
