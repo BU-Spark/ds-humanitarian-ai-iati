@@ -1,6 +1,6 @@
 # Offline graph and evaluation review
 
-The main team/PM review is [00_review_and_next_steps.ipynb](../fa26/notebooks/00_review_and_next_steps.ipynb). It contains the full findings, file map, recorded evidence, 20-question list, reproduction commands and next steps. Keep detailed updates there.
+The main team/PM review is [00_review_and_next_steps.ipynb](../notebooks/00_review_and_next_steps.ipynb). It contains the full findings, file map, recorded evidence, 20-question list, reproduction commands and next steps. Keep detailed updates there.
 
 ## Current team status — October 21, 2026
 
@@ -21,11 +21,11 @@ The main team/PM review is [00_review_and_next_steps.ipynb](../fa26/notebooks/00
 
 ## Evidence and implementation
 
-- Original findings: `analysis/george_review_results.json`; reproduce with `analysis/review_george.py`.
-- Reviewed validation: `analysis/george_offline_validation.json`.
-- Setup and commands: [notebooks README](../fa26/notebooks/README.md).
+- Original findings: `fa26/analysis/george_review_results.json`; reproduce with `fa26/analysis/review_george.py`.
+- Reviewed validation: `fa26/analysis/george_offline_validation.json`.
+- Setup and commands: [notebooks README](../notebooks/README.md).
 - Full benchmark: [benchmark README](../benchmark/README.md).
-- Screenshots: [figures](../fa26/reports/figures/README.md); these show existing application views, not model results.
+- Screenshots: [figures](../reports/figures/README.md); these show existing application views, not model results.
 
 ## Next decisions
 

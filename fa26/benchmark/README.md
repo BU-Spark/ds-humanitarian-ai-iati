@@ -26,11 +26,11 @@ The prototype's parser, filters, graph exports, and app were not edited. Everyth
 From the repository root, with a working Python installation:
 
 ```sh
-python benchmark/reference.py
-python benchmark/sql_baseline.py
-python benchmark/make_examples.py
-python benchmark/test_benchmark.py
-python benchmark/score.py benchmark/runs/sqlite_baseline.json benchmark/runs/deliberately_wrong.json benchmark/runs/no_evidence.json
+python fa26/benchmark/reference.py
+python fa26/benchmark/sql_baseline.py
+python fa26/benchmark/make_examples.py
+python fa26/benchmark/test_benchmark.py
+python fa26/benchmark/score.py fa26/benchmark/runs/sqlite_baseline.json fa26/benchmark/runs/deliberately_wrong.json fa26/benchmark/runs/no_evidence.json
 ```
 
 `pin_snapshot.py` was run once to initialize the committed snapshot. Do not run it during normal evaluation: it intentionally refuses to overwrite the manifest. To evaluate a changed dataset, create a separately versioned benchmark with a new snapshot, recalculate all answers, and rerun all compared systems on that same version. Do not compare scores across changed snapshots as though the inputs were identical.
@@ -73,7 +73,7 @@ For an abstention or clarification, use `facts: {}` and one or more of these rea
 `latency_ms` is optional (null means not measured). For live systems, measure from sending the question until the complete answer arrives, including retrieval; document model, agent version, hardware, and warm/cold conditions in your run records. SQLite baseline timings cover query/evidence construction after data loading and are **not comparable to end-to-end LLM latency**. A summary includes how many questions supplied timing; it does not impute missing measurements.
 
 ```sh
-python benchmark/score.py path/to/george_glm_run.json path/to/another_run.json --output benchmark/results/model_comparison
+python fa26/benchmark/score.py path/to/george_glm_run.json path/to/another_run.json --output fa26/benchmark/results/model_comparison
 ```
 
 The scorer writes `comparison.csv`, `comparison.md`, and `details.json`. Missing questions score zero; duplicate/unknown question IDs, mismatched snapshots, malformed evidence lists, and invalid latency values reject a submission. Output files in the chosen directory are replaced on rerun, so choose a different directory to preserve older comparisons.
@@ -83,8 +83,8 @@ The scorer writes `comparison.csv`, `comparison.md`, and `details.json`. Missing
 `nodes_transactions.csv:row:1` means the first **logical CSV data record**, excluding the header. It is not a physical text line: quoted descriptions may contain newlines. Together with the snapshot hash, this is an unambiguous locator. The record itself contains its original exported `tx_id`, `iati_identifier`, `org_ref`, or other applicable key.
 
 ```sh
-python benchmark/inspect_source.py nodes_transactions.csv:row:1
-python benchmark/inspect_source.py manifest:nodes_transactions.csv
+python fa26/benchmark/inspect_source.py nodes_transactions.csv:row:1
+python fa26/benchmark/inspect_source.py manifest:nodes_transactions.csv
 ```
 
 For an aggregate, reference evidence includes every contributing row, plus activity rows needed for publisher joins. For an empty result, `manifest:filename.csv` identifies the complete hashed table searched. Q10 is an example: no matching WFP incoming USD transactions dated in 2020 are present. This means no matches in the snapshot, not proof that WFP received no funds that year.
@@ -109,7 +109,7 @@ The baseline uses hand-written SQL and fixed policy rules for the four limitatio
 
 ## Prepare public model inputs
 
-Run `python benchmark/prepare_model_inputs.py /path/to/new/model-inputs` to export the pinned CSVs, public questions, manifest, response template and instructions. The destination must be new and outside `benchmark/`. Answer keys, catalog, baselines, tests and prior results are excluded. Validate this export path with `python benchmark/test_model_inputs.py`. See [the review](../analysis/review.md) for the separate five-question diagnostic workflow and offline results.
+Run `python fa26/benchmark/prepare_model_inputs.py /path/to/new/model-inputs` to export the pinned CSVs, public questions, manifest, response template and instructions. The destination must be new and outside `fa26/benchmark/`. Answer keys, catalog, baselines, tests and prior results are excluded. Validate this export path with `python fa26/benchmark/test_model_inputs.py`. See [the review](../analysis/review.md) for the separate five-question diagnostic workflow and offline results.
 
 ## Pilot status
 

@@ -9,4 +9,4 @@ __pycache__/
 .ipynb_checkpoints/
 .gradio/
 # Personal presentation material stays outside the team handoff
-analysis/PRESENTATION_SPEAKER_NOTES.md
+fa26/analysis/PRESENTATION_SPEAKER_NOTES.md

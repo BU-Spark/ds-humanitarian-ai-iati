@@ -1,4 +1,4 @@
-"""Read-only baseline audit. Run: python analysis/audit_prototype.py
+"""Read-only baseline audit. Run: python fa26/analysis/audit_prototype.py
 
 Runs the inherited parser/resolver against temporary synthetic inputs only.
 App analytics are loaded from their AST without launching Gradio or a server.
@@ -16,7 +16,7 @@ import tempfile
 from unittest.mock import patch
 from xml.etree import ElementTree as ET
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT / 'fa26/src'))
 import parse_filter as parser

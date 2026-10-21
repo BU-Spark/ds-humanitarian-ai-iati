@@ -2,7 +2,7 @@
 
 **Start here:** [00_review_and_next_steps.ipynb](00_review_and_next_steps.ipynb). It brings together the review, recorded results, 20-question list, file locations, access/cost decisions, next steps. Run All reads local files by default; it makes no API calls and does not load a database. Re-running checks is an explicit offline opt-in.
 
-The overview is the main reading notebook. Notebooks 01–04 remain focused working notebooks; reusable functions and tests stay in `src/`, `tests/` and `benchmark/` so they can be tested without copying code between notebooks.
+The overview is the main reading notebook. Notebooks 01–04 remain focused working notebooks; reusable functions and tests stay in `src/`, `tests/` and `fa26/benchmark/` so they can be tested without copying code between notebooks.
 
 
 
@@ -24,11 +24,11 @@ From the repository root:
 python -m pip install -r fa26/requirements-george.txt
 python fa26/src/run_offline_notebooks.py
 python fa26/tests/test_text2cypher_eval.py
-python benchmark/test_benchmark.py
-python benchmark/test_model_inputs.py
+python fa26/benchmark/test_benchmark.py
+python fa26/benchmark/test_model_inputs.py
 ```
 
-The runner uses the pinned `benchmark/snapshot` after hash verification. It writes
+The runner uses the pinned `fa26/benchmark/snapshot` after hash verification. It writes
 ignored logs and results under `fa26/data/processed` and schema output under
 `fa26/data/interim`. No `.env`, API key, reference clone or database is needed.
 Notebooks can also be run manually from the repository root or a descendant.
@@ -53,5 +53,5 @@ existing import; old endpoint-only relationships are not migrated or deleted.
 Synthetic model names start with `fake/` and must never enter a live model ranking.
 Notebook 03's five diagnostic question IDs differ from benchmark Q01–Q20.
 The legacy positive-only funding diagnostic is not a net-funding comparison.
-Use [benchmark instructions](../../benchmark/README.md) and its public-input
+Use [benchmark instructions](../benchmark/README.md) and its public-input
 exporter for the separate 20-question evidence and abstention evaluation.

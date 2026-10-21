@@ -1,10 +1,8 @@
-In this folder create a copy of the ```DATASETDOC.md``` file, rename it to include the semester and year you worked on the project ```DATASETDOC-[season][2 digit year].md```
+# Dataset documentation
 
-- ```[season]``` – one of ```sp```, ```fa```, ```sum``` to indicate when the project is taking place
-- ```[2 digit year]``` – the year in two digits
+The completed Fall 2026 documents live with the project under `fa26/`:
 
-Examples: 
-- ```DATASETDOC-fa24.md```
-- ```DATASETDOC-sp25.md```
-  
-Answer all of the questions in the .md file as a part of your project wrapup assignment. 
+- [DATASETDOC-fa26.md](../fa26/docs/dataset-documentation/DATASETDOC-fa26.md) — completed dataset description.
+- [DATA_DICTIONARY.md](../fa26/docs/dataset-documentation/DATA_DICTIONARY.md) — all tables and fields.
+
+This root folder is a navigation entry only; maintain the Fall 2026 documents in their linked location.

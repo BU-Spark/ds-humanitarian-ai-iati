@@ -1,125 +1,42 @@
----
-title: IATI Hunger Hotspots Knowledge Graph
-emoji: 🕸️
-colorFrom: purple
-colorTo: green
-sdk: gradio
-sdk_version: 6.20.0
-app_file: spaces/app.py
-pinned: false
-license: mit
----
+# Fall 2026 — Humanitarian AI Today / IATI knowledge graph
 
-# IATI Hunger Hotspots Knowledge Graph — Feasibility Prototype
+All semester implementation, review, evaluation, figures and project documents live in this folder.
 
-Builds a knowledge graph from IATI activity data (graph-database-ready CSV nodes/edges), scoped to:
+**Start with [the review notebook](notebooks/00_review_and_next_steps.ipynb).** It explains the completed offline work, results, file locations and next steps. GLM is the preferred first model pilot; model API calls and the Neo4j load have not run. No paid access or credits are confirmed.
 
-- **Orgs:** Oxfam GB vs Oxfam America, with WFP as comparison
-- **Theme:** hunger-related activities (DAC purpose codes, humanitarian
-  Food Security/Nutrition clusters, keyword fallback)
-- **Geography:** the 13 FAO–WFP Hunger Hotspots from the June–November 2026
-  outlook (CE0155EN): Sudan, South Sudan, Yemen, Palestine, Nigeria, Somalia
-  (highest concern); Afghanistan, DRC, Haiti (very high concern); Lebanon,
-  Madagascar, Myanmar, Mali (hotspots)
+## Folder map
 
-## Setup
+| Folder | Contents |
+| --- | --- |
+| [notebooks/](notebooks/README.md) | Overview and focused graph/schema/evaluation/load notebooks |
+| [src/](src/) | Pipeline, shared code labels, offline runner and evaluation helpers |
+| [tests/](tests/) | Parser fixtures and evaluation regression tests |
+| [spaces/](spaces/README.md) | Gradio application |
+| [data/graph/](data/graph/) | Working graph CSVs and pipeline reports |
+| [benchmark/](benchmark/README.md) | Pinned CSV snapshot, 20 questions, evaluator, baseline, controls and public-input exporter |
+| [analysis/](analysis/review.md) | Review summary, audits and recorded validation evidence |
+| [reports/figures/](reports/figures/README.md) | Application screenshots with filters and interpretation notes |
+| [docs/dataset-documentation/](docs/dataset-documentation/README.md) | Completed dataset documentation and data dictionary |
+| [docs/](docs/) | Project brief and supporting documentation |
 
-Python 3.10+, standard library only (no pip installs needed for the pipeline).
+`data/raw/`, `data/interim/` and `data/processed/` are local/ignored workflow outputs. Credentials stay in local environment configuration, never Git. Root-level README, license, ignore rules and the dataset-documentation navigation folder are repository-wide files.
 
-## Workflow
+## Set up and check
 
-One command runs everything:
+Commands below run **from the repository root**, using Python 3.12:
 
 ```bash
-python src/pipeline.py all        # download -> parse -> resolve -> sync to app
-python src/pipeline.py refresh    # re-parse + resolve + sync (no download)
+python -m pip install -r fa26/spaces/requirements.txt -r fa26/requirements-george.txt
+python fa26/src/run_offline_notebooks.py
+python fa26/tests/test_text2cypher_eval.py
+python fa26/benchmark/test_benchmark.py
+python fa26/benchmark/test_model_inputs.py
 ```
 
-Or stage by stage (each also runs standalone with its own flags):
+Use a project virtual environment. The offline runner executes notebooks 01–03 and writes local logs; the tests do not require API credentials or Neo4j. Read [notebook instructions](notebooks/README.md) before any future live run. Notebook 04 is not included in offline execution.
 
-```bash
-python src/pipeline.py download -- --find-publisher oxfam   # slug lookup
-python src/pipeline.py download -- --dry-run                # preview selection
-python src/download.py --publisher wfp                      # one publisher
-python src/parse_filter.py --no-theme                       # coverage scan
-python src/resolve_orgs.py --dry-run                        # resolution preview
-```
+## Dataset and evaluation
 
-Then run the demo locally:
+The dataset contains 505 retained activities from Oxfam GB, Oxfam America and WFP. It is a filtered prototype export, not a complete measure of humanitarian aid. See [dataset documentation](docs/dataset-documentation/DATASETDOC-fa26.md) for measured counts, date coverage, preprocessing, limitations and licensing questions.
 
-```bash
-pip install -r spaces/requirements.txt
-cd spaces && python app.py        # http://localhost:7860
-```
-
-Standalone shareable HTML graphs: `python src/visualize_html.py --country YE`.
-
-## Graph model
-
-```
-(Organisation)-[:REPORTS]->(Activity)
-(Organisation)-[:PARTICIPATES_IN {role}]->(Activity)
-(Activity)-[:TARGETS {percentage, is_hotspot}]->(Country {hotspot_tier})
-(Activity)-[:LOCATED_AT]->(Location {lat, lon, adm_code})
-(Activity)-[:CLASSIFIED_AS {percentage}]->(Sector {is_hunger})
-(Activity)-[:HAS_TRANSACTION]->(Transaction {type, value, date})
-(Organisation)-[:PROVIDES]->(Transaction)-[:RECEIVED_BY]->(Organisation)
-(Activity)-[:HAS_BUDGET]->(Budget {period, value, status})
-(Activity)-[:RESPONDS_TO]->(Emergency {GLIDE or HRP code})
-(Activity)-[:CONTRIBUTES_TO]->(SDG {goal or target})
-(Activity)-[:MARKED_WITH {significance}]->(PolicyMarker)
-(Activity)-[:TARGETS_REGION {percentage}]->(Region)
-(Activity)-[:PARENT_OF|CHILD_OF|SIBLING_OF]->(Activity)
-```
-
-Transactions are nodes (not edge properties) so funding flows are traversable:
-funder → transaction → activity → country. That is the query pattern the
-Oxfam GB vs Oxfam America vs WFP comparison needs.
-
-## Filtering logic
-
-An activity is kept iff:
-
-1. **Geography:** any `recipient-country` or transaction-level
-   `recipient-country` is a hotspot ISO2 code (`config.HOTSPOTS`).
-   Location-only matching (no country code) is not attempted in v0.
-2. **Theme:** any sector matches hunger DAC codes / DAC 311·313·520
-   categories / cluster codes 6 (Food Security) or 9 (Nutrition). If the
-   activity carries no sector coding at all, a keyword scan of
-   title+description is used as fallback, and the match basis is recorded on
-   the Activity node (`match_basis: sector|keyword`) so keyword-matched
-   activities can be reviewed or excluded later.
-
-Toggles in `src/config.py`: `INCLUDE_GENERAL_EMERGENCY` (DAC 72010 is broad —
-off by default), keyword list, hotspot tiers.
-
-## Known limitations (v0, by design)
-
-- Publisher attribution comes from the download folder, so keep each
-  publisher's XML in its own directory under `data/raw/`.
-- No currency conversion; transaction values are summed per currency.
-- IATI 2.0x only (all three target publishers are on 2.03).
-- Sub-national hotspot areas from the report (e.g. Borno State, Jonglei) are
-  not matched yet; `Location.adm_code` (GeoNames/G1) is captured so this can
-  be layered on next.
-- The registry heuristic that picks per-country files falls back to
-  downloading monolithic files whole; use `--all-files` to disable it.
-
-## Prior art
-
-DFID's [dcm-graph](https://github.com/DFID/dcm-graph) (2019) built an
-IATI-to-Neo4j delivery chain map -- good validation of the concept to cite,
-but it ingests all of IATI (~2.5 GB) on a 32 GB Azure VM and models only
-Organisations/Activities. This prototype instead filters at ingest to a
-theme + geography slice and adds Country, Location, Sector and Transaction
-nodes, so it runs on a laptop and loads into AuraDB Free.
-
-## Suggested demo path
-
-1. Run the `--no-theme` coverage scan; screenshot
-   `coverage_report.json` tables (activities per publisher × hotspot ×
-   start year) for the geography/time-period recommendation.
-2. Pick 1–2 hotspot countries with good coverage from all three publishers
-   (Somalia, South Sudan or DRC are likely candidates), re-run the full
-   filter, load into AuraDB Free.
-3. Demo queries 2 (Oxfam GB/US overlap), 3 (shared partners) and 6 (funding
+The working graph and evaluation snapshot have different purposes. Do not regenerate a pinned snapshot in place or expose the answer key to evaluated models. See [benchmark instructions](benchmark/README.md) for submission/scoring rules and the public-input exporter.

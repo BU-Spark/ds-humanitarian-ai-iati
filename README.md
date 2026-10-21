@@ -1,78 +1,14 @@
+# Humanitarian AI Today — IATI knowledge graph
 
-<h1 align="center">
-  <br>
-  <a href="https://www.bu.edu/spark/" target="_blank"><img src="https://www.bu.edu/spark/files/2023/08/logo.png" alt="BUSpark" width="200"></a>
-  <br>
-  Project README Template <change to project name>
-  <br>
-</h1>
+BU Spark / CDS / DS 701, Fall 2026.
 
-<h4 align="center">A template for the project readme file. </h4> <change to repo short description>
+The project explores a selected IATI dataset from Oxfam GB, Oxfam America and WFP through graph analysis and reproducible question-answer evaluation.
 
-<p align="center">
-  <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#project-description">Project Description</a> •
-  <a href="#data-locations">Data Locations</a>
-</p>
+- **[Fall 2026 project](fa26/README.md)** — folder map, setup and run commands.
+- **[Main review notebook](fa26/notebooks/00_review_and_next_steps.ipynb)** — findings, evidence and next steps.
+- **[Dataset documentation](fa26/docs/dataset-documentation/DATASETDOC-fa26.md)** — data scope, sources, processing and limitations.
+- **[20-question benchmark](fa26/benchmark/README.md)** — fixed snapshot and evaluation workflow.
 
-## Key Features
-In this section you will be including a list of key features of your code/project.
+Semester code, notebooks, data, reviews, figures and documents are organized under `fa26/`. The root `dataset-documentation/` folder links to the completed semester documents.
 
-You should also include a short description of what each part of your code does. (Detailed description in the readme of each directory, if applicable)
-* /path/to/directory - function and description
-  - Key notes
-* /path/to/script - function and description
-  - Key notes
-* Lorem Ipsum - Dolor Sit Amet
-  - Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-* Duis Aute Irure Dolor
-  - Excepteur sint occaecat
-* Excepteur Sint Occaecat
-  - Curabitur efficitur, nunc non ultricies gravida, felis purus posuere eros, sed faucibus sapien est nec quam. Nulla at nisl nisl.
- 
-## How To Use
-
-To clone and run this application, you'll need <a href="https://git-scm.com" target="_blank">Git</a>
-From your command line:
-
-```bash
-# Clone this repository
-$ git clone [repo link]
-
-# Further Instructions
-...
-```
-
-Create a new branch from dev, add changes on the new branch you just created.
-
-You will want to look into <a href="https://git-scm.com/docs/git-branch" target="_blank">git branch</a> and <a href="https://git-scm.com/docs/git-checkout" target="_blank">git checkout</a>
-
-```bash
-# Create and Checkout a new branch if it doesn't exist
-$ git checkout -b your-branch main
-...
-```
-
-Open a Pull Request to dev. Add your PM and TPM as reviewers. 
-
-At the end of the semester during project wrap up open a final Pull Request to main from dev branch.
- 
-## Project Description
-
-In this section, you should include the project description, either from the client or spark.
-
-Please make sure it reflects what you see on the documents (project description) you recieved.
-
-* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Donec vel nunc at libero ultrices tincidunt. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Mauris ut ligula nec risus posuere ultricies at et ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-* Veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-## Data locations
-
-In this section, you should include the location of all of your datasets for the project (if applicable)
-
-<a href="dataset-documentation">Dataset Documentation</a>
-* Location 1: [location]
-  - [description]
-* Location 2: [location]
-  - [description]
+Open development pull requests against `dev` and include the PM and technical reviewers. Follow the team's agreed end-of-semester process for merging into `main`.

@@ -10,7 +10,7 @@ from common import ROOT, SNAPSHOT, digest, save_json
 def main():
     if (ROOT/'manifest.json').exists():
         raise SystemExit('Snapshot already pinned. Create a new benchmark version to change inputs.')
-    source=ROOT.parent/'fa26/data/graph'
+    source=ROOT.parent/'data/graph'
     SNAPSHOT.mkdir(parents=True,exist_ok=True)
     files={}
     for p in sorted(source.glob('*.csv')):

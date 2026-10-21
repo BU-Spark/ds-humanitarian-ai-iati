@@ -1,13 +1,13 @@
 {
-  "commit": "c01c0c0b89960626e5ee3516cfb95d0484b2708c",
-  "generated_at": "2026-10-21T17:43:39.878928+00:00",
+  "commit": "bb124772107e249b80e0247f38baece21ca4b423",
+  "generated_at": "2026-10-21T23:18:48.854523+00:00",
   "working_tree_changes": true,
   "source_sha256": {
-    "fa26/notebooks/00_review_and_next_steps.ipynb": "721857bfa21a35c190873a125cad6c98dbc9a00c0caf9efa4d2b56dadda6e46b",
-    "fa26/notebooks/01_reproduce_summer_baseline_2026-10-15.ipynb": "f00dd183ad090512fe418a2baa8d87f42380d0c5bb744fc2081ab08edf1354c4",
-    "fa26/notebooks/02_schema_draft_2026-10-15.ipynb": "fc7aaa7a882ed8483581c718805842b8f23138022b984c818855e51900380f2c",
-    "fa26/notebooks/03_text2cypher_langgraph_eval_2026-10-15.ipynb": "91abe73e358275b9849600806d6cea01a98898d0e4623c42cba0311b33da332e",
-    "fa26/notebooks/04_neo4j_aura_load_2026-10-15.ipynb": "ee1963f833318c0779c98e1268a051c547f093838cd59f26f551966d8c509c7b",
+    "fa26/notebooks/00_review_and_next_steps.ipynb": "b76a586b709002178563260ac52b5fa44559f117ea9ce0e4c50ce940a59ff8c6",
+    "fa26/notebooks/01_reproduce_summer_baseline_2026-10-15.ipynb": "6cf255b9697b8d5019008590ac11706952cb5de6d2f7c3392da7f6b1a8963cbf",
+    "fa26/notebooks/02_schema_draft_2026-10-15.ipynb": "fc4c62890ea921079a5da5526cf65a2c4502dac402104639d28ef1009e259a1a",
+    "fa26/notebooks/03_text2cypher_langgraph_eval_2026-10-15.ipynb": "c4933bc18d396b056bf00bc5872277f6c700636c200e629637b58f7a678007b8",
+    "fa26/notebooks/04_neo4j_aura_load_2026-10-15.ipynb": "8c9c1904418aec69b8387570712cd476049572064725fd7ba81b877d67b8ab89",
     "fa26/src/config.py": "807744fbb6b30b27e322b2c2e4c94341a57515faecfa04182a640b75fbcbbcfd",
     "fa26/src/download.py": "5e7dfbe4c5ac38165206530babc78b97c38da0e9a0cb8b71b209956873b090e2",
     "fa26/src/iati_codelists.py": "e9ec2451a18eea0d4dc86141498c80f5c06016d827fffec097a366ad37a919ad",
@@ -23,7 +23,7 @@
     {
       "notebook": "01_reproduce_summer_baseline_2026-10-15.ipynb",
       "status": "passed",
-      "elapsed_s": 0.9313133459945675,
+      "elapsed_s": 0.9555661149934167,
       "code_cells": 11,
       "nodes": 27279,
       "relationships": 32291,
@@ -33,7 +33,7 @@
     {
       "notebook": "02_schema_draft_2026-10-15.ipynb",
       "status": "passed",
-      "elapsed_s": 1.2821907569959876,
+      "elapsed_s": 1.2373357200121973,
       "code_cells": 12,
       "nodes": 27279,
       "relationships": 59121,
@@ -43,7 +43,7 @@
     {
       "notebook": "03_text2cypher_langgraph_eval_2026-10-15.ipynb",
       "status": "passed",
-      "elapsed_s": 0.6219148009986384,
+      "elapsed_s": 0.6477326849999372,
       "code_cells": 10,
       "synthetic_control_cases": 10,
       "live_model_runs": 0
