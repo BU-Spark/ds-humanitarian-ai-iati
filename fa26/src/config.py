@@ -84,14 +84,42 @@ HUNGER_CLUSTER_CODES = {
 # It is broad; keep False for a tighter prototype slice, True for recall.
 INCLUDE_GENERAL_EMERGENCY = False
 
-# Keyword fallback applied to title/description when an activity has no
-# usable sector coding (case-insensitive, word-ish matching in parser)
-HUNGER_KEYWORDS = [
-    "food security", "food assistance", "food aid", "hunger", "famine",
-    "nutrition", "malnutrition", "school feeding", "cash transfer",
-    "agriculture", "agricultural", "livestock", "crop", "harvest",
-    "food insecurity", "IPC", "emergency food", "livelihood", "food",
+# Keyword fallback applied to title + description when an activity has no
+# usable sector coding (case-insensitive substring match, so plurals like
+# "livelihoods" still match). Sector *names* are never searched: Oxfam GB's
+# own category "A Sustainable Livelihood" would otherwise match everything
+# filed under it.
+#
+# Strong terms are specific to hunger -> match_basis "keyword".
+HUNGER_KEYWORDS_STRONG = [
+    "food security", "food insecurity", "food assistance", "food aid",
+    "emergency food", "hunger", "famine", "nutrition", "malnutrition",
+    "school feeding", "IPC",
+    "EFSVL", "FS&L",  # Oxfam: (Emergency) Food Security & (Vulnerable) Livelihoods
 ]
+# Weak terms are often but not always hunger-related. An activity matching
+# only these is kept but labelled match_basis "keyword_weak" for review.
+HUNGER_KEYWORDS_WEAK = [
+    "food", "agriculture", "agricultural", "livestock", "crop", "harvest",
+    "livelihood", "cash transfer", "drought", "farmer", "smallholder",
+]
+
+# Organisation names containing hunger words. Removed from the text before
+# keyword matching, so mentioning a partner like WFP is not a hunger signal
+# by itself (regex, case-insensitive).
+ORG_NAME_PATTERNS = [
+    r"(UN |United Nations )?World Food Program(me)?",
+    r"Food (and|&) Agricultur(e|al) Organi[sz]ation",
+    r"Welthungerhilfe",
+    r"Action (Against|contre la) (Hunger|Faim)",
+    r"International Fund for Agricultural Development",
+    r"International Crop Research[\w\s-]*",
+    r"Food for the Hungry",
+]
+
+# SDG sector vocabularies: 7 = goals, 8 = targets. Goal 2 (Zero Hunger) and
+# its targets count as a strong signal in the fallback.
+SDG_HUNGER_GOAL = "2"
 
 # ---------------------------------------------------------------------------
 # Paths

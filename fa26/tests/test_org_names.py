@@ -5,10 +5,11 @@ import pytest
 from parse_filter import hunger_match
 
 
-@pytest.mark.xfail(strict=True, reason="org names are matched as keywords")
 @pytest.mark.parametrize("title", [
     "Joint logistics hub with the World Food Programme",
     "WASH rehabilitation in partnership with Welthungerhilfe",
+    "Shelter support co-funded by Action Against Hunger",
+    "Data sharing with the UN Food & Agricultural Organisation",
 ])
 def test_org_name_alone_does_not_keep(make_rec, title):
     assert hunger_match(make_rec(title))[0] is False

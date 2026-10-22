@@ -26,10 +26,14 @@ from xml.etree import ElementTree as ET
 
 from config import (PUBLISHERS, HOTSPOTS, HUNGER_DAC_CODES,
                     HUNGER_DAC_CATEGORIES, HUNGER_CLUSTER_CODES,
-                    INCLUDE_GENERAL_EMERGENCY, HUNGER_KEYWORDS,
+                    INCLUDE_GENERAL_EMERGENCY, HUNGER_KEYWORDS_STRONG,
+                    HUNGER_KEYWORDS_WEAK, ORG_NAME_PATTERNS, SDG_HUNGER_GOAL,
                     RAW_DIR, GRAPH_DIR)
 
-KW_RE = re.compile("|".join(re.escape(k) for k in HUNGER_KEYWORDS), re.I)
+STRONG_RE = re.compile("|".join(re.escape(k) for k in HUNGER_KEYWORDS_STRONG), re.I)
+WEAK_RE = re.compile("|".join(re.escape(k) for k in HUNGER_KEYWORDS_WEAK), re.I)
+ORG_RE = re.compile("|".join(ORG_NAME_PATTERNS), re.I)
+DESCRIPTION_MAX = 2000  # chars stored on the Activity node
 DAC = HUNGER_DAC_CODES | ({"72010"} if INCLUDE_GENERAL_EMERGENCY else set())
 
 # IATI 1.x used string vocabulary/type codes; normalize to 2.x numerics
@@ -98,7 +102,9 @@ def parse_activity(act, publisher):
         "activity": {
             "iati_identifier": iid,
             "title": text(act, "title"),
-            "description": narratives(act, "description")[:2000],
+            # full text here so the keyword fallback sees all of it;
+            # truncated to DESCRIPTION_MAX when the activity is written
+            "description": narratives(act, "description"),
             "status": attr(act, "activity-status", "code"),
             "humanitarian": act.get("humanitarian", ""),
             "start_planned": get_date(act, "1", "start-planned"),
@@ -256,7 +262,10 @@ def hunger_match(rec, dropped_codes=None):
     """Sector codes are authoritative only for recognized vocabularies (DAC
     5-digit, DAC categories, humanitarian clusters). Publishers like Oxfam GB
     use their own sector vocabulary ("5 Aims"), which we can't code-match --
-    for those, fall back to keywords over title + description + sector names."""
+    for those, fall back to SDG 2 sector tags, then keywords over title +
+    description (organisation names removed). Returns (matched, basis) with
+    basis one of: sector, sector_no_match, sdg, keyword, keyword_weak,
+    no_signal."""
     sectors = rec["sectors"] + [
         {"code": t["sector_code"],
          "vocabulary": VOCAB_MAP.get(t["sector_vocab"], t["sector_vocab"]) or "1",
@@ -276,10 +285,16 @@ def hunger_match(rec, dropped_codes=None):
             for s in recognized:
                 dropped_codes[f'{s.get("vocabulary","1")}:{s["code"]}'] += 1
         return False, "sector_no_match"
-    blob = " ".join([rec["activity"]["title"], rec["activity"]["description"]]
-                    + [s.get("name", "") for s in rec["sectors"]])
-    if KW_RE.search(blob):
+    if any(s["code"] == SDG_HUNGER_GOAL if s.get("vocabulary") == "7"
+           else s["code"].startswith(SDG_HUNGER_GOAL + ".")
+           for s in sectors if s.get("vocabulary") in ("7", "8")):
+        return True, "sdg"
+    blob = ORG_RE.sub(" ", " ".join([rec["activity"]["title"],
+                                     rec["activity"]["description"]]))
+    if STRONG_RE.search(blob):
         return True, "keyword"
+    if WEAK_RE.search(blob):
+        return True, "keyword_weak"
     return False, "no_signal"
 
 
@@ -325,6 +340,7 @@ def run(publisher_filter=None, apply_theme=True):
         iid = a["iati_identifier"]
         a["hotspot_countries"] = "|".join(sorted(hs))
         a["match_basis"] = how
+        a["description"] = a["description"][:DESCRIPTION_MAX]
         activities.append(a)
 
         start = a["start_actual"] or a["start_planned"]

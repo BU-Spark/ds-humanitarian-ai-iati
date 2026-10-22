@@ -328,9 +328,11 @@ Knowledge graph of hunger-related IATI activities by **Oxfam GB, Oxfam
 America and WFP** in the 13 **FAO-WFP Hunger Hotspots** (June-November 2026
 outlook). Built from the [IATI Bulk Data Service](https://bulk-data.iatistandard.org/);
 activities are kept when they target a hotspot country **and** carry
-hunger-related sector coding (DAC / humanitarian cluster codes), with keyword
-matching for publishers that use their own sector vocabularies (the
-`match_basis` field on each activity records which).
+hunger-related sector coding (DAC / humanitarian cluster codes / SDG 2), with
+keyword matching for publishers that use their own sector vocabularies. The
+`match_basis` field on each activity records which: `sector`, `sdg`,
+`keyword` (specific hunger terms) or `keyword_weak` (only broad terms such as
+"food" or "agriculture" -- kept but worth reviewing).
 
 **Caveats:** publisher coverage and coding practices differ (WFP: DAC-coded,
 2018+; Oxfam GB: own sector vocabulary, 2006+); monetary values are not
