@@ -27,11 +27,19 @@ from xml.etree import ElementTree as ET
 from config import (PUBLISHERS, HOTSPOTS, HUNGER_DAC_CODES,
                     HUNGER_DAC_CATEGORIES, HUNGER_CLUSTER_CODES,
                     INCLUDE_GENERAL_EMERGENCY, HUNGER_KEYWORDS_STRONG,
-                    HUNGER_KEYWORDS_WEAK, ORG_NAME_PATTERNS, SDG_HUNGER_GOAL,
+                    HUNGER_KEYWORDS_WEAK, HUNGER_CONTEXT_TERMS,
+                    FOOD_CONTEXT_TERMS, ORG_NAME_PATTERNS, SDG_HUNGER_GOAL,
                     RAW_DIR, GRAPH_DIR)
 
-STRONG_RE = re.compile("|".join(re.escape(k) for k in HUNGER_KEYWORDS_STRONG), re.I)
-WEAK_RE = re.compile("|".join(re.escape(k) for k in HUNGER_KEYWORDS_WEAK), re.I)
+
+def _any_of(terms):
+    return re.compile("|".join(re.escape(k) for k in terms), re.I)
+
+
+STRONG_RE = _any_of(HUNGER_KEYWORDS_STRONG)
+WEAK_RE = _any_of(HUNGER_KEYWORDS_WEAK)
+CONTEXT_RE = _any_of(HUNGER_CONTEXT_TERMS)
+FOOD_RE = _any_of(FOOD_CONTEXT_TERMS)
 ORG_RE = re.compile("|".join(ORG_NAME_PATTERNS), re.I)
 DESCRIPTION_MAX = 2000  # chars stored on the Activity node
 DAC = HUNGER_DAC_CODES | ({"72010"} if INCLUDE_GENERAL_EMERGENCY else set())
@@ -263,7 +271,9 @@ def hunger_match(rec, dropped_codes=None):
     5-digit, DAC categories, humanitarian clusters). Publishers like Oxfam GB
     use their own sector vocabulary ("5 Aims"), which we can't code-match --
     for those, fall back to SDG 2 sector tags, then keywords over title +
-    description (organisation names removed). Returns (matched, basis) with
+    description (organisation names removed). A context term (agriculture,
+    livelihood, cash, ...) next to a food word counts as strong, as in John's
+    filter. Returns (matched, basis) with
     basis one of: sector, sector_no_match, sdg, keyword, keyword_weak,
     no_signal."""
     sectors = rec["sectors"] + [
@@ -291,7 +301,7 @@ def hunger_match(rec, dropped_codes=None):
         return True, "sdg"
     blob = ORG_RE.sub(" ", " ".join([rec["activity"]["title"],
                                      rec["activity"]["description"]]))
-    if STRONG_RE.search(blob):
+    if STRONG_RE.search(blob) or (CONTEXT_RE.search(blob) and FOOD_RE.search(blob)):
         return True, "keyword"
     if WEAK_RE.search(blob):
         return True, "keyword_weak"

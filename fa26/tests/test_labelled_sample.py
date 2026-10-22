@@ -1,41 +1,38 @@
-"""Score hunger_match() against the 50 hand-labelled activities in
-data/hunger_filter_sample_50.csv (labelled by John, sampled from hotspot
-activities, about half kept and half dropped by the original filter).
+"""Score hunger_match() against hand-labelled samples in data/:
 
-Each row carries the parsed activity as record_json, so no raw XML is needed.
-The floors below are the scores when this test was added. Raise them when the
-filter improves; a change that lowers them should be a deliberate decision."""
-import csv
-import json
+- hunger_filter_sample_50.csv: John's 50, used to tune the filter
+- hunger_filter_sample_devansh_50.csv: Devansh's 50, held out for testing
+  (skipped until labelled)
+
+Floors are the scores on John's sample when the test was written. Raise them
+when the filter improves; lowering them should be a deliberate decision.
+"keyword_weak" activities are kept by the pipeline, so the first test counts
+them as yes. The second scores the confident view: strong matches only."""
 from pathlib import Path
 
 import pytest
 
-from parse_filter import hunger_match
+import evaluate_filter as ev
 
-SAMPLE = Path(__file__).parents[1] / "data" / "hunger_filter_sample_50.csv"
-MIN_PRECISION = 0.70   # 19 / 27
-MIN_RECALL = 0.95      # 19 / 20
-
-
-def _score():
-    csv.field_size_limit(10_000_000)  # record_json fields are large
-    with open(SAMPLE, newline="", encoding="utf-8-sig") as f:
-        rows = list(csv.DictReader(f))
-    tp = fp = fn = 0
-    for r in rows:
-        actual = r["manual_label"].strip().lower() == "yes"
-        # keyword_weak activities are kept by the pipeline, so they count as yes
-        predicted = hunger_match(json.loads(r["record_json"]))[0]
-        tp += predicted and actual
-        fp += predicted and not actual
-        fn += actual and not predicted
-    return tp, fp, fn
+DATA = Path(__file__).parents[1] / "data"
+JOHN = DATA / "hunger_filter_sample_50.csv"
 
 
-@pytest.mark.skipif(not SAMPLE.exists(), reason="labelled sample not present")
-def test_filter_meets_labelled_sample_floors():
-    tp, fp, fn = _score()
-    precision, recall = tp / (tp + fp), tp / (tp + fn)
-    assert precision >= MIN_PRECISION, f"precision {precision:.0%} (TP={tp}, FP={fp})"
-    assert recall >= MIN_RECALL, f"recall {recall:.0%} (TP={tp}, FN={fn})"
+def _rates(path, weak_as_yes):
+    labelled = ev.load_labelled(path)
+    if not labelled:
+        pytest.skip(f"{path.name} has no labels yet")
+    tp, fp, tn, fn, _ = ev.confusion(labelled, weak_as_yes)
+    return tp / (tp + fp), tp / (tp + fn)
+
+
+@pytest.mark.skipif(not JOHN.exists(), reason="labelled sample not present")
+def test_pipeline_view_floors():
+    precision, recall = _rates(JOHN, weak_as_yes=True)
+    assert precision >= 0.70 and recall >= 0.95, (precision, recall)
+
+
+@pytest.mark.skipif(not JOHN.exists(), reason="labelled sample not present")
+def test_strong_only_view_floors():
+    precision, recall = _rates(JOHN, weak_as_yes=False)
+    assert precision >= 0.85 and recall >= 0.90, (precision, recall)

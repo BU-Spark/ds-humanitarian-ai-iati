@@ -96,7 +96,22 @@ HUNGER_KEYWORDS_STRONG = [
     "emergency food", "hunger", "famine", "nutrition", "malnutrition",
     "school feeding", "IPC",
     "EFSVL", "FS&L",  # Oxfam: (Emergency) Food Security & (Vulnerable) Livelihoods
+    # from John's filter (branch john)
+    "food distribution", "food voucher", "therapeutic feeding",
+    "undernutrition", "food access", "food production", "food-insecure",
+    "food insecure",
 ]
+
+# Context rule (from John's filter): these terms are a strong signal when the
+# text also mentions food, nutrition or hunger, e.g. "cash voucher (for food)"
+# or "agriculture ... nutrition". Without that they only count via the weak
+# list below.
+HUNGER_CONTEXT_TERMS = [
+    "agricultur", "smallholder", "farmer", "crop", "livestock", "harvest",
+    "livelihood", "resilien", "cash transfer", "voucher", "drought",
+]
+FOOD_CONTEXT_TERMS = ["food", "nutrition", "hunger"]
+
 # Weak terms are often but not always hunger-related. An activity matching
 # only these is kept but labelled match_basis "keyword_weak" for review.
 HUNGER_KEYWORDS_WEAK = [

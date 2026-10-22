@@ -32,6 +32,21 @@ def test_strong_wins_over_weak(make_rec):
     assert hunger_match(rec) == (True, "keyword")
 
 
+@pytest.mark.parametrize("title", [
+    "Cash Voucher (for food) Distribution",
+    "Livelihood recovery and food production support",
+    "Drought response: cash transfers to food-poor households",
+])
+def test_context_term_next_to_food_is_strong(make_rec, title):
+    # John's context rule: livelihood/cash/agriculture terms + a food word
+    assert hunger_match(make_rec(title)) == (True, "keyword")
+
+
+def test_food_alone_without_context_stays_weak(make_rec):
+    assert hunger_match(make_rec("Food for thought: civic education")) \
+        == (True, "keyword_weak")
+
+
 def test_oxfam_food_security_acronym_is_strong(make_rec):
     # EFSVL = Emergency Food Security and Vulnerable Livelihoods
     rec = make_rec("EFSVL and WASH support to vulnerable communities in Melut")
