@@ -14,3 +14,6 @@ __pycache__/
 .DS_Store
 # Anaconda Jupyter local cache
 anaconda_projects/
+
+# live benchmark runs (regenerate with notebook 05)
+benchmark/results/live_*/

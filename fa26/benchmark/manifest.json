@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "snapshot_id": "430caabd5a8ae1d0816a9941a4a8f730484c4c0b35360ee17983a76c3297658f",
+  "source_commit": "76546d3a2189e419c0233bfbf2093916f67ec4f7",
+  "source_directory": "fa26/data/graph",
+  "pinned_on": "2026-10-15",
+  "files": {
+    "nodes_activities.csv": {
+      "sha256": "4b214b716ffa2485e0456fcb750d19e84b823e61ddaa1b855fcf4d9325384425",
+      "rows": 505
+    },
+    "nodes_budgets.csv": {
+      "sha256": "7ad0771837a47b39079dfef08afe25b36d35dbd23f691f7225ac1a0f19342925",
+      "rows": 2999
+    },
+    "nodes_countries.csv": {
+      "sha256": "63a7185ac47544c763085f9b46fad88ba267996ae171e3c1f692e585a7c13730",
+      "rows": 13
+    },
+    "nodes_emergencies.csv": {
+      "sha256": "648c6790b0f69a6e8f963cd97b4827ae36af479e61b07733bd94e5a13b95a4d7",
+      "rows": 0
+    },
+    "nodes_locations.csv": {
+      "sha256": "a3c0bf60b9384b93e744dad533f3d94906e40083c120c56e20461bfcc8d7351d",
+      "rows": 82
+    },
+    "nodes_organisations.csv": {
+      "sha256": "0cdcbb22fa95bf889c49dda864934143c48aaf814d1d040a4fb5e9e078a19988",
+      "rows": 238
+    },
+    "nodes_policy_markers.csv": {
+      "sha256": "5d5670d91d80f1d6ff386db2c636673b1c557f25bc8fb83eab0e951e20be0fe7",
+      "rows": 0
+    },
+    "nodes_regions.csv": {
+      "sha256": "b6ced762289ae29851120a60f99056287c65442814014f7dc070d6d408908982",
+      "rows": 0
+    },
+    "nodes_sdgs.csv": {
+      "sha256": "0456706ab1ec1dd205ebdab47d740ca67ed2243e30217debd9a50492321c1c04",
+      "rows": 2
+    },
+    "nodes_sectors.csv": {
+      "sha256": "e149b7f92613b91c2491f9de866451b2824a2d2d6880300cf33096cd927bdd22",
+      "rows": 17
+    },
+    "nodes_transactions.csv": {
+      "sha256": "11c5e031044eb5f9f21ba1ad666523d9727bf115faf4375e9859c2f9ac842749",
+      "rows": 23423
+    },
+    "rel_classified_as.csv": {
+      "sha256": "6f6d5eebee58ee8a401da9851cf1896d91a6e4c2f7bcc863f5ecd547ee0a5dd7",
+      "rows": 1238
+    },
+    "rel_contributes_to.csv": {
+      "sha256": "df5bd35250b08305ce6e9d86e7f3900b21bd7a9d8eb592af337dfc1ac224061d",
+      "rows": 82
+    },
+    "rel_located_at.csv": {
+      "sha256": "e0f572f646643721f28f91522b930135dd82f5f83624005b4e57974a75d21bd0",
+      "rows": 82
+    },
+    "rel_marked_with.csv": {
+      "sha256": "c9cef3ce6a574605795e3ea68cb0857c5dbcdab14983791e17ffbb0c335d6ea3",
+      "rows": 0
+    },
+    "rel_participates.csv": {
+      "sha256": "eadeb0d3cbd5f9e4d62f5222f9ca07aaee10c70a1fe94e6a731bda230f7a115f",
+      "rows": 3457
+    },
+    "rel_related_activity.csv": {
+      "sha256": "c132255939cd02c9f67c8e71a3358394a9ad91e9c5fa17a993e6ce11ee3a64b0",
+      "rows": 0
+    },
+    "rel_reports.csv": {
+      "sha256": "df402e5488fdf20862562ac938fce570ee6b09f2f9b6230cb21e4be7acf1e7fa",
+      "rows": 505
+    },
+    "rel_responds_to.csv": {
+      "sha256": "b19d43880a3328ea1a19dc651ce8b6a8a2cd1f9859dca76e495f00f630dc92bd",
+      "rows": 0
+    },
+    "rel_targets_country.csv": {
+      "sha256": "b1a7cb0c28ded7382d3ca0296aa55ce2d963b65d1c12b746567c66bd2425a559",
+      "rows": 505
+    },
+    "rel_targets_region.csv": {
+      "sha256": "49249d6478d9cfb0c8a0eec40788d59e498788eab7f0d858a3cc159bbb778f24",
+      "rows": 0
+    },
+    "rel_transaction_edges.csv": {
+      "sha256": "af312dadadf05f726733b5981eaa6f6cd30bd1684cc6261934755e31dfb99427",
+      "rows": 26830
+    }
+  },
+  "limitations": [
+    "Exported filtered data, not raw XML or independently validated humanitarian ground truth.",
+    "No historical snapshots or external needs data.",
+    "Positional source IDs are meaningful only with this snapshot hash."
+  ]
+}

@@ -1,0 +1,142 @@
+[
+  {
+    "id": "Q01",
+    "category": "organizations",
+    "question": "How many retained activities does each publisher have?",
+    "value_type": "integer",
+    "contract": "Count distinct iati_identifier, grouped by publisher."
+  },
+  {
+    "id": "Q02",
+    "category": "geography",
+    "question": "How many distinct hotspot countries does each publisher target?",
+    "value_type": "integer",
+    "contract": "Use rel_targets_country where is_hotspot=true; count distinct country_code by activity publisher."
+  },
+  {
+    "id": "Q03",
+    "category": "geography",
+    "question": "How many retained activities target Somalia for each publisher?",
+    "value_type": "integer",
+    "contract": "Count distinct activity IDs with country_code=SO; include only publishers with matches."
+  },
+  {
+    "id": "Q04",
+    "category": "organizations",
+    "question": "Which organization references participate in activities from at least two publishers, and how many distinct activities does each participate in?",
+    "value_type": "integer",
+    "contract": "Group rel_participates by org_ref; require at least two distinct activity publishers. Deduplicate activities. Return organization refs, not names."
+  },
+  {
+    "id": "Q05",
+    "category": "organizations",
+    "question": "How many distinct organization references occur in each participation role?",
+    "value_type": "integer",
+    "contract": "Group by raw role code, counting distinct org_ref. Repeated participation rows do not increase counts."
+  },
+  {
+    "id": "Q06",
+    "category": "quality",
+    "question": "How many activities were included by each match basis?",
+    "value_type": "integer",
+    "contract": "Group nodes_activities by match_basis; count distinct activity IDs."
+  },
+  {
+    "id": "Q07",
+    "category": "sectors",
+    "question": "How many retained WFP activities have activity-level sector 1:72040?",
+    "value_type": "integer",
+    "contract": "Return count under key count. Use rel_classified_as, not text or transaction sectors."
+  },
+  {
+    "id": "Q08",
+    "category": "time",
+    "question": "How many activities per publisher started in 2020 through 2025 inclusive?",
+    "value_type": "integer",
+    "contract": "Use start_actual when nonempty, otherwise start_planned. Require date >=2020-01-01 and <2026-01-01. Omit publishers with zero matches."
+  },
+  {
+    "id": "Q09",
+    "category": "time",
+    "question": "What is the latest publisher-reported update calendar date among retained activities for each publisher?",
+    "value_type": "date",
+    "contract": "Take max of first 10 characters of nonempty last_updated. This is not a download timestamp."
+  },
+  {
+    "id": "Q10",
+    "category": "funding",
+    "question": "What is the net sum of WFP incoming funds in USD dated in calendar year 2020?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=1, currency=USD, date >=2020-01-01 and <2021-01-01. Include negative adjustments; no conversion or other types."
+  },
+  {
+    "id": "Q11",
+    "category": "funding",
+    "question": "What is the net sum of Oxfam GB disbursements in GBP dated in calendar year 2020?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=3, currency=GBP, date >=2020-01-01 and <2021-01-01. Include negative adjustments."
+  },
+  {
+    "id": "Q12",
+    "category": "funding",
+    "question": "What is the net sum of Oxfam America expenditure in USD across all transaction dates in this snapshot?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=4 and currency=USD for oxfamus; include negatives. This is not a current-year total."
+  },
+  {
+    "id": "Q13",
+    "category": "quality",
+    "question": "How many negative transaction values does each publisher report?",
+    "value_type": "integer",
+    "contract": "Count transaction rows with Decimal(value)<0 by activity publisher. A negative value is not automatically invalid."
+  },
+  {
+    "id": "Q14",
+    "category": "funding",
+    "question": "What is the sum of original, committed budget rows denominated in USD across all periods in this snapshot?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum nodes_budgets where type=1,status=2,currency=USD. This explicitly sums rows; it does not select revisions or estimate unique funding."
+  },
+  {
+    "id": "Q15",
+    "category": "sectors",
+    "question": "How many distinct activities are linked to each SDG key?",
+    "value_type": "integer",
+    "contract": "Count distinct activity IDs in rel_contributes_to by sdg_key. Do not interpret a tag as evidence of achieved results."
+  },
+  {
+    "id": "Q16",
+    "category": "geography",
+    "question": "How many distinct activities have at least one location node, by publisher?",
+    "value_type": "integer",
+    "contract": "Join rel_located_at to activities; count distinct activity IDs by publisher. Omit zero groups. A location is not necessarily a beneficiary location."
+  },
+  {
+    "id": "Q17",
+    "category": "reasoning",
+    "question": "Which hotspot country currently needs humanitarian aid the most?",
+    "value_type": "structured",
+    "contract": "Use only the supplied snapshot. Answer when supported; otherwise explain the missing information or request clarification. Use the shared response schema."
+  },
+  {
+    "id": "Q18",
+    "category": "reasoning",
+    "question": "What did these records say on January 1, 2020, before subsequent publisher corrections?",
+    "value_type": "structured",
+    "contract": "Use only the supplied snapshot. Answer when supported; otherwise explain the missing information or request clarification. Use the shared response schema."
+  },
+  {
+    "id": "Q19",
+    "category": "reasoning",
+    "question": "How much total funding did these organizations provide?",
+    "value_type": "structured",
+    "contract": "Use only the supplied snapshot. Answer when supported; otherwise explain the missing information or request clarification. Use the shared response schema."
+  },
+  {
+    "id": "Q20",
+    "category": "reasoning",
+    "question": "Which exact original WFP XML field contained a country code instead of an activity identifier in the summer anomaly?",
+    "value_type": "structured",
+    "contract": "Use only the supplied snapshot. Answer when supported; otherwise explain the missing information or request clarification. Use the shared response schema."
+  }
+]
