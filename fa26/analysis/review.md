@@ -1,15 +1,18 @@
-# Offline graph and evaluation review
+# Graph and evaluation review
 
 The main team/PM review is [00_review_and_next_steps.ipynb](../notebooks/00_review_and_next_steps.ipynb). It contains the full findings, file map, recorded evidence, 20-question list, reproduction commands and next steps. Keep detailed updates there.
 
-## Current team status — October 21, 2026
+## Current team status — October 22, 2026
 
-- George confirmed that he has **not yet run the model APIs or the Neo4j load**. His work provides the implementation; completed validation is offline only.
-- **GLM is the client's preferred candidate** for the first model pilot. The exact model/version, provider endpoint and access limits still need confirmation.
-- Kimi and Qwen remain optional comparison candidates, not equal-priority commitments.
-- Start with verified free-tier access. No API budget, credits or paid access are confirmed; do not assume Brent will cover charges.
-- Memory and reranking remain proposed architecture work, not implemented or evaluated features.
-- No live model results, model ranking or live database validation are claimed.
+Based on George's team update; the live artifacts and comparison table have not yet been independently reviewed here.
+
+- George confirmed the `source_id` relationship merge fix and adopted the loader as notebook 04 v2. He adopted the 20-question benchmark and `score.py` as his evaluation standard.
+- **George reports that the model APIs and Neo4j load have run.** Aura contains **27,279 nodes, 59,121 relationships and 0 isolated nodes**, using the reviewed loader.
+- His notebook 03 has live diagnostic scorecards for **Opus, Sonnet, GLM-5.3 and GLM-4.7-Flash**. Exact Claude model IDs and run artifacts are pending review; these diagnostics are separate from the 20-question benchmark.
+- The **20-question benchmark is in progress** through a LangGraph agent that writes the shared submission format. George will provide the comparison table; no final benchmark ranking is available yet.
+- George reports verified **Z.ai access with model `glm-5.3`**, at **under USD 0.10 per 20-question pass**. This is a reported run cost, not a guaranteed price, free-tier entitlement or authorization for further spending.
+- A PR to `denizbranch` is expected for value-based comparison in `text2cypher_eval.py`: exact-row comparison can reject correct results when a returned column is renamed. It is pending, not merged.
+- Memory/reranking validation and a broader API budget are not established by this update.
 
 ## Completed offline work
 
@@ -27,10 +30,11 @@ The main team/PM review is [00_review_and_next_steps.ipynb](../notebooks/00_revi
 - Full benchmark: [benchmark README](../benchmark/README.md).
 - Screenshots: [figures](../reports/figures/README.md); these show existing application views, not model results.
 
-## Next decisions
+## Next steps
 
-1. Confirm GLM free-tier access, an exact model ID, endpoint and usage limits.
-2. Agree on humanitarian funding-data definitions separately from API costs: transaction types, currencies, promised/actual amounts, dates, history and negative corrections.
-3. Validate an isolated evaluation database and server-enforced read-only evaluation account.
-4. Run a small GLM pilot, then the same 20 questions with full source evidence. Only expand comparisons after reviewing results and available access.
-5. Keep memory/reranking as explicitly scoped follow-up work. Do not claim a completed live pipeline yet.
+1. Review George's comparison table, structured submissions and live scorecards when shared. Keep five-question diagnostics separate from the 20-question benchmark.
+2. Review the incoming value-based comparison PR, including renamed-column cases, duplicate rows and failure handling, before merging.
+3. Record exact model IDs, snapshot identity, prompts, retry settings, latency, token usage and observed costs with the comparison.
+4. Confirm the loaded graph's snapshot and server-enforced read-only evaluation permissions from the live configuration.
+5. Agree on humanitarian funding-data definitions: transaction types, currencies, promised/actual amounts, dates and negative corrections.
+6. Update the client slides with the reported live progress; add model rankings only after reviewing the completed results.
