@@ -1,0 +1,2167 @@
+[
+  {
+    "id": "Q01",
+    "category": "organizations",
+    "question": "How many retained activities does each publisher have?",
+    "value_type": "integer",
+    "contract": "Count distinct iati_identifier, grouped by publisher.",
+    "split": "regression",
+    "family": "Q01",
+    "legacy": true
+  },
+  {
+    "id": "Q02",
+    "category": "geography",
+    "question": "How many distinct hotspot countries does each publisher target?",
+    "value_type": "integer",
+    "contract": "Use rel_targets_country where is_hotspot=true; count distinct country_code by activity publisher.",
+    "split": "regression",
+    "family": "Q02",
+    "legacy": true
+  },
+  {
+    "id": "Q03",
+    "category": "geography",
+    "question": "How many retained activities target Somalia for each publisher?",
+    "value_type": "integer",
+    "contract": "Count distinct activity IDs with country_code=SO; include only publishers with matches.",
+    "split": "regression",
+    "family": "Q03",
+    "legacy": true
+  },
+  {
+    "id": "Q04",
+    "category": "organizations",
+    "question": "Which organization references participate in activities from at least two publishers, and how many distinct activities does each participate in?",
+    "value_type": "integer",
+    "contract": "Group rel_participates by org_ref; require at least two distinct activity publishers. Deduplicate activities. Return organization refs, not names.",
+    "split": "regression",
+    "family": "Q04",
+    "legacy": true
+  },
+  {
+    "id": "Q05",
+    "category": "organizations",
+    "question": "How many distinct organization references occur in each participation role?",
+    "value_type": "integer",
+    "contract": "Group by raw role code, counting distinct org_ref. Repeated participation rows do not increase counts.",
+    "split": "regression",
+    "family": "Q05",
+    "legacy": true
+  },
+  {
+    "id": "Q06",
+    "category": "quality",
+    "question": "How many activities were included by each match basis?",
+    "value_type": "integer",
+    "contract": "Group nodes_activities by match_basis; count distinct activity IDs.",
+    "split": "regression",
+    "family": "Q06",
+    "legacy": true
+  },
+  {
+    "id": "Q07",
+    "category": "sectors",
+    "question": "How many retained WFP activities have activity-level sector 1:72040?",
+    "value_type": "integer",
+    "contract": "Return count under key count. Use rel_classified_as, not text or transaction sectors.",
+    "split": "regression",
+    "family": "Q07",
+    "legacy": true
+  },
+  {
+    "id": "Q08",
+    "category": "time",
+    "question": "How many activities per publisher started in 2020 through 2025 inclusive?",
+    "value_type": "integer",
+    "contract": "Use start_actual when nonempty, otherwise start_planned. Require date >=2020-01-01 and <2026-01-01. Omit publishers with zero matches.",
+    "split": "regression",
+    "family": "Q08",
+    "legacy": true
+  },
+  {
+    "id": "Q09",
+    "category": "time",
+    "question": "What is the latest publisher-reported update calendar date among retained activities for each publisher?",
+    "value_type": "date",
+    "contract": "Take max of first 10 characters of nonempty last_updated. This is not a download timestamp.",
+    "split": "regression",
+    "family": "Q09",
+    "legacy": true
+  },
+  {
+    "id": "Q10",
+    "category": "funding",
+    "question": "What is the net sum of WFP incoming funds in USD dated in calendar year 2020?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=1, currency=USD, date >=2020-01-01 and <2021-01-01. Include negative adjustments; no conversion or other types.",
+    "split": "regression",
+    "family": "Q10",
+    "legacy": true
+  },
+  {
+    "id": "Q11",
+    "category": "funding",
+    "question": "What is the net sum of Oxfam GB disbursements in GBP dated in calendar year 2020?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=3, currency=GBP, date >=2020-01-01 and <2021-01-01. Include negative adjustments.",
+    "split": "regression",
+    "family": "Q11",
+    "legacy": true
+  },
+  {
+    "id": "Q12",
+    "category": "funding",
+    "question": "What is the net sum of Oxfam America expenditure in USD across all transaction dates in this snapshot?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=4 and currency=USD for oxfamus; include negatives. This is not a current-year total.",
+    "split": "regression",
+    "family": "Q12",
+    "legacy": true
+  },
+  {
+    "id": "Q13",
+    "category": "quality",
+    "question": "How many negative transaction values does each publisher report?",
+    "value_type": "integer",
+    "contract": "Count transaction rows with Decimal(value)<0 by activity publisher. A negative value is not automatically invalid.",
+    "split": "regression",
+    "family": "Q13",
+    "legacy": true
+  },
+  {
+    "id": "Q14",
+    "category": "funding",
+    "question": "What is the sum of original, committed budget rows denominated in USD across all periods in this snapshot?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum nodes_budgets where type=1,status=2,currency=USD. This explicitly sums rows; it does not select revisions or estimate unique funding.",
+    "split": "regression",
+    "family": "Q14",
+    "legacy": true
+  },
+  {
+    "id": "Q15",
+    "category": "sectors",
+    "question": "How many distinct activities are linked to each SDG key?",
+    "value_type": "integer",
+    "contract": "Count distinct activity IDs in rel_contributes_to by sdg_key. Do not interpret a tag as evidence of achieved results.",
+    "split": "regression",
+    "family": "Q15",
+    "legacy": true
+  },
+  {
+    "id": "Q16",
+    "category": "geography",
+    "question": "How many distinct activities have at least one location node, by publisher?",
+    "value_type": "integer",
+    "contract": "Join rel_located_at to activities; count distinct activity IDs by publisher. Omit zero groups. A location is not necessarily a beneficiary location.",
+    "split": "regression",
+    "family": "Q16",
+    "legacy": true
+  },
+  {
+    "id": "Q17",
+    "category": "unsupported",
+    "question": "Which hotspot country currently needs humanitarian aid the most?",
+    "value_type": "unsupported",
+    "contract": "abstain|NEEDS_DATA_MISSING|The snapshot has no validated needs measure and is not real-time. Activity counts cannot establish unmet need.",
+    "split": "regression",
+    "family": "Q17",
+    "legacy": true
+  },
+  {
+    "id": "Q18",
+    "category": "unsupported",
+    "question": "What did these records say on January 1, 2020, before subsequent publisher corrections?",
+    "value_type": "unsupported",
+    "contract": "abstain|HISTORY_UNAVAILABLE|Only one exported snapshot is available. Transaction dates and publisher update dates cannot reconstruct earlier versions.",
+    "split": "regression",
+    "family": "Q18",
+    "legacy": true
+  },
+  {
+    "id": "Q19",
+    "category": "ambiguous",
+    "question": "How much total funding did these organizations provide?",
+    "value_type": "unsupported",
+    "contract": "clarify|FUNDING_DEFINITION_REQUIRED,CURRENCY_BASIS_REQUIRED,PERIOD_REQUIRED|Ask which financial measure, currency/conversion basis, and period are intended. Do not sum commitments, receipts, disbursements, expenditure, or different currencies together.",
+    "split": "regression",
+    "family": "Q19",
+    "legacy": true
+  },
+  {
+    "id": "Q20",
+    "category": "unsupported",
+    "question": "Which exact original WFP XML field contained a country code instead of an activity identifier in the summer anomaly?",
+    "value_type": "unsupported",
+    "contract": "abstain|RAW_XML_UNAVAILABLE|The original anomaly XML is absent, and activity-reference attributes were not preserved in these exports. Request the original example.",
+    "split": "regression",
+    "family": "Q20",
+    "legacy": true
+  },
+  {
+    "id": "V2Q001",
+    "category": "direct",
+    "question": "How many activities are recorded in this snapshot?",
+    "split": "development",
+    "family": "V2Q001",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q002",
+    "category": "direct",
+    "question": "How many activities are marked humanitarian?",
+    "split": "development",
+    "family": "V2Q002",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "humanitarian": "1"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'humanitarian': '1'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q003",
+    "category": "direct",
+    "question": "How many activities are recorded as completed?",
+    "split": "development",
+    "family": "V2Q003",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "status": "3"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'status': '3'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q004",
+    "category": "direct",
+    "question": "How many activities have no actual start date?",
+    "split": "development",
+    "family": "V2Q004",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "start_actual": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'start_actual': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q005",
+    "category": "direct",
+    "question": "How many activities have no actual end date?",
+    "split": "development",
+    "family": "V2Q005",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "end_actual": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'end_actual': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q006",
+    "category": "direct",
+    "question": "How many activities have a planned start date?",
+    "split": "development",
+    "family": "V2Q006",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "start_planned__ne": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'start_planned__ne': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q007",
+    "category": "direct",
+    "question": "How many activities have a planned end date?",
+    "split": "development",
+    "family": "V2Q007",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "end_planned__ne": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'end_planned__ne': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q008",
+    "category": "direct",
+    "question": "How many activities use GBP as their default currency?",
+    "split": "development",
+    "family": "V2Q008",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "default_currency": "GBP"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'default_currency': 'GBP'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q009",
+    "category": "direct",
+    "question": "How many distinct organisation references are recorded?",
+    "split": "development",
+    "family": "V2Q009",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_organisations",
+      "metric": "count",
+      "field": "ref",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_organisations', 'metric': 'count', 'field': 'ref', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q010",
+    "category": "direct",
+    "question": "How many distinct named locations are recorded?",
+    "split": "development",
+    "family": "V2Q010",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_locations",
+      "metric": "count",
+      "field": "location_id",
+      "filters": {
+        "name__ne": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_locations', 'metric': 'count', 'field': 'location_id', 'filters': {'name__ne': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q011",
+    "category": "direct",
+    "question": "How many activities are in implementation?",
+    "split": "heldout",
+    "family": "V2Q011",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "status": "2"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'status': '2'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q012",
+    "category": "direct",
+    "question": "What is the earliest recorded actual activity start date?",
+    "split": "heldout",
+    "family": "V2Q012",
+    "legacy": false,
+    "value_type": "date",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "min",
+      "field": "start_actual",
+      "filters": {
+        "start_actual__ne": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'min', 'field': 'start_actual', 'filters': {'start_actual__ne': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q013",
+    "category": "direct",
+    "question": "What is the latest recorded actual activity end date?",
+    "split": "heldout",
+    "family": "V2Q013",
+    "legacy": false,
+    "value_type": "date",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "max",
+      "field": "end_actual",
+      "filters": {
+        "end_actual__ne": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'max', 'field': 'end_actual', 'filters': {'end_actual__ne': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q014",
+    "category": "direct",
+    "question": "How many activities have no description?",
+    "split": "heldout",
+    "family": "V2Q014",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "description": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'description': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q015",
+    "category": "direct",
+    "question": "How many distinct transaction identifiers are recorded?",
+    "split": "heldout",
+    "family": "V2Q015",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "count",
+      "field": "tx_id",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'count', 'field': 'tx_id', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q016",
+    "category": "direct",
+    "question": "How many distinct budget identifiers are recorded?",
+    "split": "heldout",
+    "family": "V2Q016",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_budgets",
+      "metric": "count",
+      "field": "budget_id",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_budgets', 'metric': 'count', 'field': 'budget_id', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q017",
+    "category": "direct",
+    "question": "How many distinct sector keys are recorded?",
+    "split": "heldout",
+    "family": "V2Q017",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_sectors",
+      "metric": "count",
+      "field": "sector_key",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_sectors', 'metric': 'count', 'field': 'sector_key', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q018",
+    "category": "direct",
+    "question": "How many organisation references have no name?",
+    "split": "heldout",
+    "family": "V2Q018",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_organisations",
+      "metric": "count",
+      "field": "ref",
+      "filters": {
+        "name": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_organisations', 'metric': 'count', 'field': 'ref', 'filters': {'name': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q019",
+    "category": "direct",
+    "question": "How many locations have no latitude?",
+    "split": "heldout",
+    "family": "V2Q019",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_locations",
+      "metric": "count",
+      "field": "location_id",
+      "filters": {
+        "lat": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_locations', 'metric': 'count', 'field': 'location_id', 'filters': {'lat': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q020",
+    "category": "direct",
+    "question": "How many activities have a publisher-reported update timestamp?",
+    "split": "heldout",
+    "family": "V2Q020",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "last_updated__ne": ""
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'last_updated__ne': ''}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q021",
+    "category": "two_step",
+    "question": "How many Oxfam GB activities in Somalia are recorded as completed?",
+    "split": "development",
+    "family": "V2Q021",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "publisher": "oxfamgb",
+        "status": "3"
+      },
+      "links": {
+        "rel_targets_country": {
+          "country_code": "SO"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'publisher': 'oxfamgb', 'status': '3'}, 'links': {'rel_targets_country': {'country_code': 'SO'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q022",
+    "category": "two_step",
+    "question": "How many WFP activities in Yemen are in implementation?",
+    "split": "development",
+    "family": "V2Q022",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "publisher": "wfp",
+        "status": "2"
+      },
+      "links": {
+        "rel_targets_country": {
+          "country_code": "YE"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'publisher': 'wfp', 'status': '2'}, 'links': {'rel_targets_country': {'country_code': 'YE'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q023",
+    "category": "two_step",
+    "question": "How many activities targeting Afghanistan have a recorded location?",
+    "split": "development",
+    "family": "V2Q023",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "rel_targets_country": {
+          "country_code": "AF"
+        },
+        "rel_located_at": {}
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'rel_targets_country': {'country_code': 'AF'}, 'rel_located_at': {}}, 'group': None}"
+  },
+  {
+    "id": "V2Q024",
+    "category": "two_step",
+    "question": "How many activities targeting South Sudan have a funding organisation listed?",
+    "split": "development",
+    "family": "V2Q024",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "rel_targets_country": {
+          "country_code": "SS"
+        },
+        "rel_participates": {
+          "role": "1"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'rel_targets_country': {'country_code': 'SS'}, 'rel_participates': {'role': '1'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q025",
+    "category": "two_step",
+    "question": "How many WFP activities have both a sector classification and an implementing organisation?",
+    "split": "development",
+    "family": "V2Q025",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "publisher": "wfp"
+      },
+      "links": {
+        "rel_classified_as": {},
+        "rel_participates": {
+          "role": "4"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'publisher': 'wfp'}, 'links': {'rel_classified_as': {}, 'rel_participates': {'role': '4'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q026",
+    "category": "two_step",
+    "question": "How many Oxfam GB activities have both a recorded location and an implementing organisation?",
+    "split": "development",
+    "family": "V2Q026",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "publisher": "oxfamgb"
+      },
+      "links": {
+        "rel_located_at": {},
+        "rel_participates": {
+          "role": "4"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'publisher': 'oxfamgb'}, 'links': {'rel_located_at': {}, 'rel_participates': {'role': '4'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q027",
+    "category": "two_step",
+    "question": "How many activities targeting Yemen have an SDG link?",
+    "split": "development",
+    "family": "V2Q027",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "rel_targets_country": {
+          "country_code": "YE"
+        },
+        "rel_contributes_to": {}
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'rel_targets_country': {'country_code': 'YE'}, 'rel_contributes_to': {}}, 'group': None}"
+  },
+  {
+    "id": "V2Q028",
+    "category": "two_step",
+    "question": "How many activities targeting Somalia have an actual start date before 2020?",
+    "split": "development",
+    "family": "V2Q028",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "start_actual__ne": "",
+        "start_actual__lt": "2020-01-01"
+      },
+      "links": {
+        "rel_targets_country": {
+          "country_code": "SO"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'start_actual__ne': '', 'start_actual__lt': '2020-01-01'}, 'links': {'rel_targets_country': {'country_code': 'SO'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q029",
+    "category": "two_step",
+    "question": "How many activities with a funding organisation have an actual end date before 2022?",
+    "split": "development",
+    "family": "V2Q029",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "end_actual__ne": "",
+        "end_actual__lt": "2022-01-01"
+      },
+      "links": {
+        "rel_participates": {
+          "role": "1"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'end_actual__ne': '', 'end_actual__lt': '2022-01-01'}, 'links': {'rel_participates': {'role': '1'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q030",
+    "category": "two_step",
+    "question": "How many Oxfam America activities have a transaction and a budget?",
+    "split": "development",
+    "family": "V2Q030",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "publisher": "oxfamus"
+      },
+      "links": {
+        "nodes_transactions": {},
+        "nodes_budgets": {}
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'publisher': 'oxfamus'}, 'links': {'nodes_transactions': {}, 'nodes_budgets': {}}, 'group': None}"
+  },
+  {
+    "id": "V2Q031",
+    "category": "two_step",
+    "question": "How many activities have both a negative transaction and an implementing organisation?",
+    "split": "heldout",
+    "family": "V2Q031",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "nodes_transactions": {
+          "value__negative": true
+        },
+        "rel_participates": {
+          "role": "4"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'nodes_transactions': {'value__negative': True}, 'rel_participates': {'role': '4'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q032",
+    "category": "two_step",
+    "question": "How many activities have both a commitment and an expenditure transaction?",
+    "split": "heldout",
+    "family": "V2Q032",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "nodes_transactions": {
+          "type": "2"
+        },
+        "nodes_transactions#expenditure": {
+          "type": "4"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'nodes_transactions': {'type': '2'}, 'nodes_transactions#expenditure': {'type': '4'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q033",
+    "category": "two_step",
+    "question": "How many activities have both incoming funds and disbursements?",
+    "split": "heldout",
+    "family": "V2Q033",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "nodes_transactions": {
+          "type": "1"
+        },
+        "nodes_transactions#disbursement": {
+          "type": "3"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'nodes_transactions': {'type': '1'}, 'nodes_transactions#disbursement': {'type': '3'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q034",
+    "category": "two_step",
+    "question": "How many activities have both USD and GBP transactions?",
+    "split": "heldout",
+    "family": "V2Q034",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "nodes_transactions": {
+          "currency": "USD"
+        },
+        "nodes_transactions#gbp": {
+          "currency": "GBP"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'nodes_transactions': {'currency': 'USD'}, 'nodes_transactions#gbp': {'currency': 'GBP'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q035",
+    "category": "two_step",
+    "question": "How many activities with a revised budget are marked completed?",
+    "split": "heldout",
+    "family": "V2Q035",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "status": "3"
+      },
+      "links": {
+        "nodes_budgets": {
+          "type": "2"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'status': '3'}, 'links': {'nodes_budgets': {'type': '2'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q036",
+    "category": "two_step",
+    "question": "How many activities with a committed budget have an actual start date in 2021?",
+    "split": "heldout",
+    "family": "V2Q036",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "start_actual__gte": "2021-01-01",
+        "start_actual__lt": "2022-01-01"
+      },
+      "links": {
+        "nodes_budgets": {
+          "status": "2"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'start_actual__gte': '2021-01-01', 'start_actual__lt': '2022-01-01'}, 'links': {'nodes_budgets': {'status': '2'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q037",
+    "category": "two_step",
+    "question": "How many activities have a location link but no actual start date?",
+    "split": "heldout",
+    "family": "V2Q037",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "start_actual": ""
+      },
+      "links": {
+        "rel_located_at": {}
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'start_actual': ''}, 'links': {'rel_located_at': {}}, 'group': None}"
+  },
+  {
+    "id": "V2Q038",
+    "category": "two_step",
+    "question": "How many activities with sector 1:72040 also have an SDG link?",
+    "split": "heldout",
+    "family": "V2Q038",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "rel_classified_as": {
+          "sector_key": "1:72040"
+        },
+        "rel_contributes_to": {}
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'rel_classified_as': {'sector_key': '1:72040'}, 'rel_contributes_to': {}}, 'group': None}"
+  },
+  {
+    "id": "V2Q039",
+    "category": "two_step",
+    "question": "How many activities with incoming funds have no actual end date?",
+    "split": "heldout",
+    "family": "V2Q039",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "end_actual": ""
+      },
+      "links": {
+        "nodes_transactions": {
+          "type": "1"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'end_actual': ''}, 'links': {'nodes_transactions': {'type': '1'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q040",
+    "category": "two_step",
+    "question": "How many activities with an implementing organisation have a publisher-reported update in 2025?",
+    "split": "heldout",
+    "family": "V2Q040",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "last_updated__gte": "2025-01-01",
+        "last_updated__lt": "2026-01-01"
+      },
+      "links": {
+        "rel_participates": {
+          "role": "4"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'last_updated__gte': '2025-01-01', 'last_updated__lt': '2026-01-01'}, 'links': {'rel_participates': {'role': '4'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q041",
+    "category": "organisation",
+    "question": "How much did the UK give?",
+    "split": "development",
+    "family": "V2Q041",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "clarify",
+    "reasons": [
+      "funding_scope"
+    ],
+    "explanation": "Clarify government/agencies, transaction measure, currency and period.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q042",
+    "category": "organisation",
+    "question": "Show the total funding from Oxfam.",
+    "split": "development",
+    "family": "V2Q042",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "clarify",
+    "reasons": [
+      "organisation_scope"
+    ],
+    "explanation": "Clarify Oxfam entity, measure, currency and period.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q043",
+    "category": "organisation",
+    "question": "How much did America contribute?",
+    "split": "development",
+    "family": "V2Q043",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "clarify",
+    "reasons": [
+      "organisation_scope"
+    ],
+    "explanation": "America could mean a government or Oxfam America; clarify entity and financial scope.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q044",
+    "category": "organisation",
+    "question": "Which Congo projects did we support?",
+    "split": "development",
+    "family": "V2Q044",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "clarify",
+    "reasons": [
+      "country_scope"
+    ],
+    "explanation": "Clarify which Congo and the organisation meant by we.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q045",
+    "category": "organisation",
+    "question": "How much funding came from the UN?",
+    "split": "development",
+    "family": "V2Q045",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "clarify",
+    "reasons": [
+      "organisation_scope"
+    ],
+    "explanation": "Clarify which UN bodies and financial scope.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q046",
+    "category": "organisation",
+    "question": "How much did the government spend in Yemen?",
+    "split": "heldout",
+    "family": "V2Q046",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "clarify",
+    "reasons": [
+      "organisation_scope"
+    ],
+    "explanation": "The government is unspecified; clarify the entity and financial scope.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q047",
+    "category": "organisation",
+    "question": "How much did our partners spend last year?",
+    "split": "heldout",
+    "family": "V2Q047",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "clarify",
+    "reasons": [
+      "organisation_scope"
+    ],
+    "explanation": "Clarify our organisation, partners, absolute year, currency and measure.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q048",
+    "category": "organisation",
+    "question": "How much did the ministry contribute?",
+    "split": "heldout",
+    "family": "V2Q048",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "clarify",
+    "reasons": [
+      "organisation_scope"
+    ],
+    "explanation": "No ministry or country is identified; clarify entity and financial scope.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q049",
+    "category": "organisation",
+    "question": "How many activities does the World Food Programme report?",
+    "split": "development",
+    "family": "V2Q049",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "publisher": "wfp"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'publisher': 'wfp'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q050",
+    "category": "organisation",
+    "question": "How many activities does Oxfam America report?",
+    "split": "development",
+    "family": "V2Q050",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "publisher": "oxfamus"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'publisher': 'oxfamus'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q051",
+    "category": "organisation",
+    "question": "How many activities does Oxfam Great Britain report?",
+    "split": "development",
+    "family": "V2Q051",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {
+        "publisher": "oxfamgb"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {'publisher': 'oxfamgb'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q052",
+    "category": "organisation",
+    "question": "How many activities list GB-CHC-202918 as an implementing organisation?",
+    "split": "heldout",
+    "family": "organisation-role-counts",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "rel_participates": {
+          "org_ref": "GB-CHC-202918",
+          "role": "4"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'rel_participates': {'org_ref': 'GB-CHC-202918', 'role': '4'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q053",
+    "category": "organisation",
+    "question": "How many activities list GB-CHC-202918 as a funding organisation?",
+    "split": "heldout",
+    "family": "organisation-role-counts",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "rel_participates": {
+          "org_ref": "GB-CHC-202918",
+          "role": "1"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'rel_participates': {'org_ref': 'GB-CHC-202918', 'role': '1'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q054",
+    "category": "organisation",
+    "question": "How many activities list GB-CHC-202918 as an extending organisation?",
+    "split": "heldout",
+    "family": "organisation-role-counts",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "rel_participates": {
+          "org_ref": "GB-CHC-202918",
+          "role": "3"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'rel_participates': {'org_ref': 'GB-CHC-202918', 'role': '3'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q055",
+    "category": "organisation",
+    "question": "How many activities target the Democratic Republic of the Congo?",
+    "split": "heldout",
+    "family": "V2Q055",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {
+        "rel_targets_country": {
+          "country_code": "CD"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {'rel_targets_country': {'country_code': 'CD'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q056",
+    "category": "financial",
+    "question": "What is the signed total of negative WFP incoming-fund transactions in USD?",
+    "split": "development",
+    "family": "V2Q056",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "publisher": "wfp",
+        "type": "1",
+        "currency": "USD",
+        "value__negative": true
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'publisher': 'wfp', 'type': '1', 'currency': 'USD', 'value__negative': True}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q057",
+    "category": "financial",
+    "question": "What is the total of positive WFP incoming-fund transactions in USD?",
+    "split": "development",
+    "family": "V2Q057",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "publisher": "wfp",
+        "type": "1",
+        "currency": "USD",
+        "value__positive": true
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'publisher': 'wfp', 'type': '1', 'currency': 'USD', 'value__positive': True}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q058",
+    "category": "financial",
+    "question": "How many zero-value transactions are recorded?",
+    "split": "development",
+    "family": "V2Q058",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "count",
+      "field": "tx_id",
+      "filters": {
+        "value__zero": true
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'count', 'field': 'tx_id', 'filters': {'value__zero': True}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q059",
+    "category": "financial",
+    "question": "What is the net GBP expenditure recorded for Oxfam GB across the snapshot?",
+    "split": "development",
+    "family": "V2Q059",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "publisher": "oxfamgb",
+        "type": "4",
+        "currency": "GBP"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'publisher': 'oxfamgb', 'type': '4', 'currency': 'GBP'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q060",
+    "category": "financial",
+    "question": "What is the net USD commitment amount recorded for WFP across the snapshot?",
+    "split": "development",
+    "family": "V2Q060",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "publisher": "wfp",
+        "type": "2",
+        "currency": "USD"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'publisher': 'wfp', 'type': '2', 'currency': 'USD'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q061",
+    "category": "financial",
+    "question": "What is the net USD expenditure recorded for WFP across the snapshot?",
+    "split": "development",
+    "family": "V2Q061",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "publisher": "wfp",
+        "type": "4",
+        "currency": "USD"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'publisher': 'wfp', 'type': '4', 'currency': 'USD'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q062",
+    "category": "financial",
+    "question": "How many Oxfam GB disbursement transactions have negative values?",
+    "split": "development",
+    "family": "V2Q062",
+    "legacy": false,
+    "value_type": "integer",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "count",
+      "field": "tx_id",
+      "filters": {
+        "publisher": "oxfamgb",
+        "type": "3",
+        "value__negative": true
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'count', 'field': 'tx_id', 'filters': {'publisher': 'oxfamgb', 'type': '3', 'value__negative': True}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q063",
+    "category": "financial",
+    "question": "What is the net incoming-fund amount by currency across all publishers?",
+    "split": "heldout",
+    "family": "V2Q063",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "type": "1"
+      },
+      "links": {},
+      "group": "currency"
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'type': '1'}, 'links': {}, 'group': 'currency'}"
+  },
+  {
+    "id": "V2Q064",
+    "category": "financial",
+    "question": "What is the net expenditure by currency across all publishers?",
+    "split": "heldout",
+    "family": "V2Q064",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "type": "4"
+      },
+      "links": {},
+      "group": "currency"
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'type': '4'}, 'links': {}, 'group': 'currency'}"
+  },
+  {
+    "id": "V2Q065",
+    "category": "financial",
+    "question": "What is the net USD incoming-fund amount for activities targeting Somalia?",
+    "split": "heldout",
+    "family": "V2Q065",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "type": "1",
+        "currency": "USD"
+      },
+      "links": {
+        "rel_targets_country": {
+          "country_code": "SO"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'type': '1', 'currency': 'USD'}, 'links': {'rel_targets_country': {'country_code': 'SO'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q066",
+    "category": "financial",
+    "question": "What is the net GBP disbursement amount for activities targeting Yemen?",
+    "split": "heldout",
+    "family": "V2Q066",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "type": "3",
+        "currency": "GBP"
+      },
+      "links": {
+        "rel_targets_country": {
+          "country_code": "YE"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'type': '3', 'currency': 'GBP'}, 'links': {'rel_targets_country': {'country_code': 'YE'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q067",
+    "category": "financial",
+    "question": "What is the net USD expenditure dated in 2022 for activities targeting Afghanistan?",
+    "split": "heldout",
+    "family": "V2Q067",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "type": "4",
+        "currency": "USD",
+        "date__gte": "2022-01-01",
+        "date__lt": "2023-01-01"
+      },
+      "links": {
+        "rel_targets_country": {
+          "country_code": "AF"
+        }
+      },
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'type': '4', 'currency': 'USD', 'date__gte': '2022-01-01', 'date__lt': '2023-01-01'}, 'links': {'rel_targets_country': {'country_code': 'AF'}}, 'group': None}"
+  },
+  {
+    "id": "V2Q068",
+    "category": "financial",
+    "question": "What is the total value of revised indicative GBP budget rows across all periods?",
+    "split": "heldout",
+    "family": "V2Q068",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_budgets",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "type": "2",
+        "status": "1",
+        "currency": "GBP"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_budgets', 'metric': 'sum', 'field': 'value', 'filters': {'type': '2', 'status': '1', 'currency': 'GBP'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q069",
+    "category": "financial",
+    "question": "What is the net USD incoming-fund amount dated before 2000?",
+    "split": "heldout",
+    "family": "V2Q069",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "type": "1",
+        "currency": "USD",
+        "date__ne": "",
+        "date__lt": "2000-01-01"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'type': '1', 'currency': 'USD', 'date__ne': '', 'date__lt': '2000-01-01'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q070",
+    "category": "financial",
+    "question": "What is the net EUR expenditure across the snapshot?",
+    "split": "heldout",
+    "family": "V2Q070",
+    "legacy": false,
+    "value_type": "decimal",
+    "spec": {
+      "table": "nodes_transactions",
+      "metric": "sum",
+      "field": "value",
+      "filters": {
+        "type": "4",
+        "currency": "EUR"
+      },
+      "links": {},
+      "group": null
+    },
+    "status": "answer",
+    "reasons": [],
+    "explanation": "",
+    "contract": "Evaluator-only selection: {'table': 'nodes_transactions', 'metric': 'sum', 'field': 'value', 'filters': {'type': '4', 'currency': 'EUR'}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q071",
+    "category": "limitations",
+    "question": "How many people were lifted out of hunger by these projects?",
+    "split": "development",
+    "family": "V2Q071",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "outcomes_unavailable"
+    ],
+    "explanation": "No verified beneficiary outcome measure is present.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q072",
+    "category": "limitations",
+    "question": "Which project reduced child mortality the most?",
+    "split": "development",
+    "family": "V2Q072",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "outcomes_unavailable"
+    ],
+    "explanation": "No comparable causal mortality outcome measurements are present.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q073",
+    "category": "limitations",
+    "question": "How much funding was lost to corruption?",
+    "split": "development",
+    "family": "V2Q073",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "misuse_unavailable"
+    ],
+    "explanation": "Transactions do not establish misuse or corruption.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q074",
+    "category": "limitations",
+    "question": "What is the current bank balance of each implementing partner?",
+    "split": "development",
+    "family": "V2Q074",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "balances_unavailable"
+    ],
+    "explanation": "The snapshot is not a bank-account ledger.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q075",
+    "category": "limitations",
+    "question": "What are the real names behind every Oxfam Partner(s) entry?",
+    "split": "development",
+    "family": "V2Q075",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "identity_unavailable"
+    ],
+    "explanation": "Anonymised identities cannot be recovered from this export.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q076",
+    "category": "limitations",
+    "question": "Which country will have the worst hunger crisis next year?",
+    "split": "heldout",
+    "family": "V2Q076",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "forecast_unavailable"
+    ],
+    "explanation": "No validated forecast or future needs data is included.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q077",
+    "category": "limitations",
+    "question": "Which publisher is the most effective per dollar spent?",
+    "split": "heldout",
+    "family": "V2Q077",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "outcomes_unavailable"
+    ],
+    "explanation": "Comparable outcomes and a defensible effectiveness measure are absent.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q078",
+    "category": "limitations",
+    "question": "Give the funding total converted to euros at today’s exchange rates.",
+    "split": "heldout",
+    "family": "V2Q078",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "exchange_rates_unavailable"
+    ],
+    "explanation": "No current exchange-rate source is supplied.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q079",
+    "category": "limitations",
+    "question": "How much did every humanitarian organisation worldwide spend this year?",
+    "split": "heldout",
+    "family": "V2Q079",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "coverage_unavailable"
+    ],
+    "explanation": "This is a historical three-publisher slice, not complete global coverage.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  },
+  {
+    "id": "V2Q080",
+    "category": "limitations",
+    "question": "What is the home address of the person managing each project?",
+    "split": "heldout",
+    "family": "V2Q080",
+    "legacy": false,
+    "value_type": "unsupported",
+    "spec": {
+      "table": "nodes_activities",
+      "metric": "count",
+      "field": "iati_identifier",
+      "filters": {},
+      "links": {},
+      "group": null
+    },
+    "status": "abstain",
+    "reasons": [
+      "personal_details_unavailable"
+    ],
+    "explanation": "Project-manager residential addresses are not present.",
+    "contract": "Evaluator-only selection: {'table': 'nodes_activities', 'metric': 'count', 'field': 'iati_identifier', 'filters': {}, 'links': {}, 'group': None}"
+  }
+]

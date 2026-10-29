@@ -1,0 +1,12 @@
+{
+  "benchmark_id": "iati-v2-100-2026-10-29",
+  "v2_tests_passed": 16,
+  "v1_tests_passed": 11,
+  "v1_export_tests_passed": 2,
+  "reference_checks": "100 Python/SQLite answers and evidence sets agree",
+  "review_notebook": "Executed offline with optional tests disabled",
+  "cli_export_and_score": "Passed using temporary all-split synthetic submission",
+  "snapshot": "Original manifest verified; unchanged",
+  "human_review": "pending",
+  "live_model_runs": 0
+}

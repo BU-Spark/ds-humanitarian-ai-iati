@@ -1,0 +1,709 @@
+{
+  "benchmark_id": "iati-v2-100-2026-10-29",
+  "snapshot_id": "430caabd5a8ae1d0816a9941a4a8f730484c4c0b35360ee17983a76c3297658f",
+  "split": "all",
+  "run_name": "replace-with-model-and-workflow",
+  "cost_usd": null,
+  "answers": [
+    {
+      "id": "Q01",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q02",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q03",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q04",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q05",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q06",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q07",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q08",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q09",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q10",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q11",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q12",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q13",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q14",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q15",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q16",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q17",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q18",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q19",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "Q20",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q001",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q002",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q003",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q004",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q005",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q006",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q007",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q008",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q009",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q010",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q011",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q012",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q013",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q014",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q015",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q016",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q017",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q018",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q019",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q020",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q021",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q022",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q023",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q024",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q025",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q026",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q027",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q028",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q029",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q030",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q031",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q032",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q033",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q034",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q035",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q036",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q037",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q038",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q039",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q040",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q041",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q042",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q043",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q044",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q045",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q046",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q047",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q048",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q049",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q050",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q051",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q052",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q053",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q054",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q055",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q056",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q057",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q058",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q059",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q060",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q061",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q062",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q063",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q064",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q065",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q066",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q067",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q068",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q069",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q070",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q071",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q072",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q073",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q074",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q075",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q076",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q077",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q078",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q079",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    },
+    {
+      "id": "V2Q080",
+      "status": "answer",
+      "facts": {},
+      "reasons": [],
+      "latency_ms": null
+    }
+  ]
+}
