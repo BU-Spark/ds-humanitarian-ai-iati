@@ -1,5 +1,11 @@
-gradio==6.20.0
+# offline notebooks (01, 02)
 pandas
-pyvis
-plotly
-spaces
+networkx
+tabulate
+# Graph RAG evaluation and Neo4j load (03, 04): pip install -r requirements.txt
+langgraph
+langchain-core
+langchain-openai
+langchain-anthropic
+neo4j>=5.20
+python-dotenv

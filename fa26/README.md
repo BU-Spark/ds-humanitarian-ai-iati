@@ -1,42 +1,78 @@
-# Fall 2026 — Humanitarian AI Today / IATI knowledge graph
 
-All semester implementation, review, evaluation, figures and project documents live in this folder.
+<h1 align="center">
+  <br>
+  <a href="https://www.bu.edu/spark/" target="_blank"><img src="https://www.bu.edu/spark/files/2023/08/logo.png" alt="BUSpark" width="200"></a>
+  <br>
+  Project README Template <change to project name>
+  <br>
+</h1>
 
-**Start with [the review notebook](notebooks/00_review_and_next_steps.ipynb).** It explains the completed offline work, results, file locations and next steps. GLM is the preferred first model pilot; model API calls and the Neo4j load have not run. No paid access or credits are confirmed.
+<h4 align="center">A template for the project readme file. </h4> <change to repo short description>
 
-## Folder map
+<p align="center">
+  <a href="#key-features">Key Features</a> •
+  <a href="#how-to-use">How To Use</a> •
+  <a href="#project-description">Project Description</a> •
+  <a href="#data-locations">Data Locations</a>
+</p>
 
-| Folder | Contents |
-| --- | --- |
-| [notebooks/](notebooks/README.md) | Overview and focused graph/schema/evaluation/load notebooks |
-| [src/](src/) | Pipeline, shared code labels, offline runner and evaluation helpers |
-| [tests/](tests/) | Parser fixtures and evaluation regression tests |
-| [spaces/](spaces/README.md) | Gradio application |
-| [data/graph/](data/graph/) | Working graph CSVs and pipeline reports |
-| [benchmark/](benchmark/README.md) | Pinned CSV snapshot, 20 questions, evaluator, baseline, controls and public-input exporter |
-| [analysis/](analysis/review.md) | Review summary, audits and recorded validation evidence |
-| [reports/figures/](reports/figures/README.md) | Application screenshots with filters and interpretation notes |
-| [docs/dataset-documentation/](docs/dataset-documentation/README.md) | Completed dataset documentation and data dictionary |
-| [docs/](docs/) | Project brief and supporting documentation |
+## Key Features
+In this section you will be including a list of key features of your code/project.
 
-`data/raw/`, `data/interim/` and `data/processed/` are local/ignored workflow outputs. Credentials stay in local environment configuration, never Git. Root-level README, license, ignore rules and the dataset-documentation navigation folder are repository-wide files.
+You should also include a short description of what each part of your code does. (Detailed description in the readme of each directory, if applicable)
+* /path/to/directory - function and description
+  - Key notes
+* /path/to/script - function and description
+  - Key notes
+* Lorem Ipsum - Dolor Sit Amet
+  - Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+* Duis Aute Irure Dolor
+  - Excepteur sint occaecat
+* Excepteur Sint Occaecat
+  - Curabitur efficitur, nunc non ultricies gravida, felis purus posuere eros, sed faucibus sapien est nec quam. Nulla at nisl nisl.
+ 
+## How To Use
 
-## Set up and check
-
-Commands below run **from the repository root**, using Python 3.12:
+To clone and run this application, you'll need <a href="https://git-scm.com" target="_blank">Git</a>
+From your command line:
 
 ```bash
-python -m pip install -r fa26/spaces/requirements.txt -r fa26/requirements-george.txt
-python fa26/src/run_offline_notebooks.py
-python fa26/tests/test_text2cypher_eval.py
-python fa26/benchmark/test_benchmark.py
-python fa26/benchmark/test_model_inputs.py
+# Clone this repository
+$ git clone [repo link]
+
+# Further Instructions
+...
 ```
 
-Use a project virtual environment. The offline runner executes notebooks 01–03 and writes local logs; the tests do not require API credentials or Neo4j. Read [notebook instructions](notebooks/README.md) before any future live run. Notebook 04 is not included in offline execution.
+Create a new branch from dev, add changes on the new branch you just created.
 
-## Dataset and evaluation
+You will want to look into <a href="https://git-scm.com/docs/git-branch" target="_blank">git branch</a> and <a href="https://git-scm.com/docs/git-checkout" target="_blank">git checkout</a>
 
-The dataset contains 505 retained activities from Oxfam GB, Oxfam America and WFP. It is a filtered prototype export, not a complete measure of humanitarian aid. See [dataset documentation](docs/dataset-documentation/DATASETDOC-fa26.md) for measured counts, date coverage, preprocessing, limitations and licensing questions.
+```bash
+# Create and Checkout a new branch if it doesn't exist
+$ git checkout -b your-branch main
+...
+```
 
-The working graph and evaluation snapshot have different purposes. Do not regenerate a pinned snapshot in place or expose the answer key to evaluated models. See [benchmark instructions](benchmark/README.md) for submission/scoring rules and the public-input exporter.
+Open a Pull Request to dev. Add your PM and TPM as reviewers. 
+
+At the end of the semester during project wrap up open a final Pull Request to main from dev branch.
+ 
+## Project Description
+
+In this section, you should include the project description, either from the client or spark.
+
+Please make sure it reflects what you see on the documents (project description) you recieved.
+
+* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Donec vel nunc at libero ultrices tincidunt. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Mauris ut ligula nec risus posuere ultricies at et ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+* Veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+## Data locations
+
+In this section, you should include the location of all of your datasets for the project (if applicable)
+
+<a href="dataset-documentation">Dataset Documentation</a>
+* Location 1: [location]
+  - [description]
+* Location 2: [location]
+  - [description]
