@@ -1,0 +1,208 @@
+# Hunger relevance filter
+
+How the pipeline decides whether an IATI activity is hunger-related, what
+changed in Fall 2026 ("Option A"), and how to test and tune it.
+
+Code: `hunger_match()` in [`src/parse_filter.py`](../src/parse_filter.py).
+Settings: [`src/config.py`](../src/config.py).
+Tests: [`tests/`](../tests/).
+
+## Why it changed
+
+On the summer prototype's output, 430 of 505 kept activities (85%) were kept
+by the keyword fallback rather than by sector codes, almost all from Oxfam GB.
+Reviewing that fallback showed three failure patterns, each now reproduced by
+a test:
+
+| Problem | Example | Scale |
+|---|---|---|
+| **Own sector names were searched.** Oxfam GB files activities under its own categories (vocabulary 99), and the category "A Sustainable *Livelihood*" contains a keyword. | A governance project filed under that category was kept. | ~122 activities kept only for this reason |
+| **Broad keywords counted as much as specific ones.** "food", "agriculture" and "livelihood" weighed the same as "malnutrition". | "Food for thought: civic education" would be a hunger project. | "food" was the only match for 36 activities |
+| **Organisation names triggered matches.** | "World *Food* Programme", "Welt*hunger*hilfe" | 8 kept activities mention WFP |
+
+The descriptions were also cut to 2,000 characters *before* matching, so
+keywords late in long descriptions were missed.
+
+Note: matching is still substring-based on purpose. Requiring whole words
+was considered and rejected, because it would lose plurals and related forms
+("livelihoods", "crops", "malnutrition" via "nutrition").
+
+## How it works now
+
+Geography is checked first (the activity, or one of its transactions, must
+target a hotspot country). The theme check then goes in this order, and the
+first rule that applies decides the activity's `match_basis`:
+
+| Step | Rule | `match_basis` | Kept? |
+|---|---|---|---|
+| 1 | Has sector codes in a standard vocabulary (DAC 5-digit, DAC 3-digit, humanitarian clusters). They decide on their own, and keywords are not checked. | `sector` / `sector_no_match` | yes / no |
+| 2 | Tagged with SDG Goal 2 "Zero Hunger" (sector vocabulary 7, code `2`) or one of its targets (vocabulary 8, codes `2.x`). | `sdg` | yes |
+| 3 | Title or description contains a **strong** keyword, **or** a context term (agriculture, livelihood, cash, voucher, …) together with a food word (food, nutrition, hunger). | `keyword` | yes |
+| 4 | Title or description contains **only weak** keywords. | `keyword_weak` | yes, flagged for review |
+| 5 | None of the above. | `no_signal` | no |
+
+Before steps 3 and 4:
+- Organisation names in `ORG_NAME_PATTERNS` are removed from the text.
+- Sector *names* are not searched at all.
+- The full description is searched. It is cut to 2,000 characters only when written to `nodes_activities.csv`.
+
+Sector code 998 ("unspecified") doesn't count as a standard code, so
+activities coded only 998 (Oxfam America) still go through steps 2 to 5.
+
+### Keyword lists (`src/config.py`)
+
+| List | Terms |
+|---|---|
+| `HUNGER_KEYWORDS_STRONG` | food security, food insecurity, food assistance, food aid, emergency food, hunger, famine, nutrition, malnutrition, school feeding, IPC, EFSVL, FS&L; from John's filter: food distribution, food voucher, therapeutic feeding, undernutrition, food access, food production, food-insecure, food insecure |
+| `HUNGER_CONTEXT_TERMS` | agricultur…, smallholder, farmer, crop, livestock, harvest, livelihood, resilien…, cash transfer, voucher, drought. Strong when paired with a `FOOD_CONTEXT_TERMS` word (food, nutrition, hunger) |
+| `HUNGER_KEYWORDS_WEAK` | food, agriculture, agricultural, livestock, crop, harvest, livelihood, cash transfer, drought, farmer, smallholder |
+| `ORG_NAME_PATTERNS` | World Food Programme, FAO, Welthungerhilfe, Action Against Hunger / Action contre la Faim, IFAD, International Crop Research…, Food for the Hungry |
+
+EFSVL and FS&L are Oxfam's acronyms for "(Emergency) Food Security and
+(Vulnerable) Livelihoods".
+
+All matching is case-insensitive. To change a list, edit `config.py`, add a
+test for the case you care about, and rerun the comparison below.
+
+## Results
+
+Old and new filters run on the **same** download of IATI data
+(22 files, fetched 22 October 2026), so the difference comes from the
+filter alone:
+
+| Publisher | Old filter | New filter |
+|---|---|---|
+| Oxfam GB | 415 (all `keyword`) | 316 = 198 `keyword` + 118 `keyword_weak` |
+| Oxfam America | 11 (all `keyword`) | 11 = 4 `keyword` + 7 `keyword_weak` |
+| WFP | 86 = 75 `sector` + 11 `keyword` | 86 = 75 `sector` + 11 `sdg` |
+| **Total** | **512** | **413** (125 `keyword_weak`) |
+
+- **104 dropped**, all Oxfam GB. They were kept only because of the
+  "A Sustainable Livelihood" category or an organisation name. In a
+  spot-check, most are water and sanitation, governance, decent work or
+  energy projects.
+- **5 added**: drought responses and an EFSVL project that the old
+  keyword list missed.
+- The old filter keeps 512 on this data, versus 505 in the committed summer
+  output. The difference comes from publishers updating their data since
+  the summer.
+
+The committed `data/graph/` CSVs have **not** been regenerated yet. They
+still reflect the old filter. To apply the new filter:
+
+```bash
+cd fa26
+python src/pipeline.py all       # download -> parse -> resolve -> sync
+python src/pipeline.py refresh   # if data/raw/ is already downloaded
+```
+
+## Accuracy on the hand-labelled sample
+
+John labelled 50 hotspot activities by hand
+([`data/hunger_filter_sample_50.csv`](../data/hunger_filter_sample_50.csv),
+39 Oxfam GB and 11 WFP). Each row stores the parsed activity as
+`record_json`, so any version of `hunger_match()` can be scored on it
+without raw XML. 20 of the 50 are labelled hunger-related.
+
+Two ways to read the results:
+- **Pipeline view:** `keyword_weak` counts as kept, which is what the graph does today.
+- **Strong-only view:** only confident matches count.
+
+| Filter | View | Accuracy | Precision | Recall |
+|---|---|---|---|---|
+| Original (summer) | — | 76% | 63% | 95% |
+| John's (branch `john`) | — | 86% | 76% | 95% |
+| Option A, before merging John's rules | pipeline | 82% | 70% | 95% |
+| | strong-only | 88% | 89% | 80% |
+| **Current: Option A + John's rules** | pipeline | 82% | 70% | 95% |
+| | **strong-only** | **90%** | 86% | 90% |
+
+### What was taken from John's filter
+
+Each candidate rule was scored on this sample and on the full download:
+- **Taken: John's extra strong terms** (food distribution, food voucher, therapeutic feeding, …). No change on the sample, and 7 activities move from weak to strong.
+- **Taken: John's context rule.** A context term next to a food word counts as strong. On the full data, 38 activities move from weak to strong (including the 7 above), and `keyword_weak` shrinks from 163 to 125. In the strong-only view, accuracy rises from 88% to 90% and recall from 80% to 90%, for example "Cash Voucher (for food) Distribution".
+- **Not taken: letting text override non-hunger sector codes.** In John's filter, an activity with standard but non-hunger codes still goes on to the keyword check. That catches one missed WFP activity, but adds 3 false positives on the sample and about 70 activities to the graph (mostly WFP). Letting an SDG 2 tag override sector codes performs the same way, because WFP tags SDG 2 broadly.
+- **Not taken: searching sector names.** John's filter still searches category names such as "A Sustainable Livelihood". That is the problem Option A fixes.
+
+### Remaining errors on this sample
+- **Weak matches:** in the pipeline view, 5 of the 8 false positives are `keyword_weak`. In the strong-only view, 1 of the 2 misses is.
+- **The French WFP project:** "food assistance for assets" (DAC 73010 + SDG target 2.4) is missed because its sector code decides first.
+- **Two labels may be worth a second look:** "Integrated Food security and WaSH assistance in Lahj, Yemen" and "Drought response in Badakshan". Both are labelled *not* hunger-related.
+
+### Caveats
+- 50 rows is small.
+- The sample was drawn as roughly half kept and half dropped by the original filter, so these percentages do not estimate accuracy across the whole dataset.
+- No Oxfam America activities are included.
+- One person did the labelling.
+- **This sample was used to tune the filter**, so its scores are optimistic. Use the held-out sample below for an honest score.
+
+### Held-out sample (Devansh)
+
+[`data/hunger_filter_sample_devansh_50.csv`](../data/hunger_filter_sample_devansh_50.csv)
+was drawn **before** John's rules were merged, and was not looked at while
+tuning:
+- 25 Oxfam GB, 15 WFP and 10 Oxfam America activities, picked at random within each publisher (seed 2026).
+- John's 50 are excluded.
+- Filter predictions are not shown, so they can't bias the labeller.
+- Parsed records are in the matching `_records.json` file. Some are too long for a spreadsheet cell, so they aren't in the CSV.
+
+To label:
+1. Fill `manual_label` with `yes` or `no` for each row. Add a reason in `notes` if a row is borderline.
+2. Count an activity as **yes** if a meaningful part of it directly addresses food access, food assistance, nutrition, or food production for food security. Count it as **no** if food is incidental, or only appears in a partner's name.
+3. Score it:
+
+```bash
+python src/evaluate_filter.py score data/hunger_filter_sample_devansh_50.csv
+python src/evaluate_filter.py score data/hunger_filter_sample_devansh_50.csv --weak-as-no
+```
+
+Score it once with the filter as it is. If you change the filter afterwards
+because of what this sample shows, it stops being a held-out test.
+
+[`src/evaluate_filter.py`](../src/evaluate_filter.py) builds on John's
+`evaluate_hunger_filter.py`. `sample` draws a new blind sheet and `score`
+scores any labelled CSV, in John's format or this one.
+[`tests/test_labelled_sample.py`](../tests/test_labelled_sample.py) fails if
+scores on John's sample fall below 70% precision / 95% recall (pipeline
+view) or 85% / 90% (strong-only view).
+
+## Known limitations and open decisions
+
+- **The filter is still a rule of thumb.** So far it has only been measured
+  on John's 50, which were also used to tune it. The held-out sample above
+  gives the first independent score once it is labelled.
+- **125 `keyword_weak` activities need review**, nearly all Oxfam GB. The
+  app and queries currently treat them the same as `keyword`. Filter on
+  `match_basis` to exclude them. On John's sample, the strong-only view
+  scores better (90% vs 82% accuracy). Once the held-out sample confirms
+  it, consider dropping weak matches from the graph.
+- **Some food-adjacent activities are still dropped.** Terms considered and
+  deliberately *not* added: agribusiness / P4P ("Purchase for Progress",
+  +5 activities), cash for work (+5) and market access (+2). They are easy
+  to add to the weak list if the team decides otherwise.
+- **The organisation-name list is maintained by hand.** A new partner with a
+  hunger word in its name will match until it is added to the list.
+- **Waiting on the client.** Brent has not yet answered whether indirect
+  support (agriculture, livelihoods, cash) should count at all, or only
+  officially coded activities ("Option B"). If he chooses Option B, almost
+  all Oxfam activities drop out.
+
+## Tests
+
+```bash
+cd fa26
+pip install pytest
+python -m pytest -v
+```
+
+| File | Covers |
+|---|---|
+| `test_own_sector_names.py` | Oxfam GB category names are not searched; SDG 2 tags count, but other SDGs do not |
+| `test_broad_keywords.py` | Strong vs weak tiers, context rule (e.g. "cash voucher (for food)"), plurals, EFSVL, keywords past 2,000 characters |
+| `test_org_names.py` | Organisation names are ignored, but real hunger work with WFP is still kept |
+| `test_parse_fixture.py` | End-to-end: runs the parser on `fixture_iati_2.03.xml` (in a temporary folder, never `data/graph/`) and checks all 7 labelled activities |
+| `test_labelled_sample.py` | Precision and recall on John's 50 hand-labelled activities stay above the floors, in both the pipeline and strong-only views |
+
+The tests that show a problem in the code are the record of each issue. If
+you change the filter, update the tests in the same change.
