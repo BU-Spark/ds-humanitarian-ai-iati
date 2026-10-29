@@ -2,23 +2,14 @@
 which are kept, and why. Writes to a temp dir, never to data/graph/."""
 import csv
 import json
-import shutil
-from pathlib import Path
 
 import parse_filter
 
-FIXTURE = Path(__file__).parent / "fixture_iati_2.03.xml"
 
-
-def test_fixture_outcomes(tmp_path, monkeypatch):
-    raw, graph = tmp_path / "raw", tmp_path / "graph"
-    (raw / "oxfamgb").mkdir(parents=True)
-    shutil.copy(FIXTURE, raw / "oxfamgb" / FIXTURE.name)
-    monkeypatch.setattr(parse_filter, "RAW_DIR", raw)
-    monkeypatch.setattr(parse_filter, "GRAPH_DIR", graph)
-
+def test_fixture_outcomes(fixture_env):
     parse_filter.run("oxfamgb")
 
+    graph = fixture_env / "graph"
     with open(graph / "nodes_activities.csv", encoding="utf-8") as f:
         kept = {r["iati_identifier"]: r["match_basis"] for r in csv.DictReader(f)}
     assert kept == {

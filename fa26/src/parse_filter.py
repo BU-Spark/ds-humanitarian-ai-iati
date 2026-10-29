@@ -29,7 +29,8 @@ from config import (PUBLISHERS, HOTSPOTS, HUNGER_DAC_CODES,
                     INCLUDE_GENERAL_EMERGENCY, HUNGER_KEYWORDS_STRONG,
                     HUNGER_KEYWORDS_WEAK, HUNGER_CONTEXT_TERMS,
                     FOOD_CONTEXT_TERMS, ORG_NAME_PATTERNS, SDG_HUNGER_GOAL,
-                    RAW_DIR, GRAPH_DIR)
+                    REVIEW_NEAR_MISS_TERMS, RAW_DIR, GRAPH_DIR)
+import review
 
 
 def _any_of(terms):
@@ -40,6 +41,7 @@ STRONG_RE = _any_of(HUNGER_KEYWORDS_STRONG)
 WEAK_RE = _any_of(HUNGER_KEYWORDS_WEAK)
 CONTEXT_RE = _any_of(HUNGER_CONTEXT_TERMS)
 FOOD_RE = _any_of(FOOD_CONTEXT_TERMS)
+NEAR_MISS_RE = _any_of(REVIEW_NEAR_MISS_TERMS)
 ORG_RE = re.compile("|".join(ORG_NAME_PATTERNS), re.I)
 DESCRIPTION_MAX = 2000  # chars stored on the Activity node
 DAC = HUNGER_DAC_CODES | ({"72010"} if INCLUDE_GENERAL_EMERGENCY else set())
@@ -273,9 +275,11 @@ def hunger_match(rec, dropped_codes=None):
     for those, fall back to SDG 2 sector tags, then keywords over title +
     description (organisation names removed). A context term (agriculture,
     livelihood, cash, ...) next to a food word counts as strong, as in John's
-    filter. Returns (matched, basis) with
-    basis one of: sector, sector_no_match, sdg, keyword, keyword_weak,
-    no_signal."""
+    filter. Missing a hunger activity is worse than keeping an extra one, so
+    non-hunger sector codes are overruled by a *strong* text signal
+    ("keyword_over_sector", low confidence). Returns (matched, basis) with
+    basis one of: sector, sector_no_match, keyword_over_sector, sdg, keyword,
+    keyword_weak, no_signal."""
     sectors = rec["sectors"] + [
         {"code": t["sector_code"],
          "vocabulary": VOCAB_MAP.get(t["sector_vocab"], t["sector_vocab"]) or "1",
@@ -291,6 +295,8 @@ def hunger_match(rec, dropped_codes=None):
         for s in recognized:
             if is_hunger_sector(s["code"], s.get("vocabulary", "1")):
                 return True, "sector"
+        if _strong_text(_text_blob(rec)):
+            return True, "keyword_over_sector"
         if dropped_codes is not None:
             for s in recognized:
                 dropped_codes[f'{s.get("vocabulary","1")}:{s["code"]}'] += 1
@@ -299,13 +305,54 @@ def hunger_match(rec, dropped_codes=None):
            else s["code"].startswith(SDG_HUNGER_GOAL + ".")
            for s in sectors if s.get("vocabulary") in ("7", "8")):
         return True, "sdg"
-    blob = ORG_RE.sub(" ", " ".join([rec["activity"]["title"],
-                                     rec["activity"]["description"]]))
-    if STRONG_RE.search(blob) or (CONTEXT_RE.search(blob) and FOOD_RE.search(blob)):
+    blob = _text_blob(rec)
+    if _strong_text(blob):
         return True, "keyword"
     if WEAK_RE.search(blob):
         return True, "keyword_weak"
     return False, "no_signal"
+
+
+def _text_blob(rec):
+    """Title + full description with organisation names removed."""
+    return ORG_RE.sub(" ", " ".join([rec["activity"]["title"],
+                                     rec["activity"]["description"]]))
+
+
+def _strong_text(blob):
+    return bool(STRONG_RE.search(blob)
+                or (CONTEXT_RE.search(blob) and FOOD_RE.search(blob)))
+
+
+# confidence tier per match_basis: a weighting rather than a plain yes/no.
+# sector/sdg are the publisher's own coding; keyword is our reading of text.
+CONFIDENCE = {"sector": "high", "sdg": "high", "keyword": "medium",
+              "keyword_over_sector": "low", "keyword_weak": "low",
+              "geo_only": ""}
+
+
+def matched_terms(rec):
+    """The keywords found in the text, grouped by list, for explaining a
+    decision, e.g. "strong: malnutrition; weak: food"."""
+    blob = _text_blob(rec)
+    groups = [("strong", STRONG_RE), ("context", CONTEXT_RE), ("food", FOOD_RE),
+              ("weak", WEAK_RE), ("near_miss", NEAR_MISS_RE)]
+    out = []
+    for name, rx in groups:
+        found = sorted({m.lower() for m in rx.findall(blob)})
+        if found:
+            out.append(f"{name}: {', '.join(found)}")
+    return "; ".join(out)
+
+
+def review_reasons(rec, matched, basis):
+    """Why a hotspot activity needs a human look, or [] if it doesn't.
+    Only dropped activities are queued: a wrong drop is the costly error,
+    and kept-but-doubtful ones are already marked confidence "low". A
+    reviewer can still exclude any activity via the decisions file."""
+    if basis == "no_signal" and NEAR_MISS_RE.search(_text_blob(rec)):
+        return ["near_miss_term"]
+    return []
 
 
 # ------------------------------------------------------------------ main --
@@ -322,6 +369,12 @@ def run(publisher_filter=None, apply_theme=True):
     years = defaultdict(Counter)
 
     seen_ids = set()
+    queue = []
+    if apply_theme:
+        review.harvest()
+        decisions = review.load_decisions()
+    else:
+        decisions = {}
 
     def process(rec, pub):
         iid0 = rec["activity"]["iati_identifier"]
@@ -336,20 +389,48 @@ def run(publisher_filter=None, apply_theme=True):
             funnel[pub]["dropped_geography"] += 1
             return
         matched, how = (True, "geo_only")
+        reasons = []
         if apply_theme:
             matched, how = hunger_match(rec, dropped_sectors[pub])
-        if not matched:
-            stats[f"dropped_theme_{how}"] += 1
-            funnel[pub][f"dropped_theme_{how}"] += 1
+            reasons = review_reasons(rec, matched, how)
+
+        # a reviewer's decision overrides the filter in either direction
+        decision = decisions.get(iid0)
+        if decision:
+            status = decision
+            stats[f"review_{decision}"] += 1
+        elif reasons:
+            status = "pending"
+            queue.append({
+                **rec["activity"],
+                "hotspot_countries": "|".join(sorted(hs)),
+                "filter_decision": "kept" if matched else "dropped",
+                "match_basis": how, "confidence": CONFIDENCE.get(how, ""),
+                "review_reasons": "|".join(reasons),
+                "match_terms": matched_terms(rec),
+            })
+            stats[f"flagged_{'kept' if matched else 'dropped'}"] += 1
+            funnel[pub][f"flagged_{'kept' if matched else 'dropped'}"] += 1
+        else:
+            status = "not_flagged"
+
+        if decision == "exclude" or (not matched and decision != "include"):
+            key = "dropped_by_review" if decision == "exclude" else f"dropped_theme_{how}"
+            stats[key] += 1
+            funnel[pub][key] += 1
             return
 
         stats["kept"] += 1
-        stats[f"kept_via_{how}"] += 1
-        funnel[pub][f"kept_via_{how}"] += 1
+        key = "kept_by_review" if not matched else f"kept_via_{how}"
+        stats[key] += 1
+        funnel[pub][key] += 1
         a = rec["activity"]
         iid = a["iati_identifier"]
         a["hotspot_countries"] = "|".join(sorted(hs))
         a["match_basis"] = how
+        a["confidence"] = CONFIDENCE.get(how, "")
+        a["review_status"] = status
+        a["match_terms"] = matched_terms(rec) if apply_theme else ""
         a["description"] = a["description"][:DESCRIPTION_MAX]
         activities.append(a)
 
@@ -496,7 +577,8 @@ def run(publisher_filter=None, apply_theme=True):
           "default_currency", "publisher", "hierarchy", "last_updated",
           "aid_type", "finance_type", "flow_type", "tied_status",
           "collaboration_type", "scope", "capital_spend",
-          "hotspot_countries", "match_basis"])
+          "hotspot_countries", "match_basis", "confidence", "review_status",
+          "match_terms"])
     dump("nodes_organisations.csv", list(orgs.values()), ["ref", "name", "type"])
     dump("nodes_countries.csv",
          [{"code": k, "name": v["name"], "hotspot_tier": v["tier"]}
@@ -556,6 +638,15 @@ def run(publisher_filter=None, apply_theme=True):
             "distinct_emergencies": len(emergencies),
         },
     }
+    report["review"] = {
+        "queue_size": len(queue),
+        "by_reason": dict(Counter(r for q in queue
+                                  for r in q["review_reasons"].split("|"))),
+        "decisions_applied": {"include": stats["review_include"],
+                              "exclude": stats["review_exclude"]},
+    }
+    if apply_theme:
+        review.write_queue(queue)
     with open(GRAPH_DIR / "coverage_report.json", "w") as f:
         json.dump(report, f, indent=2)
     print(f"\nCoverage report -> {GRAPH_DIR/'coverage_report.json'}")
