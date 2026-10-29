@@ -37,6 +37,6 @@ def main():
         for k,f in a['facts'].items():lines.append(f"- {k}: {f['value']} ({len(f['evidence'])} source references; IDs in reference_answers.json)")
         if a['reasons']:lines.append('Reasons: '+', '.join(a['reasons']))
         lines.append('')
-    (ROOT/'ANSWER_KEY.md').write_text('\n'.join(lines)+'\n')
+    (ROOT/'ANSWER_KEY.md').write_text('\n'.join(line.rstrip() for line in lines)+'\n')
     print('Built 100 questions; 20 regression / 40 development / 40 held-out. Synthetic baseline: '+str(scored['summary']['overall_pct']))
 if __name__=='__main__':main()
