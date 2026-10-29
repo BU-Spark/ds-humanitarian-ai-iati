@@ -100,6 +100,10 @@ HUNGER_KEYWORDS_STRONG = [
     "food distribution", "food voucher", "therapeutic feeding",
     "undernutrition", "food access", "food production", "food-insecure",
     "food insecure",
+    # French: many WFP records (Haiti, Mali, DRC) are published in French.
+    # "nutrition"/"malnutrition" above already match "nutritionnel(le)".
+    "sécurité alimentaire", "insécurité alimentaire", "assistance alimentaire",
+    "aide alimentaire", "alimentation scolaire", "cantines scolaires", "faim",
 ]
 
 # Context rule (from John's filter): these terms are a strong signal when the
@@ -136,6 +140,14 @@ ORG_NAME_PATTERNS = [
 # its targets count as a strong signal in the fallback.
 SDG_HUNGER_GOAL = "2"
 
+# Food-adjacent terms deliberately NOT in the filter (see docs/hunger-filter.md).
+# A dropped activity mentioning one is sent to the manual review queue
+# instead of being lost silently.
+REVIEW_NEAR_MISS_TERMS = [
+    "cash for work", "cash-for-work", "purchase for progress",
+    "P4P", "agribusiness", "market access", "irrigation", "fisher",
+]
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -143,5 +155,6 @@ import pathlib
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "data" / "raw"
 GRAPH_DIR = ROOT / "data" / "graph"
+REVIEW_DIR = ROOT / "data" / "review"
 
 REGISTRY_API = "https://iatiregistry.org/api/3/action"
