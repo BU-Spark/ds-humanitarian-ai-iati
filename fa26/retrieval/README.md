@@ -12,6 +12,8 @@ retrieval/
   entities.py         curated tables: SAME_AS duplicates, AGENCY_OF hierarchies, aliases, placeholders
   resolve_entity.py   text -> graph IDs, plus the duplicate-organisation report
   tools.py            the four query tools
+  validate_graph.py   post-load checks: constraints, orphans, required properties, source ids
+  schema_alignment.md differences from George's schema v0.1 and what to decide
   org_duplicates.csv  report for the pipeline team (64 pairs, 41 groups)
   findings.md         Phase 1 baseline review of the prototype
   tests/              pytest, expected values recomputed from the CSVs with pandas
@@ -23,10 +25,14 @@ retrieval/
 pip install -r fa26/retrieval/requirements.txt   # neo4j, python-dotenv, rapidfuzz, pytest, pandas
 ```
 
-**Data location.** The loader and tests read the prototype's graph CSVs from
-`fa26/data/graph/` (not committed). Copy them from the summer prototype's
-`data/graph/`, or from `fa26/benchmark/snapshot/` on George's branch, or
-pass `--graph-dir PATH` to the loader.
+**Data location.** The loader and tests read graph CSVs from
+`fa26/data/graph/` (not committed). Either the summer prototype's
+`data/graph/` (505 activities) or the cleaned output of Devansh's pipeline
+(`python fa26/src/pipeline.py download parse resolve` on his branch; 439
+activities on 2026-11-01). Pass `--graph-dir PATH` to the loader and
+validator, and set `RETRIEVAL_GRAPH_DIR=PATH` for the tests, to use another
+folder, and `RETRIEVAL_ENV=PATH` to point the tests at another `.env`.
+Tests compare against whichever CSVs the graph was loaded from.
 
 Connection details come from a `.env` file (see `fa26/.env.example`),
 searched in `fa26/` first, then its parent. Keys: `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`,
@@ -37,13 +43,19 @@ brew services start neo4j                                   # local Neo4j (Homeb
 python fa26/retrieval/load_neo4j.py                    # load into an empty DB
 python fa26/retrieval/load_neo4j.py --reset            # wipe + reload (refuses a DB it did not fill unless --force)
 python fa26/retrieval/load_neo4j.py --env ../.env      # use another .env, e.g. Aura
-python -m pytest fa26/retrieval/tests -q               # 46 tests, skipped if no DB is reachable
+python fa26/retrieval/validate_graph.py --baseline-dir OLD_CSVS   # checks + per-publisher before/after
+python -m pytest fa26/retrieval/tests -q               # 47 tests, skipped if no DB is reachable
 ```
 
 The loader prints a table of CSV rows vs database counts and runs one
 semantic spot check (top USD incoming-funds providers into Somalia) against
 the same CSVs. The only expected count deviation is `PARTICIPATES_IN`:
-210 exact duplicate rows in the CSV collapse to one edge each.
+exact duplicate rows in the CSV (210 summer, 222 cleaned) collapse to one
+edge each.
+
+Every node carries `source_id` and every relationship `source_ids`, the CSV
+rows it came from as `<file>.csv:row:<n>` (data rows counted from 1): the
+citation format of the team benchmark. A collapsed edge lists all its rows.
 
 ## Using the tools
 
@@ -92,9 +104,9 @@ or Community Edition; read-mode transactions are the enforced substitute.
 
 Hunger-related activities. The year window means **active during**: start
 year ≤ `year_to` and end year (or start year if no end) ≥ `year_from`.
-`match_type` is `"sector"` (standard DAC/cluster code, WFP only) or
-`"keyword"` (title/description match, all Oxfam activities).
-Columns: `iati_identifier, publisher, title, status, start_date, end_date, countries, match_basis, humanitarian`.
+`match_type` filters on why the hunger filter kept the activity:
+`"sector"`, `"sdg"`, `"keyword"`, `"keyword_over_sector"` or `"keyword_weak"`.
+Columns: `iati_identifier, publisher, title, status, start_date, end_date, countries, match_basis, confidence, humanitarian`.
 
 ### `shared_partners(publishers, country=None, limit=50)`
 
@@ -113,7 +125,8 @@ currency** and rows never interleave currencies. `exclude_self` hides rows
 where the provider is the activity's own reporting organisation; another
 publisher still counts (WFP funding Oxfam GB's South Sudan activities is the
 top GBP funder there).
-Columns: `funder_id, funder, all_refs, currency, net, positive_total, negative_total, n_transactions, n_negative, first_date, last_date, publishers, n_activities, activity_ids`, plus `note` on placeholder rows such as "Multilateral".
+Rows are ranked by `amount` within each currency.
+Columns: `funder_id, funder, all_refs, currency, amount, adjustments, net, n_transactions, n_adjustments, first_date, last_date, publishers, n_activities, activity_ids`, plus `note` on placeholder rows such as "Multilateral".
 
 **Why the default is Incoming Funds, not Disbursement.** In this graph
 external funders appear only as providers of Incoming Funds (type 1).
@@ -124,8 +137,8 @@ returns `no_results` with a note explaining this. Change the default in
 
 ### `funding_over_time(publisher=None, country=None, transaction_type="Incoming Funds", by="year", year_from=None, year_to=None, limit=200)`
 
-Net amount per period (`year`, `quarter` or `month`) by publisher and
-currency. Columns: `period, publisher, currency, net, positive_total, negative_total, n_transactions, n_negative, n_activities, activity_ids`.
+Money per period (`year`, `quarter` or `month`) by publisher and
+currency. Columns: `period, publisher, currency, amount, adjustments, net, n_transactions, n_adjustments, n_activities, activity_ids`.
 
 ### `resolve_entity(text, kind)`
 
@@ -142,11 +155,12 @@ prints the brief's examples; `--report-duplicates` regenerates
 ## Known limitations
 
 - **No currency conversion.** Totals are per currency (USD and GBP in this slice).
-- **Negative transactions** (23% of rows) are netted; `n_negative` and `negative_total` expose them. Whether they are refunds or corrections is an open client question.
+- **Negative transactions** (about 23% of rows) are their own category, as the client chose on 2026-10-23: `amount` sums positive transactions only, `adjustments` sums the negative ones (`n_adjustments` rows), and `net` = amount + adjustments. Whether a given negative is a refund, correction or reversal is not knowable from the data.
+- **Zero-value transactions** (91 rows in the cleaned data) count in `n_transactions` but in neither `amount` nor `adjustments`.
 - **Oxfam America** has 11 activities, no funders, no partners, no sector codes: funder and partner questions return `no_results` for it.
 - **WFP money starts in 2021** although its activities start in 2018. WFP mirrors every commitment as an identical expenditure; never add those two types.
-- **Sector questions** are WFP-only: Oxfam GB uses its own "5 Aims" vocabulary and Oxfam America only "unallocated". 85% of activities were kept by keyword match (`match_basis`), which the client flagged as noisy.
+- **Sector questions** are WFP-only: Oxfam GB uses its own "5 Aims" vocabulary and Oxfam America only "unallocated". Most Oxfam activities are kept by keyword match; `match_basis` and `confidence` (high/medium/low) say why each activity is in the graph.
 - **Entity resolution is curated.** Oxfam GB names most funders without an IATI ref; cross-publisher matches depend on `entities.SAME_AS`. Unlisted variants stay separate rows.
 - **Placeholders** ("Multilateral", "Oxfam Donor(s)", "Developing countries, unspecified") are kept in funder results with a `note`, because the pooled amounts are real money.
 - **Single-country activities only** in this slice; if multi-country activities appear, a tool credits the full amount to each country (no percentage weighting).
-- The graph is the summer prototype's output, two transformations away from raw IATI XML. Some identifier oddities (uppercased bare names, the "FCDO - Procurement" label) come from the prototype's resolver, not the publishers.
+- The graph CSVs are the pipeline's output, two transformations away from raw IATI XML. Some identifier oddities (uppercased bare names, the "FCDO - Procurement" label) come from the prototype's resolver, not the publishers.

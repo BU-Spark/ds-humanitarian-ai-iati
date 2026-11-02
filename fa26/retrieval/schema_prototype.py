@@ -156,61 +156,69 @@ NODE_LOADS = [
      "UNWIND $rows AS r MERGE (n:PolicyMarker {code: r.code}) SET n += r", None, None),
 ]
 
+# Every node carries `source_id` and every relationship `source_ids`: the CSV
+# rows it came from, as "<file>.csv:row:<n>" (n counts data rows from 1), the
+# citation IDs Deniz's benchmark scores evidence against. A list on edges
+# because MERGE collapses duplicate rows (PARTICIPATES_IN) into one edge.
+SOURCE_IDS = "x.source_ids = coalesce(x.source_ids, []) + r.source_id"
+
 REL_LOADS = [
     ("rel_reports.csv",
      "UNWIND $rows AS r MATCH (o:Organisation {ref: r.org_ref}) "
-     "MATCH (a:Activity {iati_identifier: r.iati_identifier}) MERGE (o)-[:REPORTS]->(a)", None, None),
+     "MATCH (a:Activity {iati_identifier: r.iati_identifier}) MERGE (o)-[x:REPORTS]->(a) SET " + SOURCE_IDS, None, None),
     # MERGE on (org, activity, role) collapses exact duplicate CSV rows
     ("rel_participates.csv",
      "UNWIND $rows AS r MATCH (o:Organisation {ref: r.org_ref}) "
      "MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
-     "MERGE (o)-[p:PARTICIPATES_IN {role: r.role}]->(a) SET p.role_name = r.role_name", None, None),
+     "MERGE (o)-[x:PARTICIPATES_IN {role: r.role}]->(a) "
+     f"SET x.role_name = r.role_name, {SOURCE_IDS}", None, None),
     ("rel_targets_country.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
      "MATCH (c:Country {code: r.country_code}) "
-     "MERGE (a)-[t:TARGETS]->(c) SET t.percentage = r.percentage, t.is_hotspot = r.is_hotspot", None, None),
+     "MERGE (a)-[x:TARGETS]->(c) "
+     f"SET x.percentage = r.percentage, x.is_hotspot = r.is_hotspot, {SOURCE_IDS}", None, None),
     ("rel_targets_region.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
      "MATCH (g:Region {region_key: r.region_key}) "
-     "MERGE (a)-[t:TARGETS_REGION]->(g) SET t.percentage = r.percentage", None, None),
+     f"MERGE (a)-[x:TARGETS_REGION]->(g) SET x.percentage = r.percentage, {SOURCE_IDS}", None, None),
     ("rel_classified_as.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
      "MATCH (s:Sector {sector_key: r.sector_key}) "
-     "MERGE (a)-[c:CLASSIFIED_AS]->(s) SET c.percentage = r.percentage", None, None),
+     f"MERGE (a)-[x:CLASSIFIED_AS]->(s) SET x.percentage = r.percentage, {SOURCE_IDS}", None, None),
     ("rel_located_at.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
-     "MATCH (l:Location {location_id: r.location_id}) MERGE (a)-[:LOCATED_AT]->(l)", None, None),
+     "MATCH (l:Location {location_id: r.location_id}) MERGE (a)-[x:LOCATED_AT]->(l) SET " + SOURCE_IDS, None, None),
     ("nodes_transactions.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
-     "MATCH (t:Transaction {tx_id: r.tx_id}) MERGE (a)-[:HAS_TRANSACTION]->(t)",
-     None, ["iati_identifier", "tx_id"]),
+     f"MATCH (t:Transaction {{tx_id: r.tx_id}}) MERGE (a)-[x:HAS_TRANSACTION]->(t) SET {SOURCE_IDS}",
+     None, ["iati_identifier", "tx_id", "source_id"]),
     ("nodes_budgets.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
-     "MATCH (b:Budget {budget_id: r.budget_id}) MERGE (a)-[:HAS_BUDGET]->(b)",
-     None, ["iati_identifier", "budget_id"]),
+     f"MATCH (b:Budget {{budget_id: r.budget_id}}) MERGE (a)-[x:HAS_BUDGET]->(b) SET {SOURCE_IDS}",
+     None, ["iati_identifier", "budget_id", "source_id"]),
     ("rel_transaction_edges.csv",
      "UNWIND $rows AS r MATCH (o:Organisation {ref: r.org_ref}) "
-     "MATCH (t:Transaction {tx_id: r.tx_id}) MERGE (o)-[:PROVIDES]->(t)",
+     "MATCH (t:Transaction {tx_id: r.tx_id}) MERGE (o)-[x:PROVIDES]->(t) SET " + SOURCE_IDS,
      {"edge": "PROVIDED_BY"}, None),
     ("rel_transaction_edges.csv",
      "UNWIND $rows AS r MATCH (o:Organisation {ref: r.org_ref}) "
-     "MATCH (t:Transaction {tx_id: r.tx_id}) MERGE (t)-[:RECEIVED_BY]->(o)",
+     "MATCH (t:Transaction {tx_id: r.tx_id}) MERGE (t)-[x:RECEIVED_BY]->(o) SET " + SOURCE_IDS,
      {"edge": "RECEIVED_BY"}, None),
     ("rel_responds_to.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
-     "MATCH (e:Emergency {emergency_key: r.emergency_key}) MERGE (a)-[:RESPONDS_TO]->(e)", None, None),
+     "MATCH (e:Emergency {emergency_key: r.emergency_key}) MERGE (a)-[x:RESPONDS_TO]->(e) SET " + SOURCE_IDS, None, None),
     ("rel_contributes_to.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
-     "MATCH (g:SDG {sdg_key: r.sdg_key}) MERGE (a)-[:CONTRIBUTES_TO]->(g)", None, None),
+     "MATCH (g:SDG {sdg_key: r.sdg_key}) MERGE (a)-[x:CONTRIBUTES_TO]->(g) SET " + SOURCE_IDS, None, None),
     ("rel_marked_with.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
      "MATCH (m:PolicyMarker {code: r.marker_code}) "
-     "MERGE (a)-[w:MARKED_WITH]->(m) SET w.significance = r.significance", None, None),
+     f"MERGE (a)-[x:MARKED_WITH]->(m) SET x.significance = r.significance, {SOURCE_IDS}", None, None),
     # related activities may point outside the slice; only link when both exist
     ("rel_related_activity.csv",
      "UNWIND $rows AS r MATCH (a:Activity {iati_identifier: r.iati_identifier}) "
      "MATCH (b:Activity {iati_identifier: r.related_ref}) "
-     "MERGE (a)-[x:RELATED_TO]->(b) SET x.type = r.type", None, None),
+     f"MERGE (a)-[x:RELATED_TO]->(b) SET x.type = r.type, {SOURCE_IDS}", None, None),
 ]
 
 # Run once after all loads. Publisher slug on the three reporting orgs is

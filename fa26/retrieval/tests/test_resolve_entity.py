@@ -62,9 +62,10 @@ def test_typo_resolves_via_fuzzy(cat):
 
 
 def test_partial_name_is_not_a_confident_match(cat):
-    r = resolve_entity("Red Cross", "organisation", cat)
+    r = resolve_entity("Refugee Council", "organisation", cat)
     assert r["status"] == "ambiguous"
-    assert r["candidates"][0]["id"] == "name:British Red Cross"
+    assert {c["id"] for c in r["candidates"][:2]} == {"name:Danish Refugee Council",
+                                                      "name:Norwegian Refugee Council (NRC)"}
 
 
 def test_placeholder_carries_warning(cat):

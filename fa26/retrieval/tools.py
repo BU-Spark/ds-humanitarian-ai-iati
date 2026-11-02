@@ -24,7 +24,9 @@ Facts about this graph that shape the defaults (verified 2026-10-21, see
 findings.md): funders appear as the provider of "Incoming Funds"
 transactions; "Disbursement" rows exist only for Oxfam GB with Oxfam GB
 itself as provider, so it is NOT the default here. Money is never
-currency-converted. 23% of transactions are negative and are netted.
+currency-converted. About 23% of transactions are negative; per the client
+(meeting 2026-10-23) they are reported as their own "adjustments" category,
+never netted into the headline `amount`.
 """
 import sys
 from pathlib import Path
@@ -39,6 +41,7 @@ MAX_LIMIT = 500
 MAX_IDS_PER_ROW = 20
 PUBLISHER_LABELS = {"oxfamgb": "Oxfam GB", "oxfamus": "Oxfam America", "wfp": "World Food Programme"}
 TRANSACTION_TYPE_NAMES = sorted(set(TRANSACTION_TYPES.values()))
+MATCH_TYPES = ("sector", "sdg", "keyword", "keyword_over_sector", "keyword_weak")
 
 # variant ref -> canonical ref, so one funder is one row
 CANON = {v: canon for canon, vs in E.SAME_AS.items() for v in vs}
@@ -161,8 +164,9 @@ def _coverage(publishers=None, year_from=None, money=False, types=(), sectors=Fa
     pubs = set(publishers or PUBLISHER_LABELS)
     parts = []
     if money:
-        parts.append("Amounts are summed per currency with no conversion; negative transactions "
-                     "(23% of rows, mostly adjustments) are netted and counted separately.")
+        parts.append("Amounts are summed per currency with no conversion. `amount` counts positive "
+                     "transactions only; negative transactions (about 23% of rows) are reported separately "
+                     "as `adjustments`, and `net` = amount + adjustments.")
     if "oxfamus" in pubs:
         parts.append("Oxfam America publishes 11 activities (2017-2018) with no funders, partners or "
                      "sector codes, so it contributes little or nothing here.")
@@ -173,8 +177,9 @@ def _coverage(publishers=None, year_from=None, money=False, types=(), sectors=Fa
     if "oxfamgb" in pubs and "Disbursement" in types:
         parts.append("Disbursement rows exist only for Oxfam GB and name Oxfam GB itself as provider.")
     if sectors:
-        parts.append("Oxfam GB and Oxfam America have no standard sector codes; 85% of activities were "
-                     "matched by keyword (match_basis='keyword').")
+        parts.append("Oxfam GB and Oxfam America have no standard sector codes, so their activities are "
+                     "kept by keyword match. match_basis and confidence say why each activity is included; "
+                     "keyword_weak and low-confidence ones are the least certain.")
     return _note(parts)
 
 
@@ -198,7 +203,8 @@ WHERE ($country IS NULL OR EXISTS { MATCH (a)-[:TARGETS]->(:Country {code: $coun
   AND ($year_to IS NULL OR a.start_date.year <= $year_to)
 RETURN a.iati_identifier AS iati_identifier, a.publisher AS publisher, a.title AS title,
        a.status_name AS status, toString(a.start_date) AS start_date, toString(a.end_date) AS end_date,
-       a.hotspot_countries AS countries, a.match_basis AS match_basis, a.humanitarian AS humanitarian
+       a.hotspot_countries AS countries, a.match_basis AS match_basis, a.confidence AS confidence,
+       a.humanitarian AS humanitarian
 ORDER BY a.start_date DESC, a.iati_identifier
 LIMIT $limit
 """
@@ -212,10 +218,12 @@ def activities(country=None, publisher=None, year_from=None, year_to=None, match
         publisher: "Oxfam GB" | "Oxfam America" | "WFP" (or slug / org name). None = all.
         year_from, year_to: ints. An activity matches if it was ACTIVE in the
             range: start year <= year_to and end year (or start year if no end) >= year_from.
-        match_type: "sector" (standard DAC/cluster code) or "keyword" (title/description match). None = both.
+        match_type: why the hunger filter kept the activity: "sector" (standard DAC/cluster code),
+            "sdg" (SDG 2 tag), "keyword" (strong term), "keyword_over_sector" (strong term despite
+            non-hunger codes) or "keyword_weak" (weak terms only). None = all.
         limit: max rows (<= 500).
     Returns: rows of iati_identifier, publisher, title, status, start_date, end_date,
-        countries, match_basis, humanitarian.
+        countries, match_basis, confidence (high/medium/low), humanitarian.
     Example: activities(country="Yemen", publisher="Oxfam GB", year_from=2020)
     """
     raw = {"country": country, "publisher": publisher, "year_from": year_from, "year_to": year_to,
@@ -226,8 +234,8 @@ def activities(country=None, publisher=None, year_from=None, year_to=None, match
     slug, _, err = _publisher(publisher)
     if err:
         return _error(err[0], raw, err[1])
-    if match_type not in (None, "sector", "keyword"):
-        return _error("match_type must be 'sector', 'keyword' or None", raw)
+    if match_type not in (None, *MATCH_TYPES):
+        return _error(f"match_type must be one of {list(MATCH_TYPES)} or None", raw)
     year_from, err = _year(year_from, "year_from")
     if err:
         return _error(err, raw)
@@ -324,26 +332,26 @@ WITH coalesce($canon[o.ref], o.ref) AS org, coalesce($canon[rep.ref], rep.ref) A
 WHERE NOT $exclude_self OR org <> reporter
 WITH org, t.currency AS currency,
      collect(DISTINCT {ref: o.ref, name: o.name}) AS orgs,
+     sum(CASE WHEN t.value > 0 THEN t.value ELSE 0 END) AS amount,
+     sum(CASE WHEN t.value < 0 THEN t.value ELSE 0 END) AS adjustments,
      sum(t.value) AS net,
-     sum(CASE WHEN t.value > 0 THEN t.value ELSE 0 END) AS positive_total,
-     sum(CASE WHEN t.value < 0 THEN t.value ELSE 0 END) AS negative_total,
-     count(t) AS n_transactions, sum(CASE WHEN t.value < 0 THEN 1 ELSE 0 END) AS n_negative,
+     count(t) AS n_transactions, sum(CASE WHEN t.value < 0 THEN 1 ELSE 0 END) AS n_adjustments,
      collect(DISTINCT a.publisher) AS publishers, collect(DISTINCT a.iati_identifier) AS acts,
      min(t.date) AS first_date, max(t.date) AS last_date
-ORDER BY net DESC
+ORDER BY amount DESC
 WITH currency, collect({
        funder_id: org,
        funder: coalesce($names[org], head([x IN orgs WHERE x.ref = org | x.name]), head([x IN orgs | x.name]), org),
        all_refs: [x IN orgs | x.ref], currency: currency,
-       net: round(net), positive_total: round(positive_total), negative_total: round(negative_total),
-       n_transactions: n_transactions, n_negative: n_negative,
+       amount: round(amount), adjustments: round(adjustments), net: round(net),
+       n_transactions: n_transactions, n_adjustments: n_adjustments,
        first_date: toString(first_date), last_date: toString(last_date),
        publishers: publishers, n_activities: size(acts), activity_ids: acts[0..$max_ids]}) AS rows
 ORDER BY currency
 UNWIND rows[0..$limit] AS r
 RETURN r.funder_id AS funder_id, r.funder AS funder, r.all_refs AS all_refs, r.currency AS currency,
-       r.net AS net, r.positive_total AS positive_total, r.negative_total AS negative_total,
-       r.n_transactions AS n_transactions, r.n_negative AS n_negative, r.first_date AS first_date,
+       r.amount AS amount, r.adjustments AS adjustments, r.net AS net,
+       r.n_transactions AS n_transactions, r.n_adjustments AS n_adjustments, r.first_date AS first_date,
        r.last_date AS last_date, r.publishers AS publishers, r.n_activities AS n_activities,
        r.activity_ids AS activity_ids
 LIMIT $max_rows
@@ -357,7 +365,10 @@ def top_funders(country, transaction_types=("Incoming Funds",), year_from=None, 
     Sums the `value` of transactions of the given type(s) on activities that
     target the country, grouped by provider organisation and currency.
     Currencies are never converted: a funder active in USD and GBP appears
-    once per currency, and rows are ordered by currency then net amount.
+    once per currency, and rows are ordered by currency then `amount`.
+    `amount` sums positive transactions only; negative ones are kept as their
+    own `adjustments` category (client decision 2026-10-23), and `net` is
+    amount + adjustments.
 
     Args:
         country: hotspot country name or code (required).
@@ -374,8 +385,8 @@ def top_funders(country, transaction_types=("Incoming Funds",), year_from=None, 
             reporting organisation (a publisher paying itself). Other
             publishers still count: WFP funding an Oxfam GB activity is a
             funder. Default True.
-    Returns: rows of funder_id, funder, all_refs, currency, net, positive_total,
-        negative_total, n_transactions, n_negative, first_date, last_date,
+    Returns: rows of funder_id, funder, all_refs, currency, amount, adjustments,
+        net, n_transactions, n_adjustments, first_date, last_date,
         publishers, n_activities, activity_ids.
     Example: top_funders("Somalia", year_from=2022, limit=5)
     """
@@ -425,13 +436,13 @@ WITH CASE $by WHEN 'quarter' THEN toString(t.date.year) + '-Q' + toString(t.date
               ELSE toString(t.date.year) END AS period,
      a, t
 WITH period, a.publisher AS publisher, t.currency AS currency,
+     sum(CASE WHEN t.value > 0 THEN t.value ELSE 0 END) AS amount,
+     sum(CASE WHEN t.value < 0 THEN t.value ELSE 0 END) AS adjustments,
      sum(t.value) AS net,
-     sum(CASE WHEN t.value > 0 THEN t.value ELSE 0 END) AS positive_total,
-     sum(CASE WHEN t.value < 0 THEN t.value ELSE 0 END) AS negative_total,
-     count(t) AS n_transactions, sum(CASE WHEN t.value < 0 THEN 1 ELSE 0 END) AS n_negative,
+     count(t) AS n_transactions, sum(CASE WHEN t.value < 0 THEN 1 ELSE 0 END) AS n_adjustments,
      collect(DISTINCT a.iati_identifier) AS acts
-RETURN period, publisher, currency, round(net) AS net, round(positive_total) AS positive_total,
-       round(negative_total) AS negative_total, n_transactions, n_negative,
+RETURN period, publisher, currency, round(amount) AS amount, round(adjustments) AS adjustments,
+       round(net) AS net, n_transactions, n_adjustments,
        size(acts) AS n_activities, acts[0..$max_ids] AS activity_ids
 ORDER BY period, publisher, currency
 LIMIT $limit
@@ -440,7 +451,8 @@ LIMIT $limit
 
 def funding_over_time(publisher=None, country=None, transaction_type="Incoming Funds", by="year",
                       year_from=None, year_to=None, limit=200):
-    """Money per period, by publisher and currency.
+    """Money per period, by publisher and currency: positive `amount`, negative
+    `adjustments` as a separate category, and `net` = amount + adjustments.
 
     Args:
         publisher: one publisher, or None for all three (one row per publisher per period).
@@ -450,8 +462,8 @@ def funding_over_time(publisher=None, country=None, transaction_type="Incoming F
         by: "year" | "quarter" | "month".
         year_from, year_to: ints on the transaction date.
         limit: max rows (<= 500).
-    Returns: rows of period, publisher, currency, net, positive_total, negative_total,
-        n_transactions, n_negative, n_activities, activity_ids.
+    Returns: rows of period, publisher, currency, amount, adjustments, net,
+        n_transactions, n_adjustments, n_activities, activity_ids.
     Example: funding_over_time(publisher="WFP", country="Sudan", transaction_type="Expenditure")
     """
     raw = {"publisher": publisher, "country": country, "transaction_type": transaction_type, "by": by,

@@ -89,11 +89,12 @@ def read_rows(graph_dir, schema, fname, where=None, columns=None, anomalies=None
     anomalies = anomalies if anomalies is not None else Counter()
     rows = []
     with open(graph_dir / fname, newline="", encoding="utf-8") as f:
-        for raw in csv.DictReader(f):
+        for i, raw in enumerate(csv.DictReader(f), 1):    # numbered before filtering
             if where and any(raw.get(k) != v for k, v in where.items()):
                 continue
             row = {k: cast(v, casts.get(k), anomalies, f"{fname}.{k}") if k in casts
                    else (v if v != "" else None) for k, v in raw.items()}
+            row["source_id"] = f"{fname}:row:{i}"
             if derive:
                 row.update(derive(row))
             if columns:

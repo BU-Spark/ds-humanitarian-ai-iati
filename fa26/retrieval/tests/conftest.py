@@ -1,5 +1,6 @@
 """Shared fixtures: the CSVs as pandas frames (ground truth) and a skip
 when no Neo4j is reachable through .env."""
+import os
 import sys
 from pathlib import Path
 
@@ -8,7 +9,7 @@ import pytest
 
 RETRIEVAL = Path(__file__).resolve().parents[1]
 ROOT = RETRIEVAL.parent
-GRAPH = ROOT / "data" / "graph"
+GRAPH = Path(os.environ.get("RETRIEVAL_GRAPH_DIR", ROOT / "data" / "graph"))  # CSVs the graph was loaded from
 sys.path.insert(0, str(RETRIEVAL))
 
 

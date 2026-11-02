@@ -2,7 +2,9 @@
 
 The pandas side re-implements the tool's definition independently of
 Cypher: same filters, same SAME_AS canonicalisation, same self-exclusion.
-If a test fails, either the Cypher or the definition drifted."""
+If a test fails, either the Cypher or the definition drifted. Expected
+values come from the CSVs the graph was loaded from (RETRIEVAL_GRAPH_DIR),
+so the suite runs on the summer graph and on the cleaned one."""
 import pytest
 
 import entities as E
@@ -60,16 +62,19 @@ def test_activities_year_window_means_active_during(csv):
     exp = act[(act.countries.apply(lambda cc: "YE" in cc)) & (act.publisher == "oxfamgb")
               & (act.start_year <= 2020) & (act.end_year >= 2018)]
     r = activities(country="Yemen", publisher="Oxfam GB", year_from=2018, year_to="2020", limit=500)
-    assert {x["iati_identifier"] for x in r["rows"]} == set(exp.iati_identifier)
-    assert len(exp) == 30
+    assert {x["iati_identifier"] for x in r["rows"]} == set(exp.iati_identifier) and len(exp) > 0
 
 
 def test_activities_match_type(csv):
     act = csv["act"]
     r = activities(match_type="sector", limit=500)
-    assert len(r["rows"]) == (act.match_basis == "sector").sum() == 75
+    assert len(r["rows"]) == (act.match_basis == "sector").sum() > 0
     assert {x["publisher"] for x in r["rows"]} == {"wfp"}
     assert "sector codes" in r["coverage_note"]
+    for mt in ("keyword", "keyword_weak", "sdg"):
+        r = activities(match_type=mt, limit=500)
+        assert len(r["rows"]) == (act.match_basis == mt).sum()
+    assert activities(match_type="fuzzy")["status"] == "error"
 
 
 # ------------------------------------------------------ top_funders --
@@ -84,9 +89,11 @@ def pandas_funders(csv, code, types=("1",), exclude_self=True, year_from=None):
     reporter = rep.set_index("iati_identifier").org_ref.map(canon)
     if exclude_self:
         prov = prov[prov.org != prov.iati_identifier.map(reporter)]
-    g = prov.groupby(["org", "currency"]).agg(net=("value", "sum"), n=("tx_id", "count"),
+    g = prov.groupby(["org", "currency"]).agg(amount=("value", lambda s: s[s > 0].sum()),
+                                              adjustments=("value", lambda s: s[s < 0].sum()),
+                                              net=("value", "sum"), n=("tx_id", "count"),
                                               n_neg=("value", lambda s: (s < 0).sum())).reset_index()
-    return g.sort_values("net", ascending=False)
+    return g.sort_values("amount", ascending=False)
 
 
 def test_top_funder_somalia_usd(csv):
@@ -95,9 +102,20 @@ def test_top_funder_somalia_usd(csv):
     r = top_funders("Somalia", limit=1)
     got = next(x for x in r["rows"] if x["currency"] == "USD")
     assert got["funder_id"] == exp.org == "XM-DAC-302"
-    assert got["net"] == round(exp.net) == 1203270484 and got["n_transactions"] == exp.n == 44
-    assert got["n_negative"] == exp.n_neg
-    assert got["positive_total"] + got["negative_total"] == got["net"]
+    assert got["amount"] == round(exp.amount) and got["n_transactions"] == exp.n
+    assert got["adjustments"] == round(exp.adjustments) and got["n_adjustments"] == exp.n_neg
+    assert got["net"] == round(exp.net)
+    assert abs(got["amount"] + got["adjustments"] - got["net"]) <= 1   # per-column rounding
+
+
+def test_adjustments_are_their_own_category(csv):
+    r = top_funders("Yemen", limit=500)
+    assert all(x["amount"] >= 0 and x["adjustments"] <= 0 for x in r["rows"])
+    assert any(x["n_adjustments"] > 0 for x in r["rows"])
+    for cur in {x["currency"] for x in r["rows"]}:          # ranked by amount, not net
+        amounts = [x["amount"] for x in r["rows"] if x["currency"] == cur]
+        assert amounts == sorted(amounts, reverse=True)
+    assert "adjustments" in r["coverage_note"]
 
 
 def test_top_funder_south_sudan_gbp_is_wfp_canonicalised(csv):
@@ -106,7 +124,7 @@ def test_top_funder_south_sudan_gbp_is_wfp_canonicalised(csv):
     r = top_funders("South Sudan", limit=1)
     got = next(x for x in r["rows"] if x["currency"] == "GBP")
     assert exp.org == got["funder_id"] == "XM-DAC-41140"      # the name: pseudo-ref merged in
-    assert got["net"] == round(exp.net) and got["n_transactions"] == exp.n == 162
+    assert got["amount"] == round(exp.amount) and got["n_transactions"] == exp.n
     assert "name:UN World Food Programme (WFP)" in got["all_refs"]
 
 
@@ -120,7 +138,7 @@ def test_top_funders_self_exclusion_and_year(csv):
     exp = pandas_funders(csv, "SO", year_from=2024)
     exp = exp[exp.currency == "USD"].iloc[0]
     got = next(x for x in top_funders("Somalia", year_from="2024", limit=1)["rows"] if x["currency"] == "USD")
-    assert got["funder_id"] == exp.org and got["net"] == round(exp.net)
+    assert got["funder_id"] == exp.org and got["amount"] == round(exp.amount)
 
 
 def test_top_funders_limit_is_per_currency(csv):
@@ -141,13 +159,16 @@ def test_disbursement_default_from_brief_explains_itself():
 # ------------------------------------------------ funding_over_time --
 def test_funding_over_time_wfp_yearly(csv):
     tx = csv["tx"]
-    exp = tx[(tx.publisher == "wfp") & (tx.type == "1")].groupby(["year", "currency"]).value.sum()
+    t = tx[(tx.publisher == "wfp") & (tx.type == "1")]
+    exp = t[t.value > 0].groupby(["year", "currency"]).value.sum()
+    exp_adj = t[t.value < 0].groupby(["year", "currency"]).value.sum()
     r = funding_over_time(publisher="WFP")
     assert r["status"] == "ok"
-    got = {(int(x["period"]), x["currency"]): x["net"] for x in r["rows"]}
+    got = {(int(x["period"]), x["currency"]): x for x in r["rows"]}
     assert set(got) == set(exp.index)
     for k, v in exp.items():
-        assert got[k] == round(v)
+        assert got[k]["amount"] == round(v)
+        assert got[k]["adjustments"] == round(exp_adj.get(k, 0))
     assert min(y for y, _ in got) == 2021
     assert "2021" in r["coverage_note"]
 
