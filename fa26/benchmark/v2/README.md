@@ -74,7 +74,7 @@ and evidence sets. SQL uses EXISTS for relationship restrictions to avoid join
 multiplication; Python uses per-activity relationship indexes. Monetary aggregation
 uses Decimal in both engines to avoid float loss. Both consume the same evaluator
 specifications, so agreement validates execution, not whether the wording and
-contracts are the best interpretation. **Independent human review is pending.**
+contracts are the best interpretation. **Deniz reports review with George is complete and approved.**
 
 `review_examples.json` identifies ten initial cases, two per new category. The
 remaining cases use the same checked evaluator operations. The tests also cover
@@ -96,9 +96,7 @@ split. Report family-level failures rather than treating variants as independent
 - Ask John to review the ten examples first, then all new contracts and limitations.
   This is a proposed review request, not a claim that John has accepted or completed it.
 - George/Alex: run each workflow on the exported split, using the identical snapshot,
-  model/version, prompt policy and retry budget for comparisons. Their current
-  20-question notebooks need an adapter for the v2 bundle and metadata before use;
-  no changes have been made to their workflows by this task.
+  model/version, prompt policy and retry budget for comparisons. Notebooks 05 and 06 now accept exported v2 bundles; see the adapter instructions below.
 - Record model IDs, workflow commit, prompt/config, token use, timing and actual cost.
   Keep the evaluator checkout and answer key out of the agent's tools and context.
 - Freeze the first held-out run before adding templates based on its failures.
@@ -114,3 +112,56 @@ split. Report family-level failures rather than treating variants as independent
 - `test_v2.py`: regression and failure checks.
 - `results/offline_baseline.json`: synthetic reference report, no live model results.
 - `review.ipynb`, `review_examples.json`: review entry point and initial ten cases.
+
+## Notebook 05/06 adapter
+
+Deniz reports that he and George reviewed v2 and agreed to proceed. Live model
+comparison is still pending. The adapter reads only an exported public bundle;
+it does not import evaluator definitions into either model prompt.
+
+From the repository root:
+
+```bash
+python fa26/benchmark/v2/export_inputs.py /tmp/iati-v2-development --split development
+```
+
+Before running notebook 05 or 06, set these in the notebook kernel (a new first
+code cell or your shell environment before starting Jupyter):
+
+```python
+import os
+os.environ['IATI_BENCHMARK_BUNDLE'] = '/tmp/iati-v2-development'
+os.environ['IATI_LIVE_EVAL'] = '0'  # fake model, no API or Neo4j calls
+```
+
+Run All. Notebook 05 generates queries; notebook 06 runs the existing hybrid
+router. Both preserve the bundle's benchmark ID, snapshot ID, split and question
+IDs in their submissions and invoke `score_v2.py` after generation. V2 reports
+are under `fa26/benchmark/v2/results/live/`; submissions and diagnostic CSVs are
+under `fa26/data/processed/`. Run IDs include microseconds to avoid collisions.
+
+With an authorized budget, exact accessible models and the matching verified graph,
+set `IATI_LIVE_EVAL=1` to use the existing provider/database configuration. This
+adapter checks the bundle's CSV hashes; it does not independently establish the
+identity of the remote graph. Confirm that the remote graph is the same snapshot
+and uses notebook 04 source IDs before interpreting live scores.
+
+To return to v1, remove `IATI_BENCHMARK_BUNDLE` from the kernel environment and
+rerun from the top. Externally supplied flags take precedence over `.env`.
+Notebook 06's manual question-ID mapping is v1-only and is skipped for every v2
+split, including regression. V2 uses the unchanged template catalog plus the LLM
+router/free-query fallback, not mappings invented from held-out answer keys.
+Automatic mixing with previous notebook 05 outputs has been removed; compare
+specific matching submissions explicitly with the v2 scorer when both runs finish.
+
+Offline adapter verification (requires notebook dependencies):
+
+```bash
+IATI_TEST_NOTEBOOKS=1 python fa26/tests/test_benchmark_bundle.py
+```
+
+This exercises both notebooks in v1 and all four v2 selections using fake models,
+checks bundle metadata/tampering and confirms malformed responses stop after the
+retry limit. Fake outputs test integration, not model quality. Scoring runs in a
+separate evaluator subprocess after model generation; the notebooks give models
+no filesystem tool or access to the evaluator answer key.
