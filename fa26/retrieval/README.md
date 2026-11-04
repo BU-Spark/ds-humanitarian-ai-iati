@@ -11,7 +11,7 @@ retrieval/
   schema_prototype.py node labels, relationship types, constraints, indexes, casts
   entities.py         curated tables: SAME_AS duplicates, AGENCY_OF hierarchies, aliases, placeholders
   resolve_entity.py   text -> graph IDs, plus the duplicate-organisation report
-  tools.py            the four query tools
+  tools.py            the five query tools
   validate_graph.py   post-load checks: constraints, orphans, required properties, source ids
   schema_alignment.md differences from George's schema v0.1 and what to decide
   org_duplicates.csv  report for the pipeline team (64 pairs, 41 groups)
@@ -44,7 +44,7 @@ python fa26/retrieval/load_neo4j.py                    # load into an empty DB
 python fa26/retrieval/load_neo4j.py --reset            # wipe + reload (refuses a DB it did not fill unless --force)
 python fa26/retrieval/load_neo4j.py --env ../.env      # use another .env, e.g. Aura
 python fa26/retrieval/validate_graph.py --baseline-dir OLD_CSVS   # checks + per-publisher before/after
-python -m pytest fa26/retrieval/tests -q               # 47 tests, skipped if no DB is reachable
+python -m pytest fa26/retrieval/tests -q               # 55 tests, skipped if no DB is reachable
 ```
 
 The loader prints a table of CSV rows vs database counts and runs one
@@ -61,17 +61,18 @@ citation format of the team benchmark. A collapsed edge lists all its rows.
 
 ```python
 import sys; sys.path.insert(0, "fa26/retrieval")
-from tools import activities, shared_partners, top_funders, funding_over_time
+from tools import activities, shared_partners, top_funders, funding_over_time, transaction_totals
 from resolve_entity import resolve_entity
 
 top_funders("Somalia", year_from=2022, limit=5)
 activities(country="Yemen", publisher="Oxfam GB", year_from=2018, year_to=2020)
 shared_partners(["Oxfam GB", "WFP"], country="South Sudan")
 funding_over_time(publisher="WFP", transaction_type="Expenditure", by="quarter")
+transaction_totals("Incoming Funds", publisher="WFP", currency="USD", year_from=2020, year_to=2020)
 resolve_entity("UK government", "organisation")
 ```
 
-### Return format (all four tools)
+### Return format (all five tools)
 
 ```python
 {
@@ -88,6 +89,24 @@ Activity rows carry `iati_identifier` and `publisher`. Aggregate rows carry
 `activity_ids` (first 20) with `n_activities`, and `publishers`, so every
 number is traceable to IATI records. `publisher` values are the slugs
 `oxfamgb`, `oxfamus`, `wfp`.
+
+**Money and evidence.** The three money tools (`top_funders`,
+`funding_over_time`, `transaction_totals`) report `amount` (positive
+transactions), `adjustments` (negative ones, their own category per the
+client) and `net`, as unrounded floats per currency. Every row also has
+`evidence_amount`, `evidence_adjustments` and `evidence_net`: the complete
+source-row ids behind each figure (transaction rows, their activity rows, and
+the `rel_targets_country` / `rel_transaction_edges` rows a filter used), in
+the benchmark's `<file>.csv:row:<n>` format and never truncated. An empty
+money result carries a top-level `evidence` list of searched tables
+(`manifest:nodes_transactions.csv`, plus activities when filtered by
+publisher and targeting rows when filtered by country), which is how the
+benchmark cites "no matching rows". Evidence needs a graph loaded by the
+current `load_neo4j.py`; an older load has no source ids and gives empty lists.
+A figure with no contributing rows (say `adjustments` of 0) cites the same
+manifest ids. Evidence can be large (about 1 MB for `transaction_totals()`
+over all publishers), so pass `for_model(result)` to the LLM and keep the full
+result in code to attach citations.
 
 `country` and `publisher` arguments are free text and go through
 `resolve_entity`: "Somalia", "SO", "SOM", "DRC", "Oxfam GB", "WFP" all work.
@@ -126,7 +145,7 @@ where the provider is the activity's own reporting organisation; another
 publisher still counts (WFP funding Oxfam GB's South Sudan activities is the
 top GBP funder there).
 Rows are ranked by `amount` within each currency.
-Columns: `funder_id, funder, all_refs, currency, amount, adjustments, net, n_transactions, n_adjustments, first_date, last_date, publishers, n_activities, activity_ids`, plus `note` on placeholder rows such as "Multilateral".
+Columns: `funder_id, funder, all_refs, currency, amount, adjustments, net, n_transactions, n_adjustments, first_date, last_date, publishers, n_activities, activity_ids`, the evidence lists, plus `note` on placeholder rows such as "Multilateral".
 
 **Why the default is Incoming Funds, not Disbursement.** In this graph
 external funders appear only as providers of Incoming Funds (type 1).
@@ -138,7 +157,16 @@ returns `no_results` with a note explaining this. Change the default in
 ### `funding_over_time(publisher=None, country=None, transaction_type="Incoming Funds", by="year", year_from=None, year_to=None, limit=200)`
 
 Money per period (`year`, `quarter` or `month`) by publisher and
-currency. Columns: `period, publisher, currency, amount, adjustments, net, n_transactions, n_adjustments, n_activities, activity_ids`.
+currency. Columns: `period, publisher, currency, amount, adjustments, net, n_transactions, n_adjustments, n_activities, activity_ids`, plus the evidence lists.
+
+### `transaction_totals(transaction_type="Incoming Funds", publisher=None, currency=None, country=None, year_from=None, year_to=None, by_publisher=False)`
+
+Totals of **one** transaction type, one row per currency (and per publisher
+with `by_publisher=True`). Mixing types is rejected because WFP mirrors every
+commitment as an identical expenditure. Undated transactions count unless a
+year filter is given. Answers "net WFP incoming funds in USD in 2020",
+"positive / negative total", "net expenditure by currency".
+Columns: `publisher, currency, amount, adjustments, net, n_transactions, n_adjustments, n_activities, activity_ids`, plus the evidence lists.
 
 ### `resolve_entity(text, kind)`
 

@@ -12,6 +12,16 @@ Plain Python functions, no LangChain. Every tool returns the same dict:
       "coverage_note": "...",   # what the answer does NOT cover
     }
 
+Money tools (top_funders, funding_over_time, transaction_totals) also put
+three evidence lists on every row: `evidence_amount`, `evidence_adjustments`
+and `evidence_net`. Each is the complete, untruncated set of source CSV rows
+("nodes_transactions.csv:row:12") behind that figure: the transaction rows,
+their activity rows, and the link rows a filter used (country targeting,
+provider edge). This is the citation format Deniz's benchmark scores. When a
+money tool finds nothing it returns top-level `evidence` naming the tables
+searched ("manifest:nodes_transactions.csv"), as the benchmark expects.
+Amounts are unrounded floats; format them at the presentation layer.
+
 Inputs are free text: `country` and `publisher` go through resolve_entity,
 so "Somalia", "SO", "SOM", "Oxfam", "WFP" all work. If resolution is
 ambiguous the tool returns status "error" with the candidates so the caller
@@ -193,6 +203,50 @@ def _run(cypher, params, note, empty_note=""):
     return _result("ok", rows, cypher, params, note)
 
 
+# Collected per group by every money query: one [tx row, activity row, link rows...]
+# list per transaction, split by sign. `ev_links` must be bound before this runs.
+MONEY_AGG = """
+     sum(CASE WHEN t.value > 0 THEN t.value ELSE 0 END) AS amount,
+     sum(CASE WHEN t.value < 0 THEN t.value ELSE 0 END) AS adjustments,
+     sum(t.value) AS net,
+     count(t) AS n_transactions, sum(CASE WHEN t.value < 0 THEN 1 ELSE 0 END) AS n_adjustments,
+     collect(DISTINCT a.iati_identifier) AS acts,
+     collect(CASE WHEN t.value > 0 THEN [t.source_id, a.source_id] + ev_links END) AS ev_amount,
+     collect(CASE WHEN t.value < 0 THEN [t.source_id, a.source_id] + ev_links END) AS ev_adjustments,
+     collect([t.source_id, a.source_id] + ev_links) AS ev_net"""
+
+
+def _money(out, tables):
+    """Flatten the ev_* columns into sorted, de-duplicated evidence lists. A figure
+    with no contributing rows (e.g. adjustments of 0) cites the searched tables,
+    the way the benchmark cites an empty match; so does a no_results answer."""
+    manifest = sorted(f"manifest:{t}" for t in tables)
+    for r in out["rows"]:
+        for k in ("amount", "adjustments", "net"):
+            r[f"evidence_{k}"] = sorted({x for ids in r.pop(f"ev_{k}") for x in ids if x}) or manifest
+    if out["status"] == "no_results":
+        out["evidence"] = manifest
+    return out
+
+
+def for_model(result):
+    """Copy of a tool result without evidence lists, for the LLM's context.
+
+    Evidence can run to tens of thousands of row ids (about 1 MB for
+    transaction_totals() over all publishers). Give the model this copy and
+    keep the full result in code to attach citations to the final answer."""
+    out = {k: v for k, v in result.items() if k != "evidence"}
+    out["rows"] = [{k: v for k, v in r.items() if not k.startswith("evidence_")} for r in result["rows"]]
+    return out
+
+
+def _searched(*tables, publisher=None, country=None):
+    """Tables an empty money answer searched (benchmark manifest rule)."""
+    return {"nodes_transactions.csv", *tables,
+            *(["nodes_activities.csv"] if publisher else []),
+            *(["rel_targets_country.csv"] if country else [])}
+
+
 # ------------------------------------------------------------------ tools --
 ACTIVITIES_CYPHER = """
 MATCH (a:Activity)
@@ -321,30 +375,28 @@ def shared_partners(publishers, country=None, limit=50):
 
 
 TOP_FUNDERS_CYPHER = """
-MATCH (a:Activity)-[:TARGETS]->(:Country {code: $country}),
-      (a)-[:HAS_TRANSACTION]->(t:Transaction)<-[:PROVIDES]-(o:Organisation),
+MATCH (a:Activity)-[tr:TARGETS]->(:Country {code: $country}),
+      (a)-[:HAS_TRANSACTION]->(t:Transaction)<-[pv:PROVIDES]-(o:Organisation),
       (rep:Organisation)-[:REPORTS]->(a)
 WHERE t.type_name IN $types
   AND ($year_from IS NULL OR t.date.year >= $year_from)
   AND ($year_to IS NULL OR t.date.year <= $year_to)
   AND ($publisher IS NULL OR a.publisher = $publisher)
-WITH coalesce($canon[o.ref], o.ref) AS org, coalesce($canon[rep.ref], rep.ref) AS reporter, o, a, t
+WITH coalesce($canon[o.ref], o.ref) AS org, coalesce($canon[rep.ref], rep.ref) AS reporter, o, a, t,
+     coalesce(tr.source_ids, []) + coalesce(pv.source_ids, []) AS ev_links
 WHERE NOT $exclude_self OR org <> reporter
 WITH org, t.currency AS currency,
-     collect(DISTINCT {ref: o.ref, name: o.name}) AS orgs,
-     sum(CASE WHEN t.value > 0 THEN t.value ELSE 0 END) AS amount,
-     sum(CASE WHEN t.value < 0 THEN t.value ELSE 0 END) AS adjustments,
-     sum(t.value) AS net,
-     count(t) AS n_transactions, sum(CASE WHEN t.value < 0 THEN 1 ELSE 0 END) AS n_adjustments,
-     collect(DISTINCT a.publisher) AS publishers, collect(DISTINCT a.iati_identifier) AS acts,
+     collect(DISTINCT {ref: o.ref, name: o.name}) AS orgs,""" + MONEY_AGG + """,
+     collect(DISTINCT a.publisher) AS publishers,
      min(t.date) AS first_date, max(t.date) AS last_date
 ORDER BY amount DESC
 WITH currency, collect({
        funder_id: org,
        funder: coalesce($names[org], head([x IN orgs WHERE x.ref = org | x.name]), head([x IN orgs | x.name]), org),
        all_refs: [x IN orgs | x.ref], currency: currency,
-       amount: round(amount), adjustments: round(adjustments), net: round(net),
+       amount: amount, adjustments: adjustments, net: net,
        n_transactions: n_transactions, n_adjustments: n_adjustments,
+       ev_amount: ev_amount, ev_adjustments: ev_adjustments, ev_net: ev_net,
        first_date: toString(first_date), last_date: toString(last_date),
        publishers: publishers, n_activities: size(acts), activity_ids: acts[0..$max_ids]}) AS rows
 ORDER BY currency
@@ -353,7 +405,8 @@ RETURN r.funder_id AS funder_id, r.funder AS funder, r.all_refs AS all_refs, r.c
        r.amount AS amount, r.adjustments AS adjustments, r.net AS net,
        r.n_transactions AS n_transactions, r.n_adjustments AS n_adjustments, r.first_date AS first_date,
        r.last_date AS last_date, r.publishers AS publishers, r.n_activities AS n_activities,
-       r.activity_ids AS activity_ids
+       r.activity_ids AS activity_ids, r.ev_amount AS ev_amount, r.ev_adjustments AS ev_adjustments,
+       r.ev_net AS ev_net
 LIMIT $max_rows
 """
 
@@ -387,7 +440,8 @@ def top_funders(country, transaction_types=("Incoming Funds",), year_from=None, 
             funder. Default True.
     Returns: rows of funder_id, funder, all_refs, currency, amount, adjustments,
         net, n_transactions, n_adjustments, first_date, last_date,
-        publishers, n_activities, activity_ids.
+        publishers, n_activities, activity_ids, evidence_amount,
+        evidence_adjustments, evidence_net.
     Example: top_funders("Somalia", year_from=2022, limit=5)
     """
     raw = {"country": country, "transaction_types": transaction_types, "year_from": year_from,
@@ -417,7 +471,8 @@ def top_funders(country, transaction_types=("Incoming Funds",), year_from=None, 
     if exclude_self and any(t in ("Disbursement", "Expenditure", "Outgoing Commitment") for t in types):
         empty += (" other than ones where the provider is the publisher itself (hidden by exclude_self=True; "
                   "pass exclude_self=False to see them, or use the default 'Incoming Funds' for external funders)")
-    out = _run(TOP_FUNDERS_CYPHER, params, note, empty + ".")
+    out = _money(_run(TOP_FUNDERS_CYPHER, params, note, empty + "."),
+                 _searched("rel_transaction_edges.csv", publisher=slug, country=code))
     for r in out["rows"]:
         if r["funder_id"] in E.PLACEHOLDERS:
             r["note"] = E.PLACEHOLDERS[r["funder_id"]]
@@ -428,22 +483,17 @@ FUNDING_OVER_TIME_CYPHER = """
 MATCH (a:Activity)-[:HAS_TRANSACTION]->(t:Transaction)
 WHERE t.type_name IN $types AND t.date IS NOT NULL
   AND ($publisher IS NULL OR a.publisher = $publisher)
-  AND ($country IS NULL OR EXISTS { MATCH (a)-[:TARGETS]->(:Country {code: $country}) })
   AND ($year_from IS NULL OR t.date.year >= $year_from)
   AND ($year_to IS NULL OR t.date.year <= $year_to)
+OPTIONAL MATCH (a)-[tr:TARGETS]->(:Country {code: $country})
+WITH a, t, tr WHERE $country IS NULL OR tr IS NOT NULL
 WITH CASE $by WHEN 'quarter' THEN toString(t.date.year) + '-Q' + toString(t.date.quarter)
               WHEN 'month' THEN left(toString(t.date), 7)
               ELSE toString(t.date.year) END AS period,
-     a, t
-WITH period, a.publisher AS publisher, t.currency AS currency,
-     sum(CASE WHEN t.value > 0 THEN t.value ELSE 0 END) AS amount,
-     sum(CASE WHEN t.value < 0 THEN t.value ELSE 0 END) AS adjustments,
-     sum(t.value) AS net,
-     count(t) AS n_transactions, sum(CASE WHEN t.value < 0 THEN 1 ELSE 0 END) AS n_adjustments,
-     collect(DISTINCT a.iati_identifier) AS acts
-RETURN period, publisher, currency, round(amount) AS amount, round(adjustments) AS adjustments,
-       round(net) AS net, n_transactions, n_adjustments,
-       size(acts) AS n_activities, acts[0..$max_ids] AS activity_ids
+     a, t, coalesce(tr.source_ids, []) AS ev_links
+WITH period, a.publisher AS publisher, t.currency AS currency,""" + MONEY_AGG + """
+RETURN period, publisher, currency, amount, adjustments, net, n_transactions, n_adjustments,
+       size(acts) AS n_activities, acts[0..$max_ids] AS activity_ids, ev_amount, ev_adjustments, ev_net
 ORDER BY period, publisher, currency
 LIMIT $limit
 """
@@ -463,7 +513,8 @@ def funding_over_time(publisher=None, country=None, transaction_type="Incoming F
         year_from, year_to: ints on the transaction date.
         limit: max rows (<= 500).
     Returns: rows of period, publisher, currency, amount, adjustments, net,
-        n_transactions, n_adjustments, n_activities, activity_ids.
+        n_transactions, n_adjustments, n_activities, activity_ids,
+        evidence_amount, evidence_adjustments, evidence_net.
     Example: funding_over_time(publisher="WFP", country="Sudan", transaction_type="Expenditure")
     """
     raw = {"publisher": publisher, "country": country, "transaction_type": transaction_type, "by": by,
@@ -488,7 +539,79 @@ def funding_over_time(publisher=None, country=None, transaction_type="Incoming F
     params = {"publisher": slug, "country": code, "types": types, "by": by, "year_from": year_from,
               "year_to": year_to, "limit": _limit(limit), "max_ids": MAX_IDS_PER_ROW}
     note = _coverage([slug] if slug else None, year_from, money=True, types=types)
-    return _run(FUNDING_OVER_TIME_CYPHER, params, note, f"No {types[0]} transactions match.")
+    return _money(_run(FUNDING_OVER_TIME_CYPHER, params, note, f"No {types[0]} transactions match."),
+                  _searched(publisher=slug, country=code))
 
 
-TOOLS = {f.__name__: f for f in (activities, shared_partners, top_funders, funding_over_time)}
+TRANSACTION_TOTALS_CYPHER = """
+MATCH (a:Activity)-[:HAS_TRANSACTION]->(t:Transaction)
+WHERE t.type_name IN $types
+  AND ($currency IS NULL OR t.currency = $currency)
+  AND ($publisher IS NULL OR a.publisher = $publisher)
+  AND ($year_from IS NULL OR t.date.year >= $year_from)
+  AND ($year_to IS NULL OR t.date.year <= $year_to)
+OPTIONAL MATCH (a)-[tr:TARGETS]->(:Country {code: $country})
+WITH a, t, tr WHERE $country IS NULL OR tr IS NOT NULL
+WITH CASE WHEN $by_publisher THEN a.publisher END AS publisher, t.currency AS currency,
+     a, t, coalesce(tr.source_ids, []) AS ev_links
+WITH publisher, currency,""" + MONEY_AGG + """
+RETURN publisher, currency, amount, adjustments, net, n_transactions, n_adjustments,
+       size(acts) AS n_activities, acts[0..$max_ids] AS activity_ids, ev_amount, ev_adjustments, ev_net
+ORDER BY publisher, currency
+LIMIT $limit
+"""
+
+
+def transaction_totals(transaction_type="Incoming Funds", publisher=None, currency=None, country=None,
+                       year_from=None, year_to=None, by_publisher=False):
+    """Total money of ONE transaction type, one row per currency (never converted):
+    positive `amount`, negative `adjustments` as a separate category, and `net`
+    = amount + adjustments.
+
+    Use for "how much did X receive/spend/disburse", "net incoming funds in USD
+    in 2020", "positive / negative total", "by currency". Transactions without a
+    date are included unless a year filter is given.
+
+    Args:
+        transaction_type: one IATI transaction type name or code (default "Incoming Funds").
+            WFP mirrors commitments as expenditures, so never add those two types.
+        publisher: one publisher, or None for all three.
+        currency: e.g. "USD" or "GBP"; None = one row per currency.
+        country: optional hotspot country filter on the activities.
+        year_from, year_to: ints on the transaction date (inclusive calendar years).
+        by_publisher: True = one row per publisher per currency.
+    Returns: rows of publisher (only when by_publisher), currency, amount, adjustments, net,
+        n_transactions, n_adjustments, n_activities, activity_ids, evidence_amount,
+        evidence_adjustments, evidence_net.
+    Example: transaction_totals("Expenditure", publisher="Oxfam America", currency="USD")
+    """
+    raw = {"transaction_type": transaction_type, "publisher": publisher, "currency": currency,
+           "country": country, "year_from": year_from, "year_to": year_to, "by_publisher": by_publisher}
+    types, err = _types(transaction_type)
+    if err:
+        return _error(err, raw)
+    if len(types) != 1:
+        return _error("give exactly one transaction type; amounts of different types must not be added", raw)
+    slug, _, err = _publisher(publisher)
+    if err:
+        return _error(err[0], raw, err[1])
+    code, err = _country(country)
+    if err:
+        return _error(err[0], raw, err[1])
+    year_from, err = _year(year_from, "year_from")
+    if err:
+        return _error(err, raw)
+    year_to, err = _year(year_to, "year_to")
+    if err:
+        return _error(err, raw)
+    if currency is not None and not isinstance(currency, str):
+        return _error(f"currency must be a code such as 'USD', got {currency!r}", raw)
+    params = {"types": types, "publisher": slug, "currency": currency.strip().upper() if currency else None,
+              "country": code, "year_from": year_from, "year_to": year_to, "by_publisher": bool(by_publisher),
+              "limit": MAX_LIMIT, "max_ids": MAX_IDS_PER_ROW}
+    note = _coverage([slug] if slug else None, year_from, money=True, types=types)
+    return _money(_run(TRANSACTION_TOTALS_CYPHER, params, note, f"No {types[0]} transactions match."),
+                  _searched(publisher=slug, country=code))
+
+
+TOOLS = {f.__name__: f for f in (activities, shared_partners, top_funders, funding_over_time, transaction_totals)}

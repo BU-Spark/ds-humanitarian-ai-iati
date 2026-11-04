@@ -8,7 +8,7 @@ so the suite runs on the summer graph and on the cleaned one."""
 import pytest
 
 import entities as E
-from tools import activities, shared_partners, top_funders, funding_over_time, PUBLISHER_LABELS
+from tools import activities, shared_partners, top_funders, funding_over_time, transaction_totals, for_model, PUBLISHER_LABELS
 
 pytestmark = pytest.mark.usefixtures("graph_db")
 CANON = {v: c for c, vs in E.SAME_AS.items() for v in vs}
@@ -102,10 +102,10 @@ def test_top_funder_somalia_usd(csv):
     r = top_funders("Somalia", limit=1)
     got = next(x for x in r["rows"] if x["currency"] == "USD")
     assert got["funder_id"] == exp.org == "XM-DAC-302"
-    assert got["amount"] == round(exp.amount) and got["n_transactions"] == exp.n
-    assert got["adjustments"] == round(exp.adjustments) and got["n_adjustments"] == exp.n_neg
-    assert got["net"] == round(exp.net)
-    assert abs(got["amount"] + got["adjustments"] - got["net"]) <= 1   # per-column rounding
+    assert got["amount"] == pytest.approx(exp.amount, abs=0.01) and got["n_transactions"] == exp.n
+    assert got["adjustments"] == pytest.approx(exp.adjustments, abs=0.01) and got["n_adjustments"] == exp.n_neg
+    assert got["net"] == pytest.approx(exp.net, abs=0.01)
+    assert got["amount"] + got["adjustments"] == pytest.approx(got["net"], abs=0.01)
 
 
 def test_adjustments_are_their_own_category(csv):
@@ -124,7 +124,7 @@ def test_top_funder_south_sudan_gbp_is_wfp_canonicalised(csv):
     r = top_funders("South Sudan", limit=1)
     got = next(x for x in r["rows"] if x["currency"] == "GBP")
     assert exp.org == got["funder_id"] == "XM-DAC-41140"      # the name: pseudo-ref merged in
-    assert got["amount"] == round(exp.amount) and got["n_transactions"] == exp.n
+    assert got["amount"] == pytest.approx(exp.amount, abs=0.01) and got["n_transactions"] == exp.n
     assert "name:UN World Food Programme (WFP)" in got["all_refs"]
 
 
@@ -138,7 +138,7 @@ def test_top_funders_self_exclusion_and_year(csv):
     exp = pandas_funders(csv, "SO", year_from=2024)
     exp = exp[exp.currency == "USD"].iloc[0]
     got = next(x for x in top_funders("Somalia", year_from="2024", limit=1)["rows"] if x["currency"] == "USD")
-    assert got["funder_id"] == exp.org and got["amount"] == round(exp.amount)
+    assert got["funder_id"] == exp.org and got["amount"] == pytest.approx(exp.amount, abs=0.01)
 
 
 def test_top_funders_limit_is_per_currency(csv):
@@ -167,8 +167,8 @@ def test_funding_over_time_wfp_yearly(csv):
     got = {(int(x["period"]), x["currency"]): x for x in r["rows"]}
     assert set(got) == set(exp.index)
     for k, v in exp.items():
-        assert got[k]["amount"] == round(v)
-        assert got[k]["adjustments"] == round(exp_adj.get(k, 0))
+        assert got[k]["amount"] == pytest.approx(v, abs=0.01)
+        assert got[k]["adjustments"] == pytest.approx(exp_adj.get(k, 0), abs=0.01)
     assert min(y for y, _ in got) == 2021
     assert "2021" in r["coverage_note"]
 
@@ -178,7 +178,7 @@ def test_funding_over_time_quarters_sum_to_year(csv):
     q = funding_over_time(publisher="WFP", country="Sudan", transaction_type="Expenditure", by="quarter",
                           year_from=2023, year_to=2023)
     assert len(y["rows"]) == 1 and len(q["rows"]) == 4
-    assert abs(sum(x["net"] for x in q["rows"]) - y["rows"][0]["net"]) <= 2   # per-row rounding
+    assert sum(x["net"] for x in q["rows"]) == pytest.approx(y["rows"][0]["net"], abs=0.01)
     assert "mirrors" in y["coverage_note"]
 
 
@@ -187,7 +187,123 @@ def test_funding_over_time_oxfam_america_only_expenditure(csv):
     tx = csv["tx"]
     exp = tx[(tx.publisher == "oxfamus") & (tx.type == "4")].value.sum()
     r = funding_over_time(publisher="Oxfam America", transaction_type="Expenditure")
-    assert abs(round(exp) - sum(x["net"] for x in r["rows"])) <= len(r["rows"])   # per-row rounding
+    assert sum(x["net"] for x in r["rows"]) == pytest.approx(exp, abs=0.01)
+
+
+# ---------------------------------------------- transaction_totals --
+def pandas_totals(csv, type_code, publisher=None, currency=None, country=None, year=None):
+    act, tx = csv["act"], csv["tx"]
+    t = tx[tx.type == type_code]
+    if publisher:
+        t = t[t.publisher == publisher]
+    if currency:
+        t = t[t.currency == currency]
+    if year:
+        t = t[t.date.str[:4] == str(year)]
+    links = {}
+    if country:
+        tc = csv["tc"][csv["tc"].country_code == country]
+        t = t[t.iati_identifier.isin(set(tc.iati_identifier))]
+        links = tc.groupby("iati_identifier").source_id.apply(set).to_dict()
+    act_src = act.set_index("iati_identifier").source_id
+
+    def evidence(rows):
+        ids = set(rows.source_id) | set(rows.iati_identifier.map(act_src))
+        for a in set(rows.iati_identifier):
+            ids |= links.get(a, set())
+        return sorted(ids)
+    return t, evidence
+
+
+@pytest.mark.parametrize("type_code,type_name,publisher,currency", [
+    ("1", "Incoming Funds", "wfp", "USD"),
+    ("4", "Expenditure", "oxfamgb", "GBP"),
+    ("3", "Disbursement", "oxfamgb", "GBP"),
+])
+def test_transaction_totals_values_and_evidence(csv, type_code, type_name, publisher, currency):
+    t, evidence = pandas_totals(csv, type_code, publisher, currency)
+    r = transaction_totals(type_name, publisher=publisher, currency=currency)
+    assert r["status"] == "ok" and len(r["rows"]) == 1
+    got = r["rows"][0]
+    pos, neg = t[t.value > 0], t[t.value < 0]
+    assert got["amount"] == pytest.approx(pos.value.sum(), abs=0.01)
+    assert got["adjustments"] == pytest.approx(neg.value.sum(), abs=0.01)
+    assert got["net"] == pytest.approx(t.value.sum(), abs=0.01)
+    assert got["n_transactions"] == len(t) and got["n_adjustments"] == len(neg)
+    # complete lineage per figure: the sign's transaction rows plus their activity rows
+    assert got["evidence_amount"] == evidence(pos)
+    assert got["evidence_adjustments"] == evidence(neg)
+    assert got["evidence_net"] == evidence(t)
+
+
+def test_transaction_totals_country_cites_targeting_rows(csv):
+    t, evidence = pandas_totals(csv, "4", "wfp", "USD", country="SD", year=2023)
+    r = transaction_totals("Expenditure", publisher="WFP", currency="USD", country="Sudan",
+                           year_from=2023, year_to=2023)
+    got = r["rows"][0]
+    assert got["net"] == pytest.approx(t.value.sum(), abs=0.01)
+    assert got["evidence_net"] == evidence(t)
+    assert any(e.startswith("rel_targets_country.csv:") for e in got["evidence_net"])
+
+
+def test_transaction_totals_by_currency_and_publisher(csv):
+    tx = csv["tx"]
+    t = tx[tx.type == "1"]
+    r = transaction_totals()
+    assert {x["currency"]: x["net"] for x in r["rows"]} == pytest.approx(t.groupby("currency").value.sum().to_dict(), abs=0.01)
+    assert all(x["publisher"] is None for x in r["rows"])
+    r = transaction_totals(by_publisher=True)
+    exp = t.groupby(["publisher", "currency"]).value.sum().to_dict()
+    assert {(x["publisher"], x["currency"]): x["net"] for x in r["rows"]} == pytest.approx(exp, abs=0.01)
+
+
+def test_funding_over_time_country_matches_pandas(csv):
+    t, evidence = pandas_totals(csv, "4", "wfp", "USD", country="SD", year=2023)
+    rows = funding_over_time(publisher="WFP", country="Sudan", transaction_type="Expenditure",
+                             year_from=2023, year_to=2023)["rows"]
+    assert len(rows) == 1 and rows[0]["n_transactions"] == len(t)      # no row multiplication
+    assert rows[0]["net"] == pytest.approx(t.value.sum(), abs=0.01)
+    assert rows[0]["evidence_net"] == evidence(t)
+    assert rows[0]["evidence_adjustments"] == evidence(t[t.value < 0])
+
+
+def test_zero_figure_cites_searched_tables():
+    row = transaction_totals("Expenditure", publisher="Oxfam America", currency="USD")["rows"][0]
+    assert row["adjustments"] == 0 and row["n_adjustments"] == 0
+    assert row["evidence_adjustments"] == ["manifest:nodes_activities.csv", "manifest:nodes_transactions.csv"]
+
+
+def test_for_model_strips_evidence():
+    full = transaction_totals()
+    slim = for_model(full)
+    assert slim["rows"] and not any(k.startswith("evidence") for r in slim["rows"] for k in r)
+    assert full["rows"][0]["evidence_net"]                      # original untouched
+    assert "evidence" not in for_model(transaction_totals(currency="EUR"))
+
+
+def test_transaction_totals_empty_cites_searched_tables():
+    r = transaction_totals(publisher="WFP", currency="USD", year_from=1990, year_to=1990)
+    assert r["status"] == "no_results" and r["rows"] == []
+    assert r["evidence"] == ["manifest:nodes_activities.csv", "manifest:nodes_transactions.csv"]
+    r = transaction_totals("Expenditure", currency="EUR")
+    assert r["evidence"] == ["manifest:nodes_transactions.csv"]
+
+
+def test_transaction_totals_rejects_mixed_types():
+    r = transaction_totals(("Outgoing Commitment", "Expenditure"))
+    assert r["status"] == "error" and "one transaction type" in r["coverage_note"]
+    assert transaction_totals(currency=["USD"])["status"] == "error"
+
+
+def test_money_tools_carry_evidence(csv):
+    r = top_funders("Somalia", limit=1)
+    row = next(x for x in r["rows"] if x["currency"] == "USD")
+    assert row["n_adjustments"] > 0
+    assert len([e for e in row["evidence_adjustments"] if e.startswith("nodes_transactions.csv")]) == row["n_adjustments"]
+    assert {e.split(":row:")[0] for e in row["evidence_net"]} == {
+        "nodes_transactions.csv", "nodes_activities.csv", "rel_targets_country.csv", "rel_transaction_edges.csv"}
+    f = funding_over_time(publisher="WFP", year_from=2023, year_to=2023)["rows"][0]
+    assert len([e for e in f["evidence_net"] if e.startswith("nodes_transactions.csv")]) == f["n_transactions"]
 
 
 # -------------------------------------------------- shared_partners --

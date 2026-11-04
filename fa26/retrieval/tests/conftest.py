@@ -14,7 +14,9 @@ sys.path.insert(0, str(RETRIEVAL))
 
 
 def _load(name):
-    return pd.read_csv(GRAPH / name, dtype=str).fillna("")
+    df = pd.read_csv(GRAPH / name, dtype=str).fillna("")
+    df["source_id"] = [f"{name}:row:{i}" for i in range(1, len(df) + 1)]   # loader's citation ids
+    return df
 
 
 @pytest.fixture(scope="session")
@@ -36,6 +38,7 @@ def csv():
         "part": _load("rel_participates.csv"),
         "txe": _load("rel_transaction_edges.csv"),
         "rep": _load("rel_reports.csv"),
+        "tc": _load("rel_targets_country.csv"),
     }
 
 
