@@ -1,0 +1,1549 @@
+{
+  "benchmark_id": "iati-v2-100-2026-10-29",
+  "snapshot_id": "430caabd5a8ae1d0816a9941a4a8f730484c4c0b35360ee17983a76c3297658f",
+  "split": "development",
+  "runs": [
+    {
+      "run_name": "hybrid_llm_router__anthropic_claude-opus-4-6__2026-11-05_172642_659360_evsanitised",
+      "synthetic": false,
+      "summary": {
+        "questions": 40,
+        "correctness_pct": 56.67,
+        "evidence_f1_pct": 10.0,
+        "behavior_pct": 56.67,
+        "overall_pct": 46.17,
+        "latency_samples": 40,
+        "mean_latency_ms": 8535.4
+      },
+      "cost_usd": null,
+      "by_category": {
+        "direct": {
+          "questions": 10,
+          "correctness_pct": 80.0,
+          "evidence_f1_pct": 0.0,
+          "behavior_pct": null,
+          "overall_pct": 56.0,
+          "latency_samples": 10,
+          "mean_latency_ms": 6887.0599999999995
+        },
+        "financial": {
+          "questions": 7,
+          "correctness_pct": 42.86,
+          "evidence_f1_pct": 42.86,
+          "behavior_pct": null,
+          "overall_pct": 42.86,
+          "latency_samples": 7,
+          "mean_latency_ms": 13661.285714285714
+        },
+        "limitations": {
+          "questions": 5,
+          "correctness_pct": 100.0,
+          "evidence_f1_pct": null,
+          "behavior_pct": 100.0,
+          "overall_pct": 100.0,
+          "latency_samples": 5,
+          "mean_latency_ms": 4084.06
+        },
+        "organisation": {
+          "questions": 8,
+          "correctness_pct": 8.33,
+          "evidence_f1_pct": 0.0,
+          "behavior_pct": 13.33,
+          "overall_pct": 8.33,
+          "latency_samples": 8,
+          "mean_latency_ms": 5731.3125
+        },
+        "two_step": {
+          "questions": 10,
+          "correctness_pct": 60.0,
+          "evidence_f1_pct": 0.0,
+          "behavior_pct": null,
+          "overall_pct": 42.0,
+          "latency_samples": 10,
+          "mean_latency_ms": 11064.56
+        }
+      },
+      "by_split": {
+        "development": {
+          "questions": 40,
+          "correctness_pct": 56.67,
+          "evidence_f1_pct": 10.0,
+          "behavior_pct": 56.67,
+          "overall_pct": 46.17,
+          "latency_samples": 40,
+          "mean_latency_ms": 8535.4
+        }
+      },
+      "questions": [
+        {
+          "id": "V2Q001",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 4564.5
+        },
+        {
+          "id": "V2Q002",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 8787.5
+        },
+        {
+          "id": "V2Q003",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 12637.5
+        },
+        {
+          "id": "V2Q004",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 4435.5
+        },
+        {
+          "id": "V2Q005",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 8265.9
+        },
+        {
+          "id": "V2Q006",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 4764.6
+        },
+        {
+          "id": "V2Q007",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 7746.4
+        },
+        {
+          "id": "V2Q008",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 4479.3
+        },
+        {
+          "id": "V2Q009",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 4561.9
+        },
+        {
+          "id": "V2Q010",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 8627.5
+        },
+        {
+          "id": "V2Q021",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 7419.5
+        },
+        {
+          "id": "V2Q022",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 8595.7
+        },
+        {
+          "id": "V2Q023",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 8712.8
+        },
+        {
+          "id": "V2Q024",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 8480.0
+        },
+        {
+          "id": "V2Q025",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 5610.2
+        },
+        {
+          "id": "V2Q026",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 17440.3
+        },
+        {
+          "id": "V2Q027",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 10381.2
+        },
+        {
+          "id": "V2Q028",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 18783.3
+        },
+        {
+          "id": "V2Q029",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 15688.7
+        },
+        {
+          "id": "V2Q030",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 9533.9
+        },
+        {
+          "id": "V2Q041",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 7019.8
+        },
+        {
+          "id": "V2Q042",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 4007.7
+        },
+        {
+          "id": "V2Q043",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 8486.2
+        },
+        {
+          "id": "V2Q044",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.6666666666666666,
+          "evidence_f1": null,
+          "behavior": 0.6666666666666666,
+          "score": 0.6666666666666666,
+          "latency_ms": 6602.7
+        },
+        {
+          "id": "V2Q045",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 8369.7
+        },
+        {
+          "id": "V2Q049",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 3842.3
+        },
+        {
+          "id": "V2Q050",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 3695.9
+        },
+        {
+          "id": "V2Q051",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 3826.2
+        },
+        {
+          "id": "V2Q056",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 20286.6
+        },
+        {
+          "id": "V2Q057",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 19598.1
+        },
+        {
+          "id": "V2Q058",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 11754.9
+        },
+        {
+          "id": "V2Q059",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 20953.9
+        },
+        {
+          "id": "V2Q060",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 4232.2
+        },
+        {
+          "id": "V2Q061",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 4107.8
+        },
+        {
+          "id": "V2Q062",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 14695.5
+        },
+        {
+          "id": "V2Q071",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 3613.1
+        },
+        {
+          "id": "V2Q072",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 3333.1
+        },
+        {
+          "id": "V2Q073",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 3273.0
+        },
+        {
+          "id": "V2Q074",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 3057.1
+        },
+        {
+          "id": "V2Q075",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 7144.0
+        }
+      ]
+    },
+    {
+      "run_name": "hybrid_llm_router__anthropic_claude-sonnet-4-6__2026-11-05_172642_659360_evsanitised",
+      "synthetic": false,
+      "summary": {
+        "questions": 40,
+        "correctness_pct": 43.75,
+        "evidence_f1_pct": 10.0,
+        "behavior_pct": 55.0,
+        "overall_pct": 37.0,
+        "latency_samples": 40,
+        "mean_latency_ms": 4943.5825
+      },
+      "cost_usd": null,
+      "by_category": {
+        "direct": {
+          "questions": 10,
+          "correctness_pct": 70.0,
+          "evidence_f1_pct": 0.0,
+          "behavior_pct": null,
+          "overall_pct": 49.0,
+          "latency_samples": 10,
+          "mean_latency_ms": 3611.74
+        },
+        "financial": {
+          "questions": 7,
+          "correctness_pct": 42.86,
+          "evidence_f1_pct": 42.86,
+          "behavior_pct": null,
+          "overall_pct": 42.86,
+          "latency_samples": 7,
+          "mean_latency_ms": 5896.442857142857
+        },
+        "limitations": {
+          "questions": 5,
+          "correctness_pct": 100.0,
+          "evidence_f1_pct": null,
+          "behavior_pct": 100.0,
+          "overall_pct": 100.0,
+          "latency_samples": 5,
+          "mean_latency_ms": 2818.8399999999997
+        },
+        "organisation": {
+          "questions": 8,
+          "correctness_pct": 6.25,
+          "evidence_f1_pct": 0.0,
+          "behavior_pct": 10.0,
+          "overall_pct": 6.25,
+          "latency_samples": 8,
+          "mean_latency_ms": 2652.925
+        },
+        "two_step": {
+          "questions": 10,
+          "correctness_pct": 20.0,
+          "evidence_f1_pct": 0.0,
+          "behavior_pct": null,
+          "overall_pct": 14.0,
+          "latency_samples": 10,
+          "mean_latency_ms": 8503.32
+        }
+      },
+      "by_split": {
+        "development": {
+          "questions": 40,
+          "correctness_pct": 43.75,
+          "evidence_f1_pct": 10.0,
+          "behavior_pct": 55.0,
+          "overall_pct": 37.0,
+          "latency_samples": 40,
+          "mean_latency_ms": 4943.5825
+        }
+      },
+      "questions": [
+        {
+          "id": "V2Q001",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 2952.7
+        },
+        {
+          "id": "V2Q002",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 2929.4
+        },
+        {
+          "id": "V2Q003",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 9009.1
+        },
+        {
+          "id": "V2Q004",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 2540.6
+        },
+        {
+          "id": "V2Q005",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 2807.7
+        },
+        {
+          "id": "V2Q006",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 3365.1
+        },
+        {
+          "id": "V2Q007",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 3595.1
+        },
+        {
+          "id": "V2Q008",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 2695.6
+        },
+        {
+          "id": "V2Q009",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 3152.2
+        },
+        {
+          "id": "V2Q010",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 3069.9
+        },
+        {
+          "id": "V2Q021",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 8506.9
+        },
+        {
+          "id": "V2Q022",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 9507.4
+        },
+        {
+          "id": "V2Q023",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 3118.3
+        },
+        {
+          "id": "V2Q024",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 13721.0
+        },
+        {
+          "id": "V2Q025",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 5126.3
+        },
+        {
+          "id": "V2Q026",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 11650.3
+        },
+        {
+          "id": "V2Q027",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 6720.5
+        },
+        {
+          "id": "V2Q028",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 10630.7
+        },
+        {
+          "id": "V2Q029",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 12872.7
+        },
+        {
+          "id": "V2Q030",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 3179.1
+        },
+        {
+          "id": "V2Q041",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 2772.7
+        },
+        {
+          "id": "V2Q042",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 2624.1
+        },
+        {
+          "id": "V2Q043",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 4851.3
+        },
+        {
+          "id": "V2Q044",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.5,
+          "evidence_f1": null,
+          "behavior": 0.5,
+          "score": 0.5,
+          "latency_ms": 3173.1
+        },
+        {
+          "id": "V2Q045",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 2726.3
+        },
+        {
+          "id": "V2Q049",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 1446.9
+        },
+        {
+          "id": "V2Q050",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 1735.7
+        },
+        {
+          "id": "V2Q051",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 1893.3
+        },
+        {
+          "id": "V2Q056",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 11689.7
+        },
+        {
+          "id": "V2Q057",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 3963.4
+        },
+        {
+          "id": "V2Q058",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 9278.2
+        },
+        {
+          "id": "V2Q059",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 2158.5
+        },
+        {
+          "id": "V2Q060",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 2012.3
+        },
+        {
+          "id": "V2Q061",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 2792.6
+        },
+        {
+          "id": "V2Q062",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 9380.4
+        },
+        {
+          "id": "V2Q071",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 2099.5
+        },
+        {
+          "id": "V2Q072",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 2700.5
+        },
+        {
+          "id": "V2Q073",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 2318.1
+        },
+        {
+          "id": "V2Q074",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 2337.2
+        },
+        {
+          "id": "V2Q075",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 4638.9
+        }
+      ]
+    },
+    {
+      "run_name": "hybrid_llm_router__zai_glm-5.3__2026-11-05_172642_659360_evsanitised",
+      "synthetic": false,
+      "summary": {
+        "questions": 40,
+        "correctness_pct": 71.67,
+        "evidence_f1_pct": 51.81,
+        "behavior_pct": 56.67,
+        "overall_pct": 66.07,
+        "latency_samples": 40,
+        "mean_latency_ms": 52537.375
+      },
+      "cost_usd": null,
+      "by_category": {
+        "direct": {
+          "questions": 10,
+          "correctness_pct": 100.0,
+          "evidence_f1_pct": 80.0,
+          "behavior_pct": null,
+          "overall_pct": 94.0,
+          "latency_samples": 10,
+          "mean_latency_ms": 38841.55
+        },
+        "financial": {
+          "questions": 7,
+          "correctness_pct": 85.71,
+          "evidence_f1_pct": 85.71,
+          "behavior_pct": null,
+          "overall_pct": 85.71,
+          "latency_samples": 7,
+          "mean_latency_ms": 94234.55714285714
+        },
+        "limitations": {
+          "questions": 5,
+          "correctness_pct": 100.0,
+          "evidence_f1_pct": null,
+          "behavior_pct": 100.0,
+          "overall_pct": 100.0,
+          "latency_samples": 5,
+          "mean_latency_ms": 5000.04
+        },
+        "organisation": {
+          "questions": 8,
+          "correctness_pct": 8.33,
+          "evidence_f1_pct": 0.0,
+          "behavior_pct": 13.33,
+          "overall_pct": 8.33,
+          "latency_samples": 8,
+          "mean_latency_ms": 12892.1625
+        },
+        "two_step": {
+          "questions": 10,
+          "correctness_pct": 70.0,
+          "evidence_f1_pct": 15.44,
+          "behavior_pct": null,
+          "overall_pct": 53.63,
+          "latency_samples": 10,
+          "mean_latency_ms": 92530.01
+        }
+      },
+      "by_split": {
+        "development": {
+          "questions": 40,
+          "correctness_pct": 71.67,
+          "evidence_f1_pct": 51.81,
+          "behavior_pct": 56.67,
+          "overall_pct": 66.07,
+          "latency_samples": 40,
+          "mean_latency_ms": 52537.375
+        }
+      },
+      "questions": [
+        {
+          "id": "V2Q001",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 10292.0
+        },
+        {
+          "id": "V2Q002",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 58870.7
+        },
+        {
+          "id": "V2Q003",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 32053.4
+        },
+        {
+          "id": "V2Q004",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 22700.8
+        },
+        {
+          "id": "V2Q005",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 15798.2
+        },
+        {
+          "id": "V2Q006",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 8567.2
+        },
+        {
+          "id": "V2Q007",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 13248.3
+        },
+        {
+          "id": "V2Q008",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 10192.1
+        },
+        {
+          "id": "V2Q009",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 16781.8
+        },
+        {
+          "id": "V2Q010",
+          "category": "direct",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 199911.0
+        },
+        {
+          "id": "V2Q021",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.6666666666666666,
+          "behavior": null,
+          "score": 0.8999999999999999,
+          "latency_ms": 108903.3
+        },
+        {
+          "id": "V2Q022",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 13283.8
+        },
+        {
+          "id": "V2Q023",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 8914.0
+        },
+        {
+          "id": "V2Q024",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.2202486678507993,
+          "behavior": null,
+          "score": 0.7660746003552398,
+          "latency_ms": 24048.7
+        },
+        {
+          "id": "V2Q025",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 26606.4
+        },
+        {
+          "id": "V2Q026",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 189861.1
+        },
+        {
+          "id": "V2Q027",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 21126.6
+        },
+        {
+          "id": "V2Q028",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.6571428571428571,
+          "behavior": null,
+          "score": 0.8971428571428571,
+          "latency_ms": 111223.7
+        },
+        {
+          "id": "V2Q029",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 408258.8
+        },
+        {
+          "id": "V2Q030",
+          "category": "two_step",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": 13073.7
+        },
+        {
+          "id": "V2Q041",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 9938.3
+        },
+        {
+          "id": "V2Q042",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 45435.7
+        },
+        {
+          "id": "V2Q043",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 15182.4
+        },
+        {
+          "id": "V2Q044",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.6666666666666666,
+          "evidence_f1": null,
+          "behavior": 0.6666666666666666,
+          "score": 0.6666666666666666,
+          "latency_ms": 13985.2
+        },
+        {
+          "id": "V2Q045",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": 6697.6
+        },
+        {
+          "id": "V2Q049",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 4983.0
+        },
+        {
+          "id": "V2Q050",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 3362.0
+        },
+        {
+          "id": "V2Q051",
+          "category": "organisation",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 3553.1
+        },
+        {
+          "id": "V2Q056",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 308028.7
+        },
+        {
+          "id": "V2Q057",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 16037.2
+        },
+        {
+          "id": "V2Q058",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": 50462.1
+        },
+        {
+          "id": "V2Q059",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 7485.3
+        },
+        {
+          "id": "V2Q060",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 5194.5
+        },
+        {
+          "id": "V2Q061",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 2956.0
+        },
+        {
+          "id": "V2Q062",
+          "category": "financial",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 269478.1
+        },
+        {
+          "id": "V2Q071",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 3771.9
+        },
+        {
+          "id": "V2Q072",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 4405.9
+        },
+        {
+          "id": "V2Q073",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 2158.0
+        },
+        {
+          "id": "V2Q074",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 3402.8
+        },
+        {
+          "id": "V2Q075",
+          "category": "limitations",
+          "split": "development",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 11261.6
+        }
+      ]
+    }
+  ]
+}

@@ -129,8 +129,12 @@ REASON CODES FOR NEW (V2Q*) QUESTIONS. Use the lower-case scope codes, one per c
 upper-case legacy codes (those are only for Q01-Q20):
 - organisation_scope: the organisation is named loosely ("Oxfam" = GB or America?, "the UN", "America",
   "the government", "our partners", "the ministry").
-- funding_scope: a vague money question about a named funder with no measure/currency/period
+- funding_scope: a vague money question about an UNAMBIGUOUS funder with no measure/currency/period
   ("How much did the UK give?").
+Precedence: if the organisation name could denote more than one organisation in this snapshot (an Oxfam
+affiliate, a country name that is also an organisation name, "the UN", "the government"), the answer is
+organisation_scope even when the money measure is also unspecified; funding_scope only when the funder is
+unambiguous.
 - country_scope: the country is ambiguous ("Congo" = CD or CG?).
 For abstain on limitation questions use the matching *_unavailable code (outcomes, misuse, balances,
 identity, personal_details, forecast, coverage, exchange_rates).
