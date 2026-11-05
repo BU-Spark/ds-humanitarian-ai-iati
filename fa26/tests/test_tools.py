@@ -81,5 +81,30 @@ class ResolverTests(unittest.TestCase):
             self.assertGreaterEqual(groups.get(g, 0), 2, g)
 
 
+class CrosscheckTests(unittest.TestCase):
+    """Independent pandas/Decimal references used by notebook 07, pinned to the snapshot."""
+    @classmethod
+    def setUpClass(cls):
+        from tools import crosscheck as cc
+        cls.cc = cc; cls.t = cc.load(FA26 / "benchmark" / "snapshot")
+
+    def test_participation_duplicates_explain_relationship_counts(self):
+        self.assertEqual(self.cc.participation_duplicates(self.t), 210)   # 59,121 - 210 = 58,911
+
+    def test_wfp_commitments_mirror_expenditure(self):
+        m = self.cc.wfp_mirror(self.t)
+        self.assertEqual(m["2"], m["4"])
+        self.assertEqual(str(m["2"]["positive"]), "18037403740.15")
+
+    def test_shared_partners_zero_on_raw_refs(self):
+        self.assertEqual(self.cc.shared_partners(self.t, "oxfamgb", "wfp"), {})
+        self.assertEqual(self.cc.shared_partners(self.t, "oxfamgb", "oxfamus"), {"US-EIN-23-7069110": 49})
+
+    def test_somalia_top_funder_matches_published_number(self):
+        top = self.cc.country_top_funders(self.t, "SO", ("1",), "USD", True, 1)
+        self.assertEqual(list(top), ["XM-DAC-302 [USD]"])
+        self.assertEqual(str(top["XM-DAC-302 [USD]"]), "1203270484.23")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
