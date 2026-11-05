@@ -44,7 +44,7 @@ python fa26/retrieval/load_neo4j.py                    # load into an empty DB
 python fa26/retrieval/load_neo4j.py --reset            # wipe + reload (refuses a DB it did not fill unless --force)
 python fa26/retrieval/load_neo4j.py --env ../.env      # use another .env, e.g. Aura
 python fa26/retrieval/validate_graph.py --baseline-dir OLD_CSVS   # checks + per-publisher before/after
-python -m pytest fa26/retrieval/tests -q               # 55 tests, skipped if no DB is reachable
+python -m pytest fa26/retrieval/tests -q               # 59 tests, skipped if no DB is reachable
 ```
 
 The loader prints a table of CSV rows vs database counts and runs one
@@ -56,6 +56,14 @@ edge each.
 Every node carries `source_id` and every relationship `source_ids`, the CSV
 rows it came from as `<file>.csv:row:<n>` (data rows counted from 1): the
 citation format of the team benchmark. A collapsed edge lists all its rows.
+
+`Transaction` and `Budget` nodes keep `value` as a float and also get
+`value_cents`, an exact integer computed with `Decimal` from the raw CSV
+string. The money tools sum `value_cents` and divide by 100 once, so totals
+match a Decimal sum to the cent however many rows there are. Sub-cent digits
+in the exports are float artefacts (`770317.9300000001`), so rounding each row
+to the cent loses nothing real. `validate_graph.py` checks that the cents in
+the database add up to the CSV total exactly.
 
 ## Using the tools
 
@@ -93,7 +101,7 @@ number is traceable to IATI records. `publisher` values are the slugs
 **Money and evidence.** The three money tools (`top_funders`,
 `funding_over_time`, `transaction_totals`) report `amount` (positive
 transactions), `adjustments` (negative ones, their own category per the
-client) and `net`, as unrounded floats per currency. Every row also has
+client) and `net` per currency, summed exactly in integer cents. Every row also has
 `evidence_amount`, `evidence_adjustments` and `evidence_net`: the complete
 source-row ids behind each figure (transaction rows, their activity rows, and
 the `rel_targets_country` / `rel_transaction_edges` rows a filter used), in

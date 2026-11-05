@@ -29,6 +29,7 @@ def csv():
     act["end_year"] = act.end.where(act.end != "", act.start).str[:4].astype(int)
     act["countries"] = act.hotspot_countries.str.split("|")
     tx = _load("nodes_transactions.csv")
+    tx["value_raw"] = tx.value                      # exact decimal strings
     tx["value"] = pd.to_numeric(tx.value)
     tx["year"] = tx.date.str[:4].astype(int)
     tx["publisher"] = tx.iati_identifier.map(act.set_index("iati_identifier").publisher)

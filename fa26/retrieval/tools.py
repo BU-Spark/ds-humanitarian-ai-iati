@@ -203,13 +203,16 @@ def _run(cypher, params, note, empty_note=""):
     return _result("ok", rows, cypher, params, note)
 
 
-# Collected per group by every money query: one [tx row, activity row, link rows...]
-# list per transaction, split by sign. `ev_links` must be bound before this runs.
+# Collected per group by every money query. Sums are exact integer cents
+# (value_cents, set by the loader from the raw CSV string), divided once at the
+# end. Evidence: one [tx row, activity row, link rows...] list per transaction,
+# split by sign. `ev_links` must be bound before this runs.
 MONEY_AGG = """
-     sum(CASE WHEN t.value > 0 THEN t.value ELSE 0 END) AS amount,
-     sum(CASE WHEN t.value < 0 THEN t.value ELSE 0 END) AS adjustments,
-     sum(t.value) AS net,
+     sum(CASE WHEN t.value > 0 THEN t.value_cents ELSE 0 END) / 100.0 AS amount,
+     sum(CASE WHEN t.value < 0 THEN t.value_cents ELSE 0 END) / 100.0 AS adjustments,
+     sum(t.value_cents) / 100.0 AS net,
      count(t) AS n_transactions, sum(CASE WHEN t.value < 0 THEN 1 ELSE 0 END) AS n_adjustments,
+     count(t.value) - count(t.value_cents) AS n_missing_cents,
      collect(DISTINCT a.iati_identifier) AS acts,
      collect(CASE WHEN t.value > 0 THEN [t.source_id, a.source_id] + ev_links END) AS ev_amount,
      collect(CASE WHEN t.value < 0 THEN [t.source_id, a.source_id] + ev_links END) AS ev_adjustments,
@@ -220,6 +223,10 @@ def _money(out, tables):
     """Flatten the ev_* columns into sorted, de-duplicated evidence lists. A figure
     with no contributing rows (e.g. adjustments of 0) cites the searched tables,
     the way the benchmark cites an empty match; so does a no_results answer."""
+    if sum(r.pop("n_missing_cents") for r in out["rows"]):
+        return _result("error", [], out["cypher"], out["params"],
+                       "this graph was loaded before value_cents existed, so sums would read 0; "
+                       "reload it with the current load_neo4j.py")
     manifest = sorted(f"manifest:{t}" for t in tables)
     for r in out["rows"]:
         for k in ("amount", "adjustments", "net"):
@@ -396,7 +403,7 @@ WITH currency, collect({
        all_refs: [x IN orgs | x.ref], currency: currency,
        amount: amount, adjustments: adjustments, net: net,
        n_transactions: n_transactions, n_adjustments: n_adjustments,
-       ev_amount: ev_amount, ev_adjustments: ev_adjustments, ev_net: ev_net,
+       ev_amount: ev_amount, ev_adjustments: ev_adjustments, ev_net: ev_net, n_missing_cents: n_missing_cents,
        first_date: toString(first_date), last_date: toString(last_date),
        publishers: publishers, n_activities: size(acts), activity_ids: acts[0..$max_ids]}) AS rows
 ORDER BY currency
@@ -406,7 +413,7 @@ RETURN r.funder_id AS funder_id, r.funder AS funder, r.all_refs AS all_refs, r.c
        r.n_transactions AS n_transactions, r.n_adjustments AS n_adjustments, r.first_date AS first_date,
        r.last_date AS last_date, r.publishers AS publishers, r.n_activities AS n_activities,
        r.activity_ids AS activity_ids, r.ev_amount AS ev_amount, r.ev_adjustments AS ev_adjustments,
-       r.ev_net AS ev_net
+       r.ev_net AS ev_net, r.n_missing_cents AS n_missing_cents
 LIMIT $max_rows
 """
 
@@ -493,7 +500,8 @@ WITH CASE $by WHEN 'quarter' THEN toString(t.date.year) + '-Q' + toString(t.date
      a, t, coalesce(tr.source_ids, []) AS ev_links
 WITH period, a.publisher AS publisher, t.currency AS currency,""" + MONEY_AGG + """
 RETURN period, publisher, currency, amount, adjustments, net, n_transactions, n_adjustments,
-       size(acts) AS n_activities, acts[0..$max_ids] AS activity_ids, ev_amount, ev_adjustments, ev_net
+       size(acts) AS n_activities, acts[0..$max_ids] AS activity_ids, ev_amount, ev_adjustments, ev_net,
+       n_missing_cents
 ORDER BY period, publisher, currency
 LIMIT $limit
 """
@@ -556,7 +564,8 @@ WITH CASE WHEN $by_publisher THEN a.publisher END AS publisher, t.currency AS cu
      a, t, coalesce(tr.source_ids, []) AS ev_links
 WITH publisher, currency,""" + MONEY_AGG + """
 RETURN publisher, currency, amount, adjustments, net, n_transactions, n_adjustments,
-       size(acts) AS n_activities, acts[0..$max_ids] AS activity_ids, ev_amount, ev_adjustments, ev_net
+       size(acts) AS n_activities, acts[0..$max_ids] AS activity_ids, ev_amount, ev_adjustments, ev_net,
+       n_missing_cents
 ORDER BY publisher, currency
 LIMIT $limit
 """
