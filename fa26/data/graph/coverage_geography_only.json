@@ -1,0 +1,129 @@
+{
+  "filters": {
+    "theme_applied": false,
+    "include_general_emergency": false
+  },
+  "counts": {
+    "total_seen": 2858,
+    "dropped_geography": 1869,
+    "kept": 967,
+    "kept_via_geo_only": 967,
+    "dropped_duplicate": 22
+  },
+  "per_publisher_funnel": {
+    "oxfamgb": {
+      "seen": 1113,
+      "dropped_geography": 432,
+      "kept_via_geo_only": 681
+    },
+    "oxfamus": {
+      "seen": 379,
+      "dropped_geography": 333,
+      "kept_via_geo_only": 46
+    },
+    "wfp": {
+      "seen": 1344,
+      "dropped_geography": 1104,
+      "kept_via_geo_only": 240
+    }
+  },
+  "top_dropped_sector_codes": {},
+  "activities_per_publisher_per_hotspot": {
+    "oxfamgb": {
+      "AF": 37,
+      "CD": 108,
+      "HT": 96,
+      "LB": 42,
+      "ML": 45,
+      "MM": 47,
+      "NG": 28,
+      "PS": 65,
+      "SD": 1,
+      "SO": 38,
+      "SS": 80,
+      "YE": 94
+    },
+    "oxfamus": {
+      "HT": 15,
+      "NG": 4,
+      "ML": 4,
+      "SS": 4,
+      "YE": 4,
+      "SO": 3,
+      "SD": 10,
+      "PS": 2
+    },
+    "wfp": {
+      "CD": 17,
+      "MM": 21,
+      "AF": 11,
+      "SD": 15,
+      "SO": 26,
+      "SS": 22,
+      "HT": 22,
+      "LB": 19,
+      "PS": 14,
+      "YE": 20,
+      "MG": 20,
+      "ML": 12,
+      "NG": 21
+    }
+  },
+  "activities_per_publisher_per_start_year": {
+    "oxfamgb": {
+      "2006": 1,
+      "2007": 6,
+      "2008": 11,
+      "2009": 41,
+      "2010": 53,
+      "2011": 67,
+      "2012": 56,
+      "2013": 45,
+      "2014": 55,
+      "2015": 42,
+      "2016": 37,
+      "2017": 56,
+      "2018": 34,
+      "2019": 25,
+      "2020": 24,
+      "2021": 18,
+      "2022": 35,
+      "2023": 37,
+      "2024": 16,
+      "2025": 14,
+      "2026": 8
+    },
+    "oxfamus": {
+      "1970": 2,
+      "2017": 38,
+      "2018": 5,
+      "2019": 1
+    },
+    "wfp": {
+      "2018": 48,
+      "2019": 66,
+      "2020": 12,
+      "2021": 10,
+      "2022": 9,
+      "2023": 51,
+      "2024": 29,
+      "2026": 7,
+      "2027": 8
+    }
+  },
+  "enrichment_coverage": {
+    "activities_with_budgets": 967,
+    "activities_with_emergency_links": 0,
+    "activities_with_sdg_tags": 240,
+    "activities_with_policy_markers": 0,
+    "distinct_emergencies": 0
+  },
+  "review": {
+    "queue_size": 0,
+    "by_reason": {},
+    "decisions_applied": {
+      "include": 0,
+      "exclude": 0
+    }
+  }
+}

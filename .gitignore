@@ -1,3 +1,13 @@
+# Generated graph data
+**/data/graph/*.csv
+**/data/graph/*.bak
 **/data/raw/
-.venv/
+
+# Python
 __pycache__/
+*.pyc
+.venv/
+venv/
+
+# Temporary files
+*.tmp
