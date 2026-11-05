@@ -1,4 +1,6 @@
-"""Parameterised Cypher templates (schema v0.1, notebook 04 v2 load with source_id).
+"""Parameterised Cypher templates for the team graph schema (fa26/retrieval/schema_prototype.py, loaded by
+fa26/retrieval/load_neo4j.py): typed dates (Activity.start_date, Transaction.date), float values, boolean
+is_hotspot, (Organisation)-[:PROVIDES]->(Transaction), node `source_id` and relationship `source_ids` lists.
 
 Every template returns rows with exactly three columns:
   key       group label (publisher slug, org ref, role code, sdg key, ...) or 'count' / 'total'
@@ -13,24 +15,25 @@ text2cypher_eval.guard_query passes and no value can inject Cypher.
 from __future__ import annotations
 import re
 
-PUBLISHERS = {"oxfamgb": "GB-CHC-202918", "oxfamus": "US-EIN-237069110", "wfp": "XM-DAC-41140"}
+PUBLISHERS = {"oxfamgb": "GB-CHC-202918", "oxfamus": "US-EIN-23-7069110", "wfp": "XM-DAC-41140"}
 TX_TYPES = {"1": "incoming funds", "2": "outgoing commitment", "3": "disbursement", "4": "expenditure"}
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
-_ACT_START = "CASE WHEN a.start_actual <> '' THEN a.start_actual ELSE a.start_planned END"
+# relationship evidence: each edge carries a list of CSV row ids; flatten the collected lists
+_FLAT = "reduce(acc = [], l IN collect(DISTINCT {rel}.source_ids) | acc + coalesce(l, []))"  # __FLAT_<rel>__ in templates
 
 TOOLS: dict[str, dict] = {
     # ---------------------------------------------------------------- activities
     "activities_per_publisher": {
         "description": "Number of distinct activities per publisher, optionally restricted to activities whose start date "
-                       "(start_actual, else start_planned) falls in [start_from, start_to). Omits publishers with zero matches.",
+                       "(start_actual, else start_planned; stored as Activity.start_date) falls in [start_from, start_to). Omits publishers with zero matches.",
         "params": {"publisher": {"type": "enum", "values": list(PUBLISHERS), "required": False},
                    "start_from": {"type": "date", "required": False}, "start_to": {"type": "date", "required": False}},
         "cypher": f"""
 MATCH (a:Activity)
 WHERE ($publisher IS NULL OR a.publisher = $publisher)
-  AND ($start_from IS NULL OR {_ACT_START} >= $start_from)
-  AND ($start_to IS NULL OR {_ACT_START} < $start_to)
+  AND ($start_from IS NULL OR a.start_date >= date($start_from))
+  AND ($start_to IS NULL OR a.start_date < date($start_to))
 RETURN a.publisher AS key, count(DISTINCT a.iati_identifier) AS value, collect(DISTINCT a.source_id) AS evidence
 ORDER BY key""",
         "coverage": "Counts retained activities in the snapshot only; the hunger filter decides what is retained.",
@@ -42,17 +45,17 @@ ORDER BY key""",
         "cypher": """
 MATCH (a:Activity)-[r:TARGETS]->(c:Country {code: $country_code})
 RETURN a.publisher AS key, count(DISTINCT a.iati_identifier) AS value,
-       collect(DISTINCT r.source_id) + collect(DISTINCT a.source_id) AS evidence
+       __FLAT_r__ + collect(DISTINCT a.source_id) AS evidence
 ORDER BY key""",
         "coverage": "An activity targeting several countries is counted once per country; percentages are ignored.",
     },
     "hotspot_countries_per_publisher": {
-        "description": "Number of distinct hunger-hotspot countries each publisher targets (TARGETS with is_hotspot = 'true').",
+        "description": "Number of distinct hunger-hotspot countries each publisher targets (TARGETS with is_hotspot = true).",
         "params": {},
         "cypher": """
-MATCH (a:Activity)-[r:TARGETS {is_hotspot: 'true'}]->(c:Country)
+MATCH (a:Activity)-[r:TARGETS {is_hotspot: true}]->(c:Country)
 RETURN a.publisher AS key, count(DISTINCT c.code) AS value,
-       collect(DISTINCT r.source_id) + collect(DISTINCT a.source_id) AS evidence
+       __FLAT_r__ + collect(DISTINCT a.source_id) AS evidence
 ORDER BY key""",
         "coverage": "Hotspot list is the FAO-WFP June-November 2026 outlook as encoded in the snapshot.",
     },
@@ -73,15 +76,16 @@ ORDER BY key""",
         "cypher": """
 OPTIONAL MATCH (a:Activity {publisher: $publisher})-[r:CLASSIFIED_AS]->(s:Sector {sector_key: $sector_key})
 RETURN 'count' AS key, count(DISTINCT a.iati_identifier) AS value,
-       [x IN collect(DISTINCT r.source_id) WHERE x IS NOT NULL] + [x IN collect(DISTINCT a.source_id) WHERE x IS NOT NULL] AS evidence""",
+       __FLAT_r__ + [x IN collect(DISTINCT a.source_id) WHERE x IS NOT NULL] AS evidence""",
         "coverage": "Sector vocabularies differ by publisher (WFP uses DAC vocabulary 1, Oxfam GB vocabulary 99).",
     },
     "latest_update_per_publisher": {
         "description": "Latest publisher-reported last_updated calendar date (YYYY-MM-DD) per publisher.",
         "params": {},
         "cypher": """
-MATCH (a:Activity) WHERE a.last_updated <> ''
-RETURN a.publisher AS key, max(substring(a.last_updated, 0, 10)) AS value, collect(DISTINCT a.source_id) AS evidence
+MATCH (a:Activity) WHERE a.last_updated IS NOT NULL
+WITH a.publisher AS key, max(a.last_updated) AS latest, collect(DISTINCT a.source_id) AS evidence
+RETURN key, toString(date(latest)) AS value, evidence
 ORDER BY key""",
         "coverage": "This is the publisher's own update stamp, not the snapshot download date.",
     },
@@ -91,7 +95,7 @@ ORDER BY key""",
         "cypher": """
 MATCH (a:Activity)-[r:LOCATED_AT]->(:Location)
 RETURN a.publisher AS key, count(DISTINCT a.iati_identifier) AS value,
-       collect(DISTINCT r.source_id) + collect(DISTINCT a.source_id) AS evidence
+       __FLAT_r__ + collect(DISTINCT a.source_id) AS evidence
 ORDER BY key""",
         "coverage": "A location is not necessarily a beneficiary location.",
     },
@@ -100,7 +104,7 @@ ORDER BY key""",
         "params": {},
         "cypher": """
 MATCH (a:Activity)-[r:CONTRIBUTES_TO]->(s:SDG)
-RETURN s.sdg_key AS key, count(DISTINCT a.iati_identifier) AS value, collect(DISTINCT r.source_id) AS evidence
+RETURN s.sdg_key AS key, count(DISTINCT a.iati_identifier) AS value, __FLAT_r__ AS evidence
 ORDER BY key""",
         "coverage": "An SDG tag is a publisher claim, not evidence of achieved results.",
     },
@@ -111,7 +115,7 @@ ORDER BY key""",
         "params": {},
         "cypher": """
 MATCH (o:Organisation)-[p:PARTICIPATES_IN]->(:Activity)
-RETURN p.role AS key, count(DISTINCT o.ref) AS value, collect(DISTINCT p.source_id) AS evidence
+RETURN p.role AS key, count(DISTINCT o.ref) AS value, __FLAT_p__ AS evidence
 ORDER BY key""",
         "coverage": "Role codes follow the IATI OrganisationRole codelist.",
     },
@@ -122,7 +126,7 @@ ORDER BY key""",
         "cypher": """
 MATCH (o:Organisation)-[p:PARTICIPATES_IN]->(a:Activity)
 WITH o, collect(DISTINCT a.publisher) AS pubs, collect(DISTINCT a.iati_identifier) AS acts,
-     collect(DISTINCT p.source_id) + collect(DISTINCT a.source_id) AS ev
+     __FLAT_p__ + collect(DISTINCT a.source_id) AS ev
 WHERE size(pubs) >= $min_publishers
 RETURN o.ref AS key, size(acts) AS value, ev AS evidence
 ORDER BY key""",
@@ -136,10 +140,10 @@ ORDER BY key""",
                    "currency": {"type": "enum", "values": ["USD", "GBP"], "required": False},
                    "limit": {"type": "int", "required": False, "default": 10, "min": 1, "max": 50}},
         "cypher": """
-MATCH (a:Activity {publisher: $publisher})-[:HAS_TRANSACTION]->(t:Transaction {type: $type_code})-[pb:PROVIDED_BY]->(o:Organisation)
+MATCH (a:Activity {publisher: $publisher})-[:HAS_TRANSACTION]->(t:Transaction {type: $type_code})<-[pb:PROVIDES]-(o:Organisation)
 WHERE $currency IS NULL OR t.currency = $currency
-WITH o, t.currency AS currency, sum(t.value_num) AS total,
-     collect(DISTINCT t.source_id) + collect(DISTINCT pb.source_id) + collect(DISTINCT a.source_id) AS ev
+WITH o, t.currency AS currency, sum(t.value) AS total,
+     collect(DISTINCT t.source_id) + __FLAT_pb__ + collect(DISTINCT a.source_id) AS ev
 RETURN o.ref + ' [' + currency + ']' AS key, total AS value, ev AS evidence
 ORDER BY total DESC LIMIT $limit""",
         "coverage": "Sums signed values per currency with no conversion; a provider published under several refs appears several times.",
@@ -153,7 +157,7 @@ ORDER BY total DESC LIMIT $limit""",
 MATCH (o:Organisation)-[p:PARTICIPATES_IN]->(a:Activity)
 WHERE a.publisher IN [$publisher_a, $publisher_b]
 WITH o, collect(DISTINCT a.publisher) AS pubs, collect(DISTINCT a.iati_identifier) AS acts,
-     collect(DISTINCT p.source_id) + collect(DISTINCT a.source_id) AS ev
+     __FLAT_p__ + collect(DISTINCT a.source_id) AS ev
 WHERE $publisher_a IN pubs AND $publisher_b IN pubs
 RETURN o.ref AS key, size(acts) AS value, ev AS evidence
 ORDER BY value DESC, key""",
@@ -169,8 +173,8 @@ ORDER BY value DESC, key""",
                    "date_from": {"type": "date", "required": False}, "date_to": {"type": "date", "required": False}},
         "cypher": """
 OPTIONAL MATCH (a:Activity {publisher: $publisher})-[:HAS_TRANSACTION]->(t:Transaction {type: $type_code, currency: $currency})
-WHERE ($date_from IS NULL OR t.date >= $date_from) AND ($date_to IS NULL OR t.date < $date_to)
-RETURN 'total' AS key, coalesce(sum(t.value_num), 0) AS value,
+WHERE ($date_from IS NULL OR t.date >= date($date_from)) AND ($date_to IS NULL OR t.date < date($date_to))
+RETURN 'total' AS key, coalesce(sum(t.value), 0) AS value,
        [x IN collect(DISTINCT t.source_id) WHERE x IS NOT NULL] + [x IN collect(DISTINCT a.source_id) WHERE x IS NOT NULL] AS evidence""",
         "coverage": "One type and one currency only; never mixes commitments, disbursements or currencies.",
     },
@@ -181,8 +185,8 @@ RETURN 'total' AS key, coalesce(sum(t.value_num), 0) AS value,
                    "currency": {"type": "enum", "values": ["USD", "GBP"], "required": True}},
         "cypher": """
 MATCH (a:Activity {publisher: $publisher})-[:HAS_TRANSACTION]->(t:Transaction {type: $type_code, currency: $currency})
-WHERE t.date <> ''
-RETURN substring(t.date, 0, 4) AS key, sum(t.value_num) AS value,
+WHERE t.date IS NOT NULL
+RETURN toString(t.date.year) AS key, sum(t.value) AS value,
        collect(DISTINCT t.source_id) + collect(DISTINCT a.source_id) AS evidence
 ORDER BY key""",
         "coverage": "Years are taken from transaction-date, not value-date.",
@@ -192,7 +196,7 @@ ORDER BY key""",
         "params": {},
         "cypher": """
 MATCH (a:Activity)-[:HAS_TRANSACTION]->(t:Transaction)
-WHERE t.value_num < 0
+WHERE t.value < 0
 RETURN a.publisher AS key, count(t) AS value, collect(DISTINCT t.source_id) + collect(DISTINCT a.source_id) AS evidence
 ORDER BY key""",
         "coverage": "Only 3% of negatives are exact reversals; most are partial adjustments.",
@@ -205,10 +209,13 @@ ORDER BY key""",
                    "currency": {"type": "enum", "values": ["USD", "GBP"], "required": True}},
         "cypher": """
 OPTIONAL MATCH (b:Budget {type: $type_code, status: $status_code, currency: $currency})
-RETURN 'total' AS key, coalesce(sum(toFloat(b.value)), 0) AS value, [x IN collect(DISTINCT b.source_id) WHERE x IS NOT NULL] AS evidence""",
+RETURN 'total' AS key, coalesce(sum(b.value), 0) AS value, [x IN collect(DISTINCT b.source_id) WHERE x IS NOT NULL] AS evidence""",
         "coverage": "Budget type '1' original / '2' revised; status '1' indicative / '2' committed.",
     },
 }
+
+for _t in TOOLS.values():  # expand relationship-evidence placeholders
+    _t["cypher"] = re.sub(r"__FLAT_(\w+)__", lambda m: _FLAT.format(rel=m.group(1)), _t["cypher"])
 
 MANIFEST_SCOPE = {  # tables to cite when a scalar template finds no rows (benchmark convention)
     "count_activities_by_sector": ["rel_classified_as.csv", "nodes_activities.csv"],
