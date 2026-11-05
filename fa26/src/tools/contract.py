@@ -105,6 +105,25 @@ def invalid_reasons(reasons, vocabulary) -> list[str]:
     return [r for r in (reasons or []) if r not in vocab]
 
 
+SCOPE_PRIORITY = ("country_scope", "organisation_scope", "funding_scope")
+
+
+def single_v2_reason(reasons, status="clarify"):
+    """Benchmark v2 expects exactly one reason per clarify/abstain on V2Q* questions. Drop the legacy
+    upper-case codes when a v2 code is present, and keep the most specific scope code when several are
+    given (country beats organisation beats funding: an ambiguous place name is flagged only when the
+    model saw one, so it is the most specific signal; a vague organisation beats a vague money measure). Abstain keeps its first *_unavailable code."""
+    rs = [r for r in (reasons or []) if r]
+    v2 = [r for r in rs if r.islower()]
+    if not v2:
+        return rs
+    if status == "clarify":
+        for code in SCOPE_PRIORITY:
+            if code in v2:
+                return [code]
+    return [v2[0]]
+
+
 V2_REASON_GUIDE = """
 REASON CODES FOR NEW (V2Q*) QUESTIONS. Use the lower-case scope codes, one per clarify, never the
 upper-case legacy codes (those are only for Q01-Q20):
@@ -115,8 +134,9 @@ upper-case legacy codes (those are only for Q01-Q20):
 - country_scope: the country is ambiguous ("Congo" = CD or CG?).
 For abstain on limitation questions use the matching *_unavailable code (outcomes, misuse, balances,
 identity, personal_details, forecast, coverage, exchange_rates).
+Give EXACTLY ONE reason code per V2Q* clarify or abstain; never add the legacy upper-case codes to it.
 """.strip()
 
 
 __all__ = ["valid_evidence_id", "clean_evidence", "evidence_error", "scalar_kind", "normalise_facts",
-           "invalid_reasons", "V1_REASONS", "V2_REASON_GUIDE", "manifest_files", "SCALAR_KEYS"]
+           "invalid_reasons", "single_v2_reason", "SCOPE_PRIORITY", "V1_REASONS", "V2_REASON_GUIDE", "manifest_files", "SCALAR_KEYS"]

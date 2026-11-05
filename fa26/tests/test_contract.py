@@ -6,7 +6,7 @@ from pathlib import Path
 FA26 = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(FA26 / "src"))
 from tools.contract import (clean_evidence, evidence_error, invalid_reasons, normalise_facts,  # noqa: E402
-                            scalar_kind, valid_evidence_id)
+                            scalar_kind, single_v2_reason, valid_evidence_id)
 
 
 class EvidenceTests(unittest.TestCase):
@@ -57,6 +57,15 @@ class KeyTests(unittest.TestCase):
 
 
 class ReasonTests(unittest.TestCase):
+    def test_single_v2_reason(self):
+        self.assertEqual(single_v2_reason(["organisation_scope", "FUNDING_DEFINITION_REQUIRED", "PERIOD_REQUIRED"]), ["organisation_scope"])
+        self.assertEqual(single_v2_reason(["funding_scope", "organisation_scope"]), ["organisation_scope"])
+        self.assertEqual(single_v2_reason(["country_scope", "organisation_scope"]), ["country_scope"])
+        self.assertEqual(single_v2_reason(["country_scope", "funding_scope"]), ["country_scope"])
+        self.assertEqual(single_v2_reason(["outcomes_unavailable", "coverage_unavailable"], status="abstain"), ["outcomes_unavailable"])
+        legacy = ["FUNDING_DEFINITION_REQUIRED", "CURRENCY_BASIS_REQUIRED", "PERIOD_REQUIRED"]
+        self.assertEqual(single_v2_reason(legacy), legacy)      # Q01-Q20 style lists untouched
+
     def test_invalid_reasons(self):
         vocab = ["organisation_scope", "funding_scope", "NEEDS_DATA_MISSING"]
         self.assertEqual(invalid_reasons(["organisation_scope", "ORG_AMBIGUOUS"], vocab), ["ORG_AMBIGUOUS"])
