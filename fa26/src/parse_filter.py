@@ -1,5 +1,5 @@
 """
-02_parse_and_filter.py -- Parse IATI activity XML into graph-ready CSVs (v0.3).
+parse_filter.py -- Parse IATI activity XML into graph-ready CSVs (v0.3).
 
 Keeps an activity if BOTH are true:
   (a) geography: a recipient-country (activity or transaction level) is a

@@ -4,60 +4,70 @@
     "include_general_emergency": false
   },
   "counts": {
-    "total_seen": 2840,
-    "dropped_geography": 1863,
-    "dropped_theme_no_signal": 299,
-    "kept": 505,
-    "kept_via_keyword": 430,
+    "total_seen": 2858,
+    "dropped_geography": 1869,
+    "dropped_theme_no_signal": 398,
+    "kept": 439,
+    "kept_via_keyword_weak": 124,
+    "kept_via_keyword": 203,
+    "review_exclude": 6,
+    "dropped_by_review": 6,
     "dropped_duplicate": 22,
+    "kept_via_sdg": 11,
     "kept_via_sector": 75,
-    "dropped_theme_sector_no_match": 151
+    "kept_via_keyword_over_sector": 26,
+    "dropped_theme_sector_no_match": 124
   },
   "per_publisher_funnel": {
     "oxfamgb": {
-      "seen": 1105,
-      "dropped_geography": 429,
-      "dropped_theme_no_signal": 264,
-      "kept_via_keyword": 412
+      "seen": 1113,
+      "dropped_geography": 432,
+      "dropped_theme_no_signal": 359,
+      "kept_via_keyword_weak": 117,
+      "kept_via_keyword": 199,
+      "dropped_by_review": 6
     },
     "oxfamus": {
       "seen": 379,
       "dropped_geography": 333,
-      "kept_via_keyword": 11,
+      "kept_via_keyword": 4,
+      "kept_via_keyword_weak": 7,
       "dropped_theme_no_signal": 35
     },
     "wfp": {
-      "seen": 1334,
-      "dropped_geography": 1101,
+      "seen": 1344,
+      "dropped_geography": 1104,
+      "kept_via_sdg": 11,
+      "dropped_theme_no_signal": 4,
       "kept_via_sector": 75,
-      "dropped_theme_sector_no_match": 151,
-      "kept_via_keyword": 7
+      "kept_via_keyword_over_sector": 26,
+      "dropped_theme_sector_no_match": 124
     }
   },
   "top_dropped_sector_codes": {
     "oxfamgb": {},
     "oxfamus": {},
     "wfp": {
-      "1:72050": 78,
-      "1:73010": 31,
+      "1:72050": 77,
       "1:91010": 23,
-      "1:74020": 19
+      "1:74020": 13,
+      "1:73010": 11
     }
   },
   "activities_per_publisher_per_hotspot": {
     "oxfamgb": {
-      "AF": 26,
-      "CD": 38,
-      "HT": 57,
-      "LB": 20,
-      "ML": 29,
-      "MM": 26,
-      "NG": 25,
-      "PS": 44,
+      "AF": 15,
+      "CD": 27,
+      "HT": 33,
+      "LB": 5,
+      "ML": 23,
+      "MM": 21,
+      "NG": 22,
+      "PS": 39,
       "SD": 1,
-      "SO": 29,
-      "SS": 57,
-      "YE": 60
+      "SO": 30,
+      "SS": 49,
+      "YE": 51
     },
     "oxfamus": {
       "HT": 1,
@@ -68,65 +78,73 @@
       "YE": 1
     },
     "wfp": {
-      "AF": 4,
-      "MM": 10,
-      "SD": 6,
-      "SO": 6,
-      "SS": 6,
-      "HT": 7,
+      "CD": 9,
+      "MM": 14,
+      "AF": 7,
+      "SD": 7,
+      "SO": 11,
+      "SS": 8,
+      "HT": 10,
       "LB": 7,
-      "PS": 3,
-      "YE": 8,
-      "CD": 5,
+      "PS": 5,
+      "YE": 10,
       "MG": 6,
-      "ML": 5,
-      "NG": 9
+      "ML": 6,
+      "NG": 12
     }
   },
   "activities_per_publisher_per_start_year": {
     "oxfamgb": {
-      "2006": 1,
-      "2007": 3,
-      "2008": 6,
-      "2009": 26,
-      "2010": 35,
-      "2011": 41,
-      "2012": 40,
-      "2013": 23,
-      "2014": 29,
-      "2015": 20,
-      "2016": 23,
-      "2017": 36,
-      "2018": 15,
-      "2019": 16,
-      "2020": 15,
-      "2021": 11,
-      "2022": 24,
-      "2023": 29,
-      "2024": 7,
-      "2025": 10,
-      "2026": 2
+      "2007": 1,
+      "2008": 4,
+      "2009": 19,
+      "2010": 29,
+      "2011": 34,
+      "2012": 29,
+      "2013": 15,
+      "2014": 21,
+      "2015": 17,
+      "2016": 19,
+      "2017": 29,
+      "2018": 10,
+      "2019": 11,
+      "2020": 8,
+      "2021": 9,
+      "2022": 18,
+      "2023": 24,
+      "2024": 4,
+      "2025": 9,
+      "2026": 6
     },
     "oxfamus": {
       "2017": 10,
       "2018": 1
     },
     "wfp": {
-      "2018": 18,
-      "2019": 24,
-      "2020": 5,
-      "2021": 5,
-      "2022": 3,
-      "2023": 16,
-      "2024": 10,
-      "2026": 1
+      "2018": 24,
+      "2019": 29,
+      "2020": 6,
+      "2021": 6,
+      "2022": 5,
+      "2023": 22,
+      "2024": 13,
+      "2026": 3,
+      "2027": 4
     }
   },
   "enrichment_coverage": {
-    "activities_with_budgets": 505,
+    "activities_with_budgets": 439,
     "activities_with_emergency_links": 0,
-    "activities_with_sdg_tags": 82,
+    "activities_with_sdg_tags": 112,
     "activities_with_policy_markers": 0,
     "distinct_emergencies": 0
+  },
+  "review": {
+    "queue_size": 0,
+    "by_reason": {},
+    "decisions_applied": {
+      "include": 0,
+      "exclude": 6
+    }
   }
 }
