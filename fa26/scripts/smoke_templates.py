@@ -96,10 +96,9 @@ def main():
     subprocess.run([sys.executable, str(FA26 / "benchmark" / "score.py"), str(out),
                     str(FA26 / "benchmark" / "runs" / "sqlite_baseline.json"), "--output", str(results)], check=True)
     print((results / "comparison.md").read_text())
-    details = json.loads((results / "details.json").read_text())
-    runs = details["runs"] if isinstance(details, dict) and "runs" in details else details
-    ours = [r for r in runs if "templates_manual" in json.dumps(r)[:300]]
-    overall = ours[0]["summary"]["overall"] if ours and "summary" in ours[0] else None
+    runs = json.loads((results / "details.json").read_text())["runs"]
+    ours = [r for r in runs if r["summary"]["run_name"].startswith("templates_manual")]
+    overall = ours[0]["summary"]["overall_pct"] if ours else None
     if failed or (overall is not None and overall < 100):
         print("SMOKE FAILED", {"errors": failed, "overall": overall}); sys.exit(1)
     print("SMOKE OK")
