@@ -565,7 +565,8 @@ def run(publisher_filter=None, apply_theme=True):
     # ------------------------------------------------------------- write --
     def dump(name, rows, fields):
         with open(GRAPH_DIR / name, "w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore",
+                               lineterminator="\n")
             w.writeheader()
             w.writerows(rows)
         print(f"  {name:<28} {len(rows):>7} rows")

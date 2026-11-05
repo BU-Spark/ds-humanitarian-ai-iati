@@ -331,8 +331,11 @@ activities are kept when they target a hotspot country **and** carry
 hunger-related sector coding (DAC / humanitarian cluster codes / SDG 2), with
 keyword matching for publishers that use their own sector vocabularies. The
 `match_basis` field on each activity records which: `sector`, `sdg`,
-`keyword` (specific hunger terms) or `keyword_weak` (only broad terms such as
-"food" or "agriculture" -- kept but worth reviewing).
+`keyword` (specific hunger terms), `keyword_over_sector` (strong hunger terms
+overruling non-hunger sector codes) or `keyword_weak` (only broad terms such
+as "food" or "agriculture"). `confidence` grades these high / medium / low,
+and `match_terms` lists the words that matched. The filter favours recall:
+doubtful activities are kept and marked low confidence rather than dropped.
 
 **Caveats:** publisher coverage and coding practices differ (WFP: DAC-coded,
 2018+; Oxfam GB: own sector vocabulary, 2006+); monetary values are not
