@@ -9,3 +9,10 @@ langchain-openai
 langchain-anthropic
 neo4j>=5.20
 python-dotenv
+# retrieval layer (fa26/retrieval): see fa26/retrieval/requirements.txt
+rapidfuzz
+# summer prototype app (fa26/app.py, Hugging Face Space)
+gradio==6.20.0
+pyvis
+plotly
+spaces
