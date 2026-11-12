@@ -38,6 +38,18 @@ IATI_BENCHMARK_BUNDLE=<that dir> caffeinate -dims jupyter nbconvert --to noteboo
 
 Tune only on the development split; the first held-out run is frozen (see `benchmark/v2/README.md`).
 
+## Ask tab (the engine as a module)
+
+`fa26/src/ask.py` is notebook 06's router as an importable engine (`Engine().ask(question)` returns the
+benchmark answer shape plus tool, arguments, query, latency; `evidence_rows()` returns the cited snapshot rows).
+`fa26/ask_app.py` is a minimal Gradio page on top of it:
+
+```bash
+conda activate iati && pip install gradio
+python fa26/ask_app.py                         # http://127.0.0.1:7861, model anthropic/claude-sonnet-4-6
+IATI_ASK_MODEL=zai/glm-5.3 python fa26/ask_app.py
+```
+
 ## Environment
 
 Use a dedicated conda env so project packages (langgraph, openai 3.x) do not collide with other work in `base`:
