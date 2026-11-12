@@ -15,6 +15,7 @@ retrieval/
   validate_graph.py   post-load checks: constraints, orphans, required properties, source ids
   schema_alignment.md differences from George's schema v0.1 and what to decide
   funding_definition.md which transaction type counts as "funding", why, and its caveats
+  findings_negatives.md what negative transactions do in this data, and what is still unknown
   org_duplicates.csv  report for the pipeline team (64 pairs, 41 groups)
   findings.md         Phase 1 baseline review of the prototype
   tests/              pytest, expected values recomputed from the CSVs with pandas
