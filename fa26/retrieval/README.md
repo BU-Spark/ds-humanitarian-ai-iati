@@ -13,6 +13,8 @@ retrieval/
   resolve_entity.py   text -> graph IDs, plus the duplicate-organisation report
   tools.py            the five query tools
   validate_graph.py   post-load checks: constraints, orphans, required properties, source ids
+  schema_export.py    the loaded graph's schema as XML, for the model's prompt
+  schema.xml          its output for the benchmark snapshot graph (regenerate after a reload)
   schema_alignment.md differences from George's schema v0.1 and what to decide
   funding_definition.md which transaction type counts as "funding", why, and its caveats
   findings_negatives.md what negative transactions do in this data, and what is still unknown
@@ -46,7 +48,7 @@ python fa26/retrieval/load_neo4j.py                    # load into an empty DB
 python fa26/retrieval/load_neo4j.py --reset            # wipe + reload (refuses a DB it did not fill unless --force)
 python fa26/retrieval/load_neo4j.py --env ../.env      # use another .env, e.g. Aura
 python fa26/retrieval/validate_graph.py --baseline-dir OLD_CSVS   # checks + per-publisher before/after
-python -m pytest fa26/retrieval/tests -q               # 59 tests, skipped if no DB is reachable
+python -m pytest fa26/retrieval/tests -q               # 65 tests, skipped if no DB is reachable
 ```
 
 The loader prints a table of CSV rows vs database counts and runs one
@@ -191,6 +193,31 @@ they are the same organisation or its agencies); `match.parent` is set when
 the match is itself an agency. `python retrieval/resolve_entity.py --demo`
 prints the brief's examples; `--report-duplicates` regenerates
 `org_duplicates.csv`.
+
+## Schema for the model
+
+`schema_export.py` writes the schema of the loaded graph as XML: node labels
+with their key, every property with its type, the values of small string
+properties (codes shown as `1=Incoming Funds`), relationship directions with
+counts, and seven rules (the funding rule, money, dates, citations, organisation
+refs, scope, how to read the value lists). Structure, types, counts and values
+are read from the live graph, so they stay correct after a reload. Keys, code
+names and the rules come from `schema_prototype.py` and this file, so a
+different schema module needs them updated.
+
+```bash
+python fa26/retrieval/schema_export.py --out fa26/retrieval/schema.xml
+```
+
+```python
+from schema_export import graph_schema_xml
+system_prompt = "Graph schema:\n" + graph_schema_xml()
+```
+
+The committed `schema.xml` (about 9 KB) was generated from the benchmark
+snapshot graph. The schema text in notebooks 05 and 06 was written by hand for
+the earlier graph and still names `PROVIDED_BY`, `value_num` and string
+dates, none of which exist in this graph.
 
 ## Known limitations
 
