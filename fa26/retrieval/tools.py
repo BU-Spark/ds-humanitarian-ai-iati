@@ -53,6 +53,13 @@ PUBLISHER_LABELS = {"oxfamgb": "Oxfam GB", "oxfamus": "Oxfam America", "wfp": "W
 TRANSACTION_TYPE_NAMES = sorted(set(TRANSACTION_TYPES.values()))
 MATCH_TYPES = ("sector", "sdg", "keyword", "keyword_over_sector", "keyword_weak")
 
+# The one transaction type the team counts as "funding" (client meeting
+# 2026-11-06: pick one and document it). Default of every money tool; the
+# rule and its caveats are in funding_definition.md. Change it here, then
+# update the tests' expected values and the rationale in the docstrings,
+# README and funding_definition.md.
+FUNDING_TRANSACTION_TYPE = "Incoming Funds"
+
 # variant ref -> canonical ref, so one funder is one row
 CANON = {v: canon for canon, vs in E.SAME_AS.items() for v in vs}
 
@@ -418,7 +425,7 @@ LIMIT $max_rows
 """
 
 
-def top_funders(country, transaction_types=("Incoming Funds",), year_from=None, year_to=None,
+def top_funders(country, transaction_types=(FUNDING_TRANSACTION_TYPE,), year_from=None, year_to=None,
                 limit=10, publisher=None, exclude_self=True):
     """Organisations providing the most money into a hotspot country.
 
@@ -477,7 +484,8 @@ def top_funders(country, transaction_types=("Incoming Funds",), year_from=None, 
     empty = f"No {', '.join(types)} transactions with a provider found for {code}"
     if exclude_self and any(t in ("Disbursement", "Expenditure", "Outgoing Commitment") for t in types):
         empty += (" other than ones where the provider is the publisher itself (hidden by exclude_self=True; "
-                  "pass exclude_self=False to see them, or use the default 'Incoming Funds' for external funders)")
+                  f"pass exclude_self=False to see them, or use the default '{FUNDING_TRANSACTION_TYPE}' "
+                  "for external funders)")
     out = _money(_run(TOP_FUNDERS_CYPHER, params, note, empty + "."),
                  _searched("rel_transaction_edges.csv", publisher=slug, country=code))
     for r in out["rows"]:
@@ -507,7 +515,7 @@ LIMIT $limit
 """
 
 
-def funding_over_time(publisher=None, country=None, transaction_type="Incoming Funds", by="year",
+def funding_over_time(publisher=None, country=None, transaction_type=FUNDING_TRANSACTION_TYPE, by="year",
                       year_from=None, year_to=None, limit=200):
     """Money per period, by publisher and currency: positive `amount`, negative
     `adjustments` as a separate category, and `net` = amount + adjustments.
@@ -571,7 +579,7 @@ LIMIT $limit
 """
 
 
-def transaction_totals(transaction_type="Incoming Funds", publisher=None, currency=None, country=None,
+def transaction_totals(transaction_type=FUNDING_TRANSACTION_TYPE, publisher=None, currency=None, country=None,
                        year_from=None, year_to=None, by_publisher=False):
     """Total money of ONE transaction type, one row per currency (never converted):
     positive `amount`, negative `adjustments` as a separate category, and `net`

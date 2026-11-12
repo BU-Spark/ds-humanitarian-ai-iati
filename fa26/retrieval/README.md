@@ -14,6 +14,7 @@ retrieval/
   tools.py            the five query tools
   validate_graph.py   post-load checks: constraints, orphans, required properties, source ids
   schema_alignment.md differences from George's schema v0.1 and what to decide
+  funding_definition.md which transaction type counts as "funding", why, and its caveats
   org_duplicates.csv  report for the pipeline team (64 pairs, 41 groups)
   findings.md         Phase 1 baseline review of the prototype
   tests/              pytest, expected values recomputed from the CSVs with pandas
@@ -159,8 +160,10 @@ Columns: `funder_id, funder, all_refs, currency, amount, adjustments, net, n_tra
 external funders appear only as providers of Incoming Funds (type 1).
 Disbursement rows (type 3) exist only for Oxfam GB and name Oxfam GB itself
 as provider; WFP publishes none. Calling with `("Disbursement",)` therefore
-returns `no_results` with a note explaining this. Change the default in
-`tools.py` if the team decides otherwise.
+returns `no_results` with a note explaining this. The default of all three
+money tools is `FUNDING_TRANSACTION_TYPE` in `tools.py`; change it there if
+the team decides otherwise. The rule and its caveats are in
+`funding_definition.md`.
 
 ### `funding_over_time(publisher=None, country=None, transaction_type="Incoming Funds", by="year", year_from=None, year_to=None, limit=200)`
 
