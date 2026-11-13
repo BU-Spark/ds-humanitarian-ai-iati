@@ -96,7 +96,7 @@ def read_rows(graph_dir, schema, fname, where=None, columns=None, anomalies=None
                    else (v if v != "" else None) for k, v in raw.items()}
             row["source_id"] = f"{fname}:row:{i}"
             if derive:
-                row.update(derive(row))
+                row.update(derive(row, raw))
             if columns:
                 row = {k: row[k] for k in columns}
             rows.append(row)

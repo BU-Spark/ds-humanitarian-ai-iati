@@ -1,0 +1,134 @@
+<graph_schema schema="prototype-v0" nodes="27279" relationships="58911">
+  <node label="Activity" count="505" key="iati_identifier">
+    <property name="iati_identifier" type="STRING" />
+    <property name="aid_type" type="STRING" optional="true" values="C01" />
+    <property name="capital_spend" type="FLOAT" optional="true" />
+    <property name="collaboration_type" type="STRING" optional="true" values="4" />
+    <property name="default_currency" type="STRING" values="GBP | USD" />
+    <property name="description" type="STRING" />
+    <property name="end_actual" type="DATE" optional="true" />
+    <property name="end_date" type="DATE" optional="true" />
+    <property name="end_planned" type="DATE" optional="true" />
+    <property name="finance_type" type="STRING" optional="true" values="110" />
+    <property name="flow_type" type="STRING" optional="true" values="10" />
+    <property name="hierarchy" type="STRING" values="1" />
+    <property name="hotspot_countries" type="LIST OF STRING" />
+    <property name="humanitarian" type="STRING" optional="true" values="0 | 1" />
+    <property name="last_updated" type="ZONED DATETIME" />
+    <property name="match_basis" type="STRING" values="keyword | sector" />
+    <property name="publisher" type="STRING" values="oxfamgb | oxfamus | wfp" />
+    <property name="source_id" type="STRING" />
+    <property name="start_actual" type="DATE" optional="true" />
+    <property name="start_date" type="DATE" />
+    <property name="start_planned" type="DATE" optional="true" />
+    <property name="status" type="STRING" values="2=Implementation | 3=Finalisation" />
+    <property name="status_name" type="STRING" values="Finalisation | Implementation" />
+    <property name="tied_status" type="STRING" optional="true" values="5" />
+    <property name="title" type="STRING" />
+  </node>
+  <node label="Budget" count="2999" key="budget_id">
+    <property name="budget_id" type="STRING" />
+    <property name="currency" type="STRING" values="GBP | USD" />
+    <property name="iati_identifier" type="STRING" />
+    <property name="period_end" type="DATE" />
+    <property name="period_start" type="DATE" />
+    <property name="source_id" type="STRING" />
+    <property name="status" type="STRING" values="1=Indicative | 2=Committed" />
+    <property name="status_name" type="STRING" values="Committed | Indicative" />
+    <property name="type" type="STRING" values="1=Original | 2=Revised" />
+    <property name="type_name" type="STRING" values="Original | Revised" />
+    <property name="value" type="FLOAT" />
+    <property name="value_cents" type="INTEGER" />
+  </node>
+  <node label="Country" count="13" key="code">
+    <property name="code" type="STRING" values="AF | CD | HT | LB | MG | ML | MM | NG | PS | SD | SO | SS | YE" />
+    <property name="hotspot_tier" type="INTEGER" />
+    <property name="name" type="STRING" values="Afghanistan | Democratic Republic of the Congo | Haiti | Lebanon | Madagascar | Mali | Myanmar | Nigeria | Palestine | Somalia | South Sudan | Sudan | Yemen" />
+    <property name="source_id" type="STRING" />
+  </node>
+  <node label="Location" count="82" key="location_id">
+    <property name="location_id" type="STRING" />
+    <property name="lat" type="FLOAT" />
+    <property name="lon" type="FLOAT" />
+    <property name="name" type="STRING" values="Abuja | Antananarivo | Bamako | Beirut | Juba | Kabul | Khartoum | Kinshasa | Mogadishu | Naypyidaw | Port Au Prince | Ramallah | Sana’A City" />
+    <property name="source_id" type="STRING" />
+  </node>
+  <node label="Organisation" count="238" key="ref">
+    <property name="ref" type="STRING" />
+    <property name="name" type="STRING" optional="true" />
+    <property name="publisher" type="STRING" optional="true" values="oxfamgb | oxfamus | wfp" />
+    <property name="source_id" type="STRING" />
+    <property name="type" type="STRING" optional="true" values="10 | 21 | 40 | 60 | 70 | 90" />
+  </node>
+  <node label="SDG" count="2" key="sdg_key">
+    <property name="sdg_key" type="STRING" values="2:17 | 2:2" />
+    <property name="code" type="STRING" values="17 | 2" />
+    <property name="level" type="STRING" values="goal" />
+    <property name="name" type="STRING" values="Partnerships for the goals | Zero hunger" />
+    <property name="source_id" type="STRING" />
+  </node>
+  <node label="Sector" count="17" key="sector_key">
+    <property name="sector_key" type="STRING" values="1:12240 | 1:52010 | 1:72040 | 1:99810 | 2:998 | 7:17 | 7:2 | 8:17.14 | 8:17.9 | 8:2.1 | 8:2.2 | 8:2.3 | 99:1 | 99:2 | 99:3 | 99:4 | 99:5" />
+    <property name="code" type="STRING" values="1 | 12240 | 17 | 17.14 | 17.9 | 2 | 2.1 | 2.2 | 2.3 | 3 | 4 | 5 | 52010 | 72040 | 998 | 99810" />
+    <property name="is_hunger" type="BOOLEAN" />
+    <property name="name" type="STRING" optional="true" />
+    <property name="source_id" type="STRING" />
+    <property name="vocabulary" type="STRING" values="1 | 2 | 7 | 8 | 99" />
+  </node>
+  <node label="Transaction" count="23423" key="tx_id">
+    <property name="tx_id" type="STRING" />
+    <property name="currency" type="STRING" values="GBP | USD" />
+    <property name="date" type="DATE" />
+    <property name="iati_identifier" type="STRING" />
+    <property name="source_id" type="STRING" />
+    <property name="type" type="STRING" values="1=Incoming Funds | 2=Outgoing Commitment | 3=Disbursement | 4=Expenditure" />
+    <property name="type_name" type="STRING" values="Disbursement | Expenditure | Incoming Funds | Outgoing Commitment" />
+    <property name="value" type="FLOAT" />
+    <property name="value_cents" type="INTEGER" />
+    <property name="value_date" type="DATE" />
+  </node>
+  <relationship type="CLASSIFIED_AS" from="Activity" to="Sector" count="1238">
+    <property name="percentage" type="FLOAT" optional="true" />
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="CONTRIBUTES_TO" from="Activity" to="SDG" count="82">
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="HAS_BUDGET" from="Activity" to="Budget" count="2999">
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="HAS_TRANSACTION" from="Activity" to="Transaction" count="23423">
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="LOCATED_AT" from="Activity" to="Location" count="82">
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="PARTICIPATES_IN" from="Organisation" to="Activity" count="3247">
+    <property name="role" type="STRING" values="1=Funding | 2=Accountable | 3=Extending | 4=Implementing" />
+    <property name="role_name" type="STRING" values="Accountable | Extending | Funding | Implementing" />
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="PROVIDES" from="Organisation" to="Transaction" count="17570">
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="RECEIVED_BY" from="Transaction" to="Organisation" count="9260">
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="REPORTS" from="Organisation" to="Activity" count="505">
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <relationship type="TARGETS" from="Activity" to="Country" count="505">
+    <property name="is_hotspot" type="BOOLEAN" />
+    <property name="percentage" type="FLOAT" optional="true" />
+    <property name="source_ids" type="LIST OF STRING" />
+  </relationship>
+  <rules>
+    <rule>"Funding" means Transaction.type_name = "Incoming Funds". The funder is the Organisation on the PROVIDES relationship; leave out rows where that Organisation is the activity's own reporting organisation. Never add different transaction types together: WFP repeats every Outgoing Commitment as an identical Expenditure.</rule>
+    <rule>Money: for exact totals use sum(value_cents) / 100.0 (dividing by the integer 100 truncates). Report positive and negative transactions separately (amount, adjustments, net = amount + adjustments). Group by currency; never add or convert currencies.</rule>
+    <rule>Dates are DATE values: use t.date.year, not string comparison. Activity.start_date and end_date hold the actual date when there is one, otherwise the planned date.</rule>
+    <rule>Citations: every node has source_id and every relationship has source_ids (a list), each naming a source CSV row, for example "nodes_transactions.csv:row:12".</rule>
+    <rule>An Organisation.ref starting with "name:" has no IATI identifier. One organisation can appear under several refs, so resolve names with resolve_entity or the retrieval tools, not by matching Organisation.name in Cypher.</rule>
+    <rule>The graph holds only hunger-related activities in the hotspot countries, so totals are not totals for a publisher as a whole.</rule>
+    <rule>A value list written as "code=name" (for example "1=Incoming Funds") means the property holds the code ("1"); the property with the same name plus "_name" holds the name ("Incoming Funds").</rule>
+  </rules>
+</graph_schema>

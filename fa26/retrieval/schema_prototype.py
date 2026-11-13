@@ -29,6 +29,7 @@ edge=RECEIVED_BY to (Transaction)-[:RECEIVED_BY]->(Organisation).
 HAS_TRANSACTION and HAS_BUDGET have no rel CSV; they come from the
 `iati_identifier` column on the transaction and budget node CSVs.
 """
+from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN
 
 NAME = "prototype-v0"
 
@@ -67,8 +68,22 @@ CASTS = {
 }
 
 
-# Derived columns, computed per row after casting. Keep these tiny.
-def _derive_activity(r):
+def _cents(text):
+    """Exact integer cents from the raw CSV string (None if empty or not a number).
+    Sub-cent digits in the exports are float artefacts (770317.9300000001), so
+    rounding to the cent is exact for real amounts."""
+    try:
+        d = Decimal(text) if text else None
+    except InvalidOperation:
+        return None
+    if d is None or not d.is_finite() or abs(d) >= Decimal(2 ** 63) / 100:   # NaN, Infinity, beyond int64
+        return None
+    return int((d * 100).to_integral_value(ROUND_HALF_EVEN))
+
+
+# Derived columns, computed per row after casting; `raw` is the uncast CSV row.
+# Keep these tiny.
+def _derive_activity(r, raw):
     return {
         "start_date": r["start_actual"] or r["start_planned"],   # rule app.py uses
         "end_date": r["end_actual"] or r["end_planned"],
@@ -77,16 +92,17 @@ def _derive_activity(r):
     }
 
 
-def _derive_transaction(r):
-    return {"type_name": TRANSACTION_TYPES.get(r["type"] or "")}
+def _derive_transaction(r, raw):
+    return {"type_name": TRANSACTION_TYPES.get(r["type"] or ""), "value_cents": _cents(raw["value"])}
 
 
-def _derive_budget(r):
+def _derive_budget(r, raw):
     return {"type_name": BUDGET_TYPES.get(r["type"] or ""),
-            "status_name": BUDGET_STATUS.get(r["status"] or "")}
+            "status_name": BUDGET_STATUS.get(r["status"] or ""),
+            "value_cents": _cents(raw["value"])}
 
 
-def _derive_participates(r):
+def _derive_participates(r, raw):
     return {"role_name": ORG_ROLES.get(r["role"] or "")}
 
 

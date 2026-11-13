@@ -236,6 +236,18 @@ def test_transaction_totals_values_and_evidence(csv, type_code, type_name, publi
     assert got["evidence_net"] == evidence(t)
 
 
+def test_money_sums_are_exact_cents(csv):
+    """value_cents sums reproduce the Decimal total of the raw strings to the cent
+    (a float sum is off by ~2e-5 on this group)."""
+    from decimal import Decimal
+    tx = csv["tx"]
+    t = tx[(tx.publisher == "wfp") & (tx.type == "1") & (tx.currency == "USD")]
+    row = transaction_totals("Incoming Funds", publisher="WFP", currency="USD")["rows"][0]
+    for got, rows in ((row["amount"], t[t.value > 0]), (row["adjustments"], t[t.value < 0]), (row["net"], t)):
+        exact = sum((Decimal(v) for v in rows.value_raw), Decimal(0)).quantize(Decimal("0.01"))
+        assert Decimal(repr(got)) == exact
+
+
 def test_transaction_totals_country_cites_targeting_rows(csv):
     t, evidence = pandas_totals(csv, "4", "wfp", "USD", country="SD", year=2023)
     r = transaction_totals("Expenditure", publisher="WFP", currency="USD", country="Sudan",

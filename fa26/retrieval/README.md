@@ -13,7 +13,11 @@ retrieval/
   resolve_entity.py   text -> graph IDs, plus the duplicate-organisation report
   tools.py            the five query tools
   validate_graph.py   post-load checks: constraints, orphans, required properties, source ids
+  schema_export.py    the loaded graph's schema as XML, for the model's prompt
+  schema.xml          its output for the benchmark snapshot graph (regenerate after a reload)
   schema_alignment.md differences from George's schema v0.1 and what to decide
+  funding_definition.md which transaction type counts as "funding", why, and its caveats
+  findings_negatives.md what negative transactions do in this data, and what is still unknown
   org_duplicates.csv  report for the pipeline team (64 pairs, 41 groups)
   findings.md         Phase 1 baseline review of the prototype
   tests/              pytest, expected values recomputed from the CSVs with pandas
@@ -44,7 +48,7 @@ python fa26/retrieval/load_neo4j.py                    # load into an empty DB
 python fa26/retrieval/load_neo4j.py --reset            # wipe + reload (refuses a DB it did not fill unless --force)
 python fa26/retrieval/load_neo4j.py --env ../.env      # use another .env, e.g. Aura
 python fa26/retrieval/validate_graph.py --baseline-dir OLD_CSVS   # checks + per-publisher before/after
-python -m pytest fa26/retrieval/tests -q               # 55 tests, skipped if no DB is reachable
+python -m pytest fa26/retrieval/tests -q               # 65 tests, skipped if no DB is reachable
 ```
 
 The loader prints a table of CSV rows vs database counts and runs one
@@ -56,6 +60,14 @@ edge each.
 Every node carries `source_id` and every relationship `source_ids`, the CSV
 rows it came from as `<file>.csv:row:<n>` (data rows counted from 1): the
 citation format of the team benchmark. A collapsed edge lists all its rows.
+
+`Transaction` and `Budget` nodes keep `value` as a float and also get
+`value_cents`, an exact integer computed with `Decimal` from the raw CSV
+string. The money tools sum `value_cents` and divide by 100 once, so totals
+match a Decimal sum to the cent however many rows there are. Sub-cent digits
+in the exports are float artefacts (`770317.9300000001`), so rounding each row
+to the cent loses nothing real. `validate_graph.py` checks that the cents in
+the database add up to the CSV total exactly.
 
 ## Using the tools
 
@@ -93,7 +105,7 @@ number is traceable to IATI records. `publisher` values are the slugs
 **Money and evidence.** The three money tools (`top_funders`,
 `funding_over_time`, `transaction_totals`) report `amount` (positive
 transactions), `adjustments` (negative ones, their own category per the
-client) and `net`, as unrounded floats per currency. Every row also has
+client) and `net` per currency, summed exactly in integer cents. Every row also has
 `evidence_amount`, `evidence_adjustments` and `evidence_net`: the complete
 source-row ids behind each figure (transaction rows, their activity rows, and
 the `rel_targets_country` / `rel_transaction_edges` rows a filter used), in
@@ -151,8 +163,10 @@ Columns: `funder_id, funder, all_refs, currency, amount, adjustments, net, n_tra
 external funders appear only as providers of Incoming Funds (type 1).
 Disbursement rows (type 3) exist only for Oxfam GB and name Oxfam GB itself
 as provider; WFP publishes none. Calling with `("Disbursement",)` therefore
-returns `no_results` with a note explaining this. Change the default in
-`tools.py` if the team decides otherwise.
+returns `no_results` with a note explaining this. The default of all three
+money tools is `FUNDING_TRANSACTION_TYPE` in `tools.py`; change it there if
+the team decides otherwise. The rule and its caveats are in
+`funding_definition.md`.
 
 ### `funding_over_time(publisher=None, country=None, transaction_type="Incoming Funds", by="year", year_from=None, year_to=None, limit=200)`
 
@@ -179,6 +193,31 @@ they are the same organisation or its agencies); `match.parent` is set when
 the match is itself an agency. `python retrieval/resolve_entity.py --demo`
 prints the brief's examples; `--report-duplicates` regenerates
 `org_duplicates.csv`.
+
+## Schema for the model
+
+`schema_export.py` writes the schema of the loaded graph as XML: node labels
+with their key, every property with its type, the values of small string
+properties (codes shown as `1=Incoming Funds`), relationship directions with
+counts, and seven rules (the funding rule, money, dates, citations, organisation
+refs, scope, how to read the value lists). Structure, types, counts and values
+are read from the live graph, so they stay correct after a reload. Keys, code
+names and the rules come from `schema_prototype.py` and this file, so a
+different schema module needs them updated.
+
+```bash
+python fa26/retrieval/schema_export.py --out fa26/retrieval/schema.xml
+```
+
+```python
+from schema_export import graph_schema_xml
+system_prompt = "Graph schema:\n" + graph_schema_xml()
+```
+
+The committed `schema.xml` (about 9 KB) was generated from the benchmark
+snapshot graph. The schema text in notebooks 05 and 06 was written by hand for
+the earlier graph and still names `PROVIDED_BY`, `value_num` and string
+dates, none of which exist in this graph.
 
 ## Known limitations
 

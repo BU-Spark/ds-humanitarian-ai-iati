@@ -95,6 +95,14 @@ def main():
         got = q("MATCH ()-[p:PARTICIPATES_IN]->() RETURN sum(size(p.source_ids)) AS c")[0]["c"]
         check("collapsed PARTICIPATES_IN edges keep every CSV row", got == len(part), f"{got} of {len(part)} rows")
 
+        print("\nexact money (value_cents)")
+        for label, fname in (("Transaction", "nodes_transactions.csv"), ("Budget", "nodes_budgets.csv")):
+            want = sum(schema._cents(r["value"]) or 0 for r in rows(graph_dir, fname))
+            got = q(f"MATCH (n:{label}) RETURN sum(n.value_cents) AS c, "
+                    f"count(n.value) - count(n.value_cents) AS missing")[0]
+            check(f"{label}.value_cents sums to the exact CSV total", got["c"] == want and got["missing"] == 0,
+                  f"db {got['c']} vs csv {want}, {got['missing']} rows without value_cents")
+
         print("\norphans and structure")
         for label in NO_ORPHANS:
             n = q(f"MATCH (n:{label}) WHERE NOT (n)--() RETURN count(n) AS c")[0]["c"]
