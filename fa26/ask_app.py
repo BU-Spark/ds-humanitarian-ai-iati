@@ -17,7 +17,15 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 from ask import Engine, DEFAULT_MODEL  # noqa: E402
 
-ENGINE = Engine(model=os.environ.get("IATI_ASK_MODEL", DEFAULT_MODEL))
+_ENGINE = None
+
+
+def engine():
+    """Connect on the first question, not at import, so the page still opens when Aura is paused."""
+    global _ENGINE
+    if _ENGINE is None:
+        _ENGINE = Engine(model=os.environ.get("IATI_ASK_MODEL", DEFAULT_MODEL))
+    return _ENGINE
 
 EXAMPLES = ["How many WFP activities target Yemen?",
             "What is the total of positive WFP incoming-fund transactions in USD?",
@@ -27,7 +35,12 @@ EXAMPLES = ["How many WFP activities target Yemen?",
 
 
 def answer(question):
-    out = ENGINE.ask(question)
+    try:
+        eng = engine()
+        out = eng.ask(question)
+    except Exception as e:  # paused Aura, missing key, network: show it instead of a dead page
+        msg = f"**Backend unavailable** ({type(e).__name__}): {str(e)[:300]}\n\nIf this mentions DNS / 9391175d.databases.neo4j.io, the Aura free instance is paused — resume it in the Neo4j console and ask again."
+        return msg, "{}", pd.DataFrame(columns=["id"]), "{}"
     if out["status"] == "answer":
         lines = [f"**{k}**: {v['value']}  ({len(v['evidence'])} source rows)" for k, v in out["facts"].items()] or ["(no facts)"]
         head = "\n".join(lines)
@@ -36,7 +49,7 @@ def answer(question):
     else:
         head = f"**Cannot answer from this snapshot** ({', '.join(out['reasons'])}): {out.get('explanation') or ''}"
     how = {k: out[k] for k in ("model", "tool", "args", "cypher", "retries", "error", "latency_ms") if out.get(k) not in (None, "", {})}
-    rows = ENGINE.evidence_rows(out)
+    rows = eng.evidence_rows(out)
     df = pd.DataFrame(rows) if rows else pd.DataFrame(columns=["id"])
     return head, json.dumps(how, indent=1), df, json.dumps({k: out[k] for k in ("id", "status", "facts", "reasons")}, indent=1)
 
