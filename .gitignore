@@ -12,3 +12,5 @@ venv/
 # Temporary files
 *.tmp
 .DS_Store
+# Local snapshot archives and manifests (do not commit publisher downloads)
+fa26/data/snapshots/

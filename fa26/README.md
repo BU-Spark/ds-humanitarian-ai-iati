@@ -123,3 +123,10 @@ nodes, so it runs on a laptop and loads into AuraDB Free.
    (Somalia, South Sudan or DRC are likely candidates), re-run the full
    filter, load into AuraDB Free.
 3. Demo queries 2 (Oxfam GB/US overlap), 3 (shared partners) and 6 (funding
+
+## Optional verified raw snapshots
+
+To preserve raw XML versions without overwriting the previous successful
+snapshot, see [the snapshot workflow](docs/raw-snapshots.md). It supports local
+imports, verified downloads, duplicate-content reuse and restoration. The
+existing download command remains unchanged.
