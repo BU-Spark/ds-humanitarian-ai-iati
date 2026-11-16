@@ -53,7 +53,8 @@ def _write(path, rows, fields):
     path.parent.mkdir(parents=True, exist_ok=True)
     # utf-8-sig so Excel opens accented titles (French WFP records) correctly
     with open(path, "w", newline="", encoding="utf-8-sig") as f:
-        w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+        w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore",
+                           lineterminator="\n")
         w.writeheader()
         w.writerows(rows)
 

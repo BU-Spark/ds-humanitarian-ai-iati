@@ -87,8 +87,8 @@ filter alone:
   output. The difference comes from publishers updating their data since
   the summer.
 
-The committed `data/graph/` CSVs have **not** been regenerated yet. They
-still reflect the old filter. To apply the new filter:
+The `data/graph/` CSVs are generated, not kept in git. Run the pipeline to
+create them (439 activities with the current filter and decisions):
 
 ```bash
 cd fa26

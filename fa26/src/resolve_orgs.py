@@ -94,7 +94,7 @@ def read(name):
 def write(name, rows, fields):
     shutil.copy(GRAPH_DIR / name, GRAPH_DIR / (name + ".bak"))
     with open(GRAPH_DIR / name, "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=fields)
+        w = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
         w.writeheader()
         w.writerows(rows)
 

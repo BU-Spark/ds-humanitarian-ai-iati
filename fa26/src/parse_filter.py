@@ -1,5 +1,5 @@
 """
-02_parse_and_filter.py -- Parse IATI activity XML into graph-ready CSVs (v0.3).
+parse_filter.py -- Parse IATI activity XML into graph-ready CSVs (v0.3).
 
 Keeps an activity if BOTH are true:
   (a) geography: a recipient-country (activity or transaction level) is a
@@ -565,7 +565,8 @@ def run(publisher_filter=None, apply_theme=True):
     # ------------------------------------------------------------- write --
     def dump(name, rows, fields):
         with open(GRAPH_DIR / name, "w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore",
+                               lineterminator="\n")
             w.writeheader()
             w.writerows(rows)
         print(f"  {name:<28} {len(rows):>7} rows")
