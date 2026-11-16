@@ -152,8 +152,9 @@ REVIEW_NEAR_MISS_TERMS = [
 # Paths
 # ---------------------------------------------------------------------------
 import pathlib
+import os
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-RAW_DIR = ROOT / "data" / "raw"
+RAW_DIR = pathlib.Path(os.environ["IATI_RAW_DIR"]).resolve() if os.environ.get("IATI_RAW_DIR") else ROOT / "data" / "raw"
 GRAPH_DIR = ROOT / "data" / "graph"
 REVIEW_DIR = ROOT / "data" / "review"
 
