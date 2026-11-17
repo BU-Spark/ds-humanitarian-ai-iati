@@ -37,7 +37,7 @@ RETRIEVAL_DIR = FA26 / "retrieval"
 SNAPSHOT_DIR = FA26 / "benchmark" / "snapshot"
 
 MEASURES = ("amount", "adjustments", "net")
-TX_TYPES = ("Incoming Funds", "Commitment", "Disbursement", "Expenditure")
+TX_TYPES = ("Incoming Funds", "Outgoing Commitment", "Disbursement", "Expenditure")  # exact names in Alex's TRANSACTION_TYPE_NAMES
 MATCH_TYPES = ("sector", "sdg", "keyword", "keyword_over_sector", "keyword_weak")
 
 

@@ -2,6 +2,13 @@
 fa26/retrieval/load_neo4j.py): typed dates (Activity.start_date, Transaction.date), float values, boolean
 is_hotspot, (Organisation)-[:PROVIDES]->(Transaction), node `source_id` and relationship `source_ids` lists.
 
+Money: totals sum the exact integer `value_cents` set by the loader and divide once by 100.0, as Alex's
+retrieval/schema.xml rule says; `value` (a float) is used only for its sign. Defaults differ from Alex's tools on
+purpose, because these templates answer Deniz's benchmark contracts, which sum signed values and include every
+provider: measure defaults to 'net' (Alex: 'amount') and top_funders does not exclude the publisher's own
+rows (Alex: exclude_self=True). Pass measure='amount' to get Alex's headline figure. Funding type: top_funders
+defaults to type '1' (Incoming Funds, Alex's FUNDING_TRANSACTION_TYPE); the totals templates make the caller choose.
+
 Every template returns rows with exactly three columns:
   key       group label (publisher slug, org ref, role code, sdg key, ...) or 'count' / 'total'
   value     integer, number or 'YYYY-MM-DD' string
@@ -147,11 +154,11 @@ ORDER BY key""",
         "cypher": """
 MATCH (a:Activity {publisher: $publisher})-[:HAS_TRANSACTION]->(t:Transaction {type: $type_code})<-[pb:PROVIDES]-(o:Organisation)
 WHERE ($currency IS NULL OR t.currency = $currency) AND __IN_MEASURE__
-WITH o, t.currency AS currency, sum(t.value) AS total,
+WITH o, t.currency AS currency, sum(t.value_cents) / 100.0 AS total,
      collect(DISTINCT t.source_id) + __FLAT_pb__ + collect(DISTINCT a.source_id) AS ev
 RETURN o.ref + ' [' + currency + ']' AS key, total AS value, ev AS evidence
 ORDER BY total DESC LIMIT $limit""",
-        "coverage": "Sums signed values per currency with no conversion; a provider published under several refs appears several times.",
+        "coverage": "Sums exact cents per currency with no conversion; includes the publisher's own rows (unlike Alex's top_funders); a provider published under several refs appears several times.",
     },
     "shared_partners": {
         "description": "Organisation refs that participate in activities of both publisher_a and publisher_b, with the number "
@@ -181,7 +188,7 @@ ORDER BY value DESC, key""",
         "cypher": """
 OPTIONAL MATCH (a:Activity {publisher: $publisher})-[:HAS_TRANSACTION]->(t:Transaction {type: $type_code, currency: $currency})
 WHERE ($date_from IS NULL OR t.date >= date($date_from)) AND ($date_to IS NULL OR t.date < date($date_to)) AND __IN_MEASURE__
-RETURN 'total' AS key, coalesce(sum(t.value), 0) AS value,
+RETURN 'total' AS key, coalesce(sum(t.value_cents), 0) / 100.0 AS value,
        [x IN collect(DISTINCT t.source_id) WHERE x IS NOT NULL] + [x IN collect(DISTINCT a.source_id) WHERE x IS NOT NULL] AS evidence""",
         "coverage": "One type and one currency only; never mixes commitments, disbursements or currencies.",
     },
@@ -195,7 +202,7 @@ RETURN 'total' AS key, coalesce(sum(t.value), 0) AS value,
         "cypher": """
 MATCH (a:Activity {publisher: $publisher})-[:HAS_TRANSACTION]->(t:Transaction {type: $type_code, currency: $currency})
 WHERE t.date IS NOT NULL AND __IN_MEASURE__
-RETURN toString(t.date.year) AS key, sum(t.value) AS value,
+RETURN toString(t.date.year) AS key, sum(t.value_cents) / 100.0 AS value,
        collect(DISTINCT t.source_id) + collect(DISTINCT a.source_id) AS evidence
 ORDER BY key""",
         "coverage": "Years are taken from transaction-date, not value-date.",
@@ -347,7 +354,7 @@ RETURN 'date' AS key, left(toString(d), 10) AS value, ev AS evidence""",
                    "currency": {"type": "enum", "values": ["USD", "GBP"], "required": True}},
         "cypher": """
 OPTIONAL MATCH (b:Budget {type: $type_code, status: $status_code, currency: $currency})
-RETURN 'total' AS key, coalesce(sum(b.value), 0) AS value, [x IN collect(DISTINCT b.source_id) WHERE x IS NOT NULL] AS evidence""",
+RETURN 'total' AS key, coalesce(sum(b.value_cents), 0) / 100.0 AS value, [x IN collect(DISTINCT b.source_id) WHERE x IS NOT NULL] AS evidence""",
         "coverage": "Budget type '1' original / '2' revised; status '1' indicative / '2' committed.",
     },
 }

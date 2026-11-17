@@ -5,6 +5,8 @@
 **Source notebooks:** `notebooks/01_reproduce_summer_baseline_2026-10-15.ipynb`, `notebooks/02_schema_draft_2026-10-15.ipynb`
 **Data:** summer prototype graph CSVs (`reference/iati-graph-prototype/data/graph/`), Oxfam GB, Oxfam America, WFP, hunger-hotspot scope
 
+> **Status 2026-11-17: historical record, kept as written.** Schema v0.1 and the notebook 04 loader were superseded on 2026-11-05 by Alex's `fa26/retrieval/load_neo4j.py` (schema `retrieval/schema_prototype.py`: `(Organisation)-[:PROVIDES]->(Transaction)`, typed values, no `type_label`; 58,911 relationships after merging duplicate participation rows). Notebook 03 became a Text2Cypher diagnostic, and the evaluation set is Deniz's benchmark (v1: 20 questions; v2: 100). The next steps in section 4 are therefore out of date; see `notebooks/README.md` for the current state.
+
 ## 1. Baseline reproduced (notebook 01)
 
 - 27,279 nodes and 58,314 relationships once transaction edges are modelled. About 14% of the Aura Free limit (200k nodes / 400k relationships), so the three-publisher graph fits with room to spare.

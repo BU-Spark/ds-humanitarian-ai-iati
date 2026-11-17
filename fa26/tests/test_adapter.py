@@ -72,6 +72,13 @@ class ArgTests(unittest.TestCase):
         kw, _ = validate_retrieval_args("rt_top_funders", {"country": "SO", "exclude_self": "false"})
         self.assertFalse(kw["exclude_self"])
 
+    def test_transaction_types_are_alexs_exact_names(self):
+        # Alex's tools reject any name not in TRANSACTION_TYPE_NAMES ("Commitment" used to fail)
+        sys.path.insert(0, str(FA26 / "retrieval"))
+        from schema_prototype import TRANSACTION_TYPES
+        from tools.adapter import TX_TYPES
+        self.assertLessEqual(set(TX_TYPES), set(TRANSACTION_TYPES.values()))
+
     def test_rejections(self):
         with self.assertRaisesRegex(ToolError, "required"):
             validate_retrieval_args("rt_top_funders", {})

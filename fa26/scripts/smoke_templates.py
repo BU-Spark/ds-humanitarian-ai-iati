@@ -1,5 +1,5 @@
-"""Live smoke test: run the 16 templates on the graph in .env with notebook 06's manual routes (Q01-Q16)
-and score the result against the v1 answer key. Use after reloading the graph.
+"""Live smoke test: run notebook 06's v1 manual routes on the graph in .env (Q01-Q16 use 13 of the 21 templates;
+Q17-Q20 use the fixed abstain / clarify rules) and score the result against the v1 answer key. Use after reloading the graph.
 
     conda activate iati
     python fa26/scripts/smoke_templates.py            # writes data/processed/06_submission_templates_manual_<run>.json
