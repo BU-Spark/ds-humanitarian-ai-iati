@@ -130,3 +130,9 @@ To preserve raw XML versions without overwriting the previous successful
 snapshot, see [the snapshot workflow](docs/raw-snapshots.md). It supports local
 imports, verified downloads, duplicate-content reuse and restoration. The
 existing download command remains unchanged.
+
+## Knowledge base (RAG, Milestone 1)
+
+Keyword search over the kept activities, with citations and CSV export:
+`python -m kb.build`, then `python -m kb.search "school meals" --country YE`.
+See [the knowledge base doc](docs/knowledge-base.md).

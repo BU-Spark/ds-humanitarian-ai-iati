@@ -157,5 +157,6 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 RAW_DIR = pathlib.Path(os.environ["IATI_RAW_DIR"]).resolve() if os.environ.get("IATI_RAW_DIR") else ROOT / "data" / "raw"
 GRAPH_DIR = ROOT / "data" / "graph"
 REVIEW_DIR = ROOT / "data" / "review"
+KB_PATH = ROOT / "data" / "kb" / "kb.sqlite"
 
 REGISTRY_API = "https://iatiregistry.org/api/3/action"
