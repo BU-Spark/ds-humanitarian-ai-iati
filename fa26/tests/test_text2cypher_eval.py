@@ -89,6 +89,7 @@ class EvaluationTests(unittest.TestCase):
         self.assertFalse(result['match'])
         self.assertNotIn('secret-like', str(result))
 
+    @unittest.skip('notebook 04 is retired; the team loader is fa26/retrieval/load_neo4j.py, tested in fa26/retrieval/tests')
     def test_loader_preserves_distinct_source_rows_and_shared_codelists(self):
         import pandas as pd
         from iati_codelists import ORG_TYPE
