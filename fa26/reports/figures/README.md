@@ -17,17 +17,15 @@ Values are rounded to whole points. Overall: Sonnet 37.0 to 94.25, GLM-5.3 66.07
 
 ## iati_budget_table_2026-10-23.jpg
 
-Benchmark v1 (20 questions), one full run per architecture and model.
+Benchmark v1 (20 questions), one full run per architecture and model. Redrawn 2026-11-17 directly from the files below (the earlier version had an estimated cost column whose source was not recorded; it was removed). Values used are also saved next to the drawing script as a CSV.
 
 | Column | How it is calculated | Source |
 | --- | --- | --- |
-| Overall score | scorer output, `Overall %` | `reports/benchmark_runs/2026-10-22_v1_free_text2cypher.md` (nb05 rows, runs ending `_0935` and `_1521`), `reports/benchmark_runs/2026-10-22_v1_hybrid.md` (nb06 rows, runs ending `_1613`) |
-| Mean latency / question | scorer output, `Mean ms` / 1000, rounded to 0.1 s | same files |
-| Wall time, 20 Qs | mean latency x 20 (not separately timed) | derived |
-| LLM calls | 20 = one planning call per question. This is the minimum: notebooks 05 and 06 retry a failed query (05 once, 06 up to twice) and retries were not counted | notebook design |
-| Est. cost / run | **not measured**. The scorer output has `cost_usd: null` for every run (notebooks 05 and 06, scoring cell), and no notebook records token usage. The figures in this column were rough estimates made when the table was drawn; the method was not recorded. Do not quote them as results | none |
+| Overall score, Correctness, Evidence F1 | scorer output columns `Overall %`, `Correctness %`, `Evidence F1 %` | `reports/benchmark_runs/2026-10-22_v1_free_text2cypher.md` (nb05 rows: Opus and Sonnet run `_0935`, GLM-5.3 run `_1521`); `reports/benchmark_runs/2026-10-22_v1_hybrid.md` (nb06 rows, run `_1613`) |
+| Mean latency / question | scorer output `Mean ms` / 1000, rounded to 0.1 s | same files |
+| LLM calls | sum of `model_calls` over the 20 questions, 0 retries in every case | nb06: `data/processed/06_hybrid_eval_2026-10-22_1613.csv`; nb05 GLM-5.3: `data/processed/05_live_eval_2026-10-22_1521.csv`. The nb05 Opus and Sonnet runs (`_0935`) have no per-question CSV in `data/processed`, so the figure shows "not recorded" |
 
-"verified" marks the two runs that scored 100% overall in `2026-10-22_v1_hybrid.md`.
+Opus and Sonnet each have two nb05 runs that day (`_0933` and `_0935`); the figure uses the later one. Bold rows are the two runs at 100% overall.
 
 ## iati_pipeline_validator_2026-11-05.jpg
 
