@@ -101,3 +101,56 @@ def test_eval_questions_reference_kb_activities():
     for q in data["questions"]:
         assert q["relevant"] and len(set(q["relevant"])) == len(q["relevant"]), q["id"]
         assert all(i.startswith(("GB-CHC-", "XM-DAC-", "US-EIN-")) for i in q["relevant"])
+
+
+# ------------------------------------------------- router tool (kb/tool.py) --
+import re
+
+from kb import tool
+
+# the evidence format src/tools/contract.py checks on the router branch
+EVIDENCE = re.compile(r"^nodes_activities\.csv:row:[1-9]\d*$")
+
+
+def test_tool_result_has_router_shape(kb):
+    res = tool.run({"query": "hunger malnutrition"}, kb_path=kb)
+    assert set(res) == {"tool", "params", "measure", "cypher", "rows", "coverage", "raw"}
+    assert res["tool"] == "kb_search" and res["rows"]
+    for row in res["rows"]:
+        assert set(row) == {"key", "value", "evidence"}
+        assert row["evidence"] and all(EVIDENCE.match(e) for e in row["evidence"])
+    assert res["rows"][0]["key"] == "US-EIN-237069110-TEST004"
+
+
+def test_tool_evidence_points_at_the_activity_row(kb, fixture_env):
+    with open(fixture_env / "graph" / "nodes_activities.csv", encoding="utf-8") as f:
+        row_of = {r["iati_identifier"]: f"nodes_activities.csv:row:{i}"
+                  for i, r in enumerate(csv.DictReader(f), start=1)}
+    for row in tool.run({"query": "food"}, kb_path=kb)["rows"]:
+        assert row["evidence"] == [row_of[row["key"]]]
+
+
+@pytest.mark.parametrize("publisher, slug", [
+    ("WFP", "wfp"), ("Oxfam GB", "oxfamgb"), ("oxfamus", "oxfamus"), ("Oxfam America", "oxfamus")])
+def test_tool_accepts_publisher_names(kb, publisher, slug):
+    assert tool.run({"query": "food", "publisher": publisher}, kb_path=kb)["params"]["publisher"] == slug
+
+
+@pytest.mark.parametrize("args", [
+    {}, {"query": "  "}, {"query": "food", "colour": "red"},
+    {"query": "food", "publisher": "UNICEF"}, {"query": "food", "limit": "many"},
+    {"query": "food", "min_confidence": "certain"}, {"query": "food", "country": "Narnia"},
+])
+def test_tool_rejects_bad_arguments(kb, args):
+    with pytest.raises(ValueError):
+        tool.run(args, kb_path=kb)
+
+
+def test_tool_caps_limit_and_ignores_empty_optionals(kb):
+    res = tool.run({"query": "food", "limit": 999, "country": "", "publisher": None}, kb_path=kb)
+    assert res["params"] == {"query": "food", "limit": tool.MAX_LIMIT}
+
+
+def test_catalog_line_matches_router_format():
+    line = tool.catalog_line()
+    assert line.startswith("- kb_search(query: text, country?: text, publisher?: enum=")

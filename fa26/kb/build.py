@@ -6,6 +6,10 @@ Keyword search (SQLite FTS5, BM25 ranking) needs no model or server, gives
 the same results every run, and the file can be copied or exported as is.
 Embedding search is a later milestone, measured against this baseline.
 
+Each entry carries the activity's source_id ("nodes_activities.csv:row:N",
+rows counted from 1), so hits cite the same rows as the graph and the
+query router. Build from benchmark/snapshot to cite the pinned snapshot.
+
 Searchable fields: title, description, organisation names, standard sector
 names (DAC / clusters / SDG; Oxfam's own categories are left out for the
 same reason the hunger filter ignores them) and country names. Everything
@@ -25,7 +29,7 @@ from config import GRAPH_DIR, HOTSPOTS, KB_PATH, PUBLISHERS
 
 csv.field_size_limit(10_000_000)
 
-SCHEMA_VERSION = "1"
+SCHEMA_VERSION = "2"
 DESCRIPTION_CAP = 2000  # parse_filter.DESCRIPTION_MAX: longer text is cut there
 STANDARD_SECTOR_VOCABS = {"1", "2", "7", "8", "10"}
 STATUS = {"1": "Pipeline", "2": "Implementation", "3": "Finalisation",
@@ -34,7 +38,7 @@ ROLES = {"1": "funding", "2": "accountable", "3": "extending", "4": "implementin
 # placeholders, not organisations (Oxfam GB anonymises partners and donors)
 PLACEHOLDER_ORGS = {"Oxfam Partner(s)", "Oxfam Donor(s)"}
 
-COLUMNS = ["iati_identifier", "publisher", "publisher_name", "countries",
+COLUMNS = ["iati_identifier", "source_id", "publisher", "publisher_name", "countries",
            "country_names", "title", "description", "description_truncated",
            "organisations", "funders", "implementers", "sectors", "status",
            "start_date", "end_date", "humanitarian", "match_basis",
@@ -69,12 +73,15 @@ def entries(graph_dir):
             sectors[c["iati_identifier"]].add(sector_name[c["sector_key"]])
 
     out = []
-    for a in _rows(graph_dir, "nodes_activities.csv"):
+    for n, a in enumerate(_rows(graph_dir, "nodes_activities.csv"), start=1):
         iid = a["iati_identifier"]
         codes = [c for c in a["hotspot_countries"].split("|") if c]
         roles = orgs_by_role[iid]
         out.append({
             "iati_identifier": iid,
+            # same row id the Neo4j loader puts on the Activity node, and
+            # the evidence format the query router checks
+            "source_id": f"nodes_activities.csv:row:{n}",
             "publisher": a["publisher"],
             "publisher_name": PUBLISHERS.get(a["publisher"], {}).get("label", a["publisher"]),
             "countries": "|".join(codes),
