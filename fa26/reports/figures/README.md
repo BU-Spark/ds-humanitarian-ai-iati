@@ -34,6 +34,7 @@ Numbers in the caption:
 - Calls on the heldout run: Sonnet 65, GLM-5.3 44 for 40 questions (sum of `model_calls` in `data/processed/06_hybrid_eval_2026-11-05_204405_996398.csv`, gitignored).
 - Development split overall: Sonnet 94.25, GLM-5.3 96.75 (`2026-11-05_v2_development_06_hybrid.json`), 2.50 points apart.
 - Heldout split overall: Sonnet 72.59, GLM-5.3 88.94 (`2026-11-05_v2_heldout_06_hybrid_FROZEN.json`), 16.35 points apart. The output checks do not make the two models equal on unseen questions.
+- Prior exposure (recorded 2026-11-17, as `benchmark/v2/README.md` requires): George did not read the heldout questions or the answer key while building or tuning the router; the run used an exported heldout bundle (question ids and text only). The heldout questions and answers are present in the repository for evaluator review. No template, prompt or contract change was made after the frozen heldout run (2026-11-05 20:44).
 
 ## iati_budget_table_2026-10-23.jpg
 
