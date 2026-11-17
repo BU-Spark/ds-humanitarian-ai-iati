@@ -1,0 +1,19 @@
+check,key,cypher_template,pandas_csv,agree,alex_findings
+B1 top_funders oxfamgb type1 GBP,name:UN World Food Programme (WFP) [GBP],203438175.00,203438175.00,True,"WFP is the largest GBP funder of Oxfam GB (findings.md, demo claim)"
+B1 top_funders oxfamgb type1 GBP,XM-DAC-12-1 [GBP],42241092.00,42241092.00,True,"WFP is the largest GBP funder of Oxfam GB (findings.md, demo claim)"
+B1 top_funders oxfamgb type1 GBP,name:EU - ECHO (EC Humanitarian Aid Dept) [GBP],38091027.00,38091027.00,True,"WFP is the largest GBP funder of Oxfam GB (findings.md, demo claim)"
+B1 top_funders oxfamgb type1 GBP,DK-CVR-88136411 [GBP],23534246.00,23534246.00,True,"WFP is the largest GBP funder of Oxfam GB (findings.md, demo claim)"
+B1 top_funders oxfamgb type1 GBP,name:Oxfam Germany [GBP],22664307.00,22664307.00,True,"WFP is the largest GBP funder of Oxfam GB (findings.md, demo claim)"
+B2 shared_partners oxfamgb x wfp (raw refs),(none),0 rows,0 rows,True,zero shared orgs on raw refs; same funders carry different IDs per publisher
+B3 funding_over_time wfp type4 USD,2022,5263780779.60,5263780779.60,True,WFP transactions begin 2021; type 2 == type 4 to the dollar
+B3 funding_over_time wfp type4 USD,2023,4307449043.44,4307449043.44,True,WFP transactions begin 2021; type 2 == type 4 to the dollar
+B3 funding_over_time wfp type4 USD,2024,3573521569.95,3573521569.95,True,WFP transactions begin 2021; type 2 == type 4 to the dollar
+B3 funding_over_time wfp type4 USD,2025,3288849657.77,3288849657.77,True,WFP transactions begin 2021; type 2 == type 4 to the dollar
+B3 funding_over_time wfp type4 USD,2026,1583791359.52,1583791359.52,True,WFP transactions begin 2021; type 2 == type 4 to the dollar
+B4 WFP type2 == type4 mirror,positive total,,type2 18037403740.15 / type4 18037403740.15 (n=2756/2756),True,"18,037,403,740 positive, 2,756 rows each"
+B5 top funders into Somalia type1 USD excl self,XM-DAC-302 [USD],1203270484.23,1203270484.23,True,"findings.md app table: United States 1.20bn, Somalia 343m, Multilateral 135m, FCDO 59m"
+B5 top funders into Somalia type1 USD excl self,XM-DAC-273 [USD],342883571.42,342883571.42,True,"findings.md app table: United States 1.20bn, Somalia 343m, Multilateral 135m, FCDO 59m"
+B5 top funders into Somalia type1 USD excl self,MU [USD],134761982.93,134761982.93,True,"findings.md app table: United States 1.20bn, Somalia 343m, Multilateral 135m, FCDO 59m"
+B5 top funders into Somalia type1 USD excl self,XM-DAC-12-1 [USD],58846333.48,58846333.48,True,"findings.md app table: United States 1.20bn, Somalia 343m, Multilateral 135m, FCDO 59m"
+B5 top funders into Somalia type1 USD excl self,DE-1 [USD],46583732.79,46583732.79,True,"findings.md app table: United States 1.20bn, Somalia 343m, Multilateral 135m, FCDO 59m"
+B6 rel_participates exact duplicates,duplicates,,210,True,"210 duplicate rows collapse to one edge: 59,121 - 210 = 58,911"

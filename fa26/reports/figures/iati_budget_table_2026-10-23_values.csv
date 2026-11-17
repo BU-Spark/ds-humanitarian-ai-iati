@@ -1,0 +1,7 @@
+arch,model,overall,correct,evidence,latency,calls
+Free Text2Cypher,Claude Opus 4.6,97.2%,100.0%,88.3%,5.0 s,not recorded
+Free Text2Cypher,Claude Sonnet 4.6,92.3%,95.0%,82.5%,3.1 s,not recorded
+Free Text2Cypher,GLM-5.3,98.3%,100.0%,92.8%,41.3 s,20
+Hybrid router + templates,Claude Opus 4.6,100.0%,100.0%,100.0%,3.4 s,20
+Hybrid router + templates,Claude Sonnet 4.6,99.0%,99.0%,100.0%,2.4 s,20
+Hybrid router + templates,GLM-5.3,100.0%,100.0%,100.0%,4.7 s,20

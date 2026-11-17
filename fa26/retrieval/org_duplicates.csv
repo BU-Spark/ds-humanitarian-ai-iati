@@ -1,0 +1,65 @@
+group,canonical_ref,ref,name,degree,relation,rule,score,curated,note
+ANDORRA,ANDORRA,AND,ANDORRA,1,same,ref_equals_other_name,100,yes,one org's ref is the other's name
+AU-5,AU-5,name:Australian Govt - DFAT,Australian Govt - DFAT,5,same,curated_only,100,yes,hand-checked; not caught by detection rules
+FAROE ISLANDS,FAROE ISLANDS,FRO,FAROE ISLANDS,1,same,ref_equals_other_name,100,yes,one org's ref is the other's name
+GLOBAL PARTNERSHIP FOR EDUCATION,GLOBAL PARTNERSHIP FOR EDUCATION,GLOBAL PARTNERSHIP FOR EDUCATION,,1,same,ref_equals_other_name,100,yes,one org's ref is the other's name
+HOLY SEE,HOLY SEE,HOL,HOLY SEE,1,same,ref_equals_other_name,100,yes,one org's ref is the other's name
+RWANDA,RWANDA,RWANDA,,1,same,ref_equals_other_name,100,yes,one org's ref is the other's name
+XI-IATI-EC_ECHO,XI-IATI-EC_ECHO,name:EU - ECHO (EC Humanitarian Aid Dept),EU - ECHO (EC Humanitarian Aid Dept),296,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-1,XM-DAC-1,name:Austrian Development Agency,Austrian Development Agency,9,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-10,XM-DAC-10,name:Swedish Int'l Development Cooperation,Swedish Int'l Development Cooperation,228,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-11,XM-DAC-11,name:Swiss Agency for Dev and Co-op,Swiss Agency for Dev and Co-op,150,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-12,XM-DAC-12,XM-DAC-12-1,FCDO - Procurement,455,agency_of,dac_agency_code,100,yes,XM-DAC-<donor>-<agency> under same donor
+XM-DAC-12,XM-DAC-12,name:UK - Scottish Government,UK - Scottish Government,14,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-2,XM-DAC-2,XM-DAC-2-10,Belgian Development Cooperation,22,agency_of,dac_agency_code,100,yes,XM-DAC-<donor>-<agency> under same donor
+XM-DAC-21,XM-DAC-21,XM-DAC-21-1,Ireland - Department of Foreign Affairs and Trade,23,agency_of,dac_agency_code,100,yes,XM-DAC-<donor>-<agency> under same donor
+XM-DAC-21-1,XM-DAC-21-1,name:Irish Government - Irish Aid,Irish Government - Irish Aid,11,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-255,XM-DAC-255,name:Govt of Mali  - DNPSES,Govt of Mali  - DNPSES,3,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-3,XM-DAC-3,name:Danish MFA & Embassies,Danish MFA & Embassies,38,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-3,XM-DAC-3,name:Danish Embassies,Danish Embassies,13,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-301,XM-DAC-301,CA-3,Canada - Global Affairs Canada | Affaires mondiales Canada,420,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-302,XM-DAC-302,name:USAID - Bureau for Hum Ass (ex OFDA),USAID - Bureau for Hum Ass (ex OFDA),109,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-349,XM-DAC-349,name:HAITI Govt,HAITI Govt,13,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-4,XM-DAC-4,FR-6,France - Ministry for Europe and Foreign Affairs,370,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-4,XM-DAC-4,name:French Government,French Government,2,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-41114,XM-DAC-41114,name:UN United Nations Development Programme,UN United Nations Development Programme,76,same,pseudo_ref_name_match,97,yes,name-only ref resembles a real ref's name
+XM-DAC-41119,XM-DAC-41119,name:UN Population Fund,UN Population Fund,8,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-41121,XM-DAC-41121,name:UN High Commissioner for Refugees UNHCR,UN High Commissioner for Refugees UNHCR,6,same,shared_acronym,90,yes,both carry acronym UNHCR; review
+XM-DAC-41122,XM-DAC-41122,name:UN United Nations Children's Fund UNICEF,UN United Nations Children's Fund UNICEF,194,same,pseudo_ref_name_match,96,yes,name-only ref resembles a real ref's name
+XM-DAC-41140,XM-DAC-41140,XM-DAC-41140,World Food Programme,246,same,shared_acronym,90,yes,both carry acronym WFP; review
+XM-DAC-41301,XM-DAC-41301,name:UN Food & Agricultural Organisation,UN Food & Agricultural Organisation,41,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-44000,XM-DAC-44000,name:WB World Bank Trust Fund,WB World Bank Trust Fund,52,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-44000,XM-DAC-44000,44000,The World Bank,40,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-44000,XM-DAC-44000,XM-DAC-70,MIGA,28,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-44000,XM-DAC-44000,XM-DAC-62,IBRD (World Bank),18,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-44000,XM-DAC-44000,XM-DAC-77,IDA (World Bank),8,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-44000,XM-DAC-44000,XM-DAC-72,IFC,6,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-47066,XM-DAC-47066,name:UN-Int Organization for Migration (IOM),UN-Int Organization for Migration (IOM),4,same,shared_acronym,90,yes,both carry acronym IOM; review
+XM-DAC-5,XM-DAC-5,DE-1,Germany - Ministry for Economic Cooperation and Development,379,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-5,XM-DAC-5,XM-DAC-5-7,Germany - Federal Foreign Office,251,agency_of,dac_agency_code,100,yes,XM-DAC-<donor>-<agency> under same donor
+XM-DAC-5,XM-DAC-5,name:Deutsche Gesellschaft für Int - GIZ,Deutsche Gesellschaft für Int - GIZ,8,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-5,XM-DAC-5,name:German Govt and Embassies,German Govt and Embassies,4,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-50,XM-DAC-50,XM-DAC-50-21,Spanish Agency for International Development Cooperation (AECID),43,agency_of,dac_agency_code,100,yes,XM-DAC-<donor>-<agency> under same donor
+XM-DAC-50,XM-DAC-50,ES-DIR3-E04585801,Spain - Ministry of Foreign Affairs and Cooperation,12,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-552,XM-DAC-552,XM-DAC-46004,Asian Development Bank,27,same,shared_acronym,90,yes,both carry acronym ADB; review
+XM-DAC-6,XM-DAC-6,XM-DAC-6-4,AICS - Agenzia Italiana per la Cooperazione allo Sviluppo / Italian Agency for Cooperation and Development,73,agency_of,dac_agency_code,100,yes,XM-DAC-<donor>-<agency> under same donor
+XM-DAC-6-4,XM-DAC-6-4,name:Italian Agency for Dev & Coop AICS,Italian Agency for Dev & Coop AICS,9,same,shared_acronym,90,yes,both carry acronym AICS; review
+XM-DAC-7,XM-DAC-7,name:Netherlands Government,Netherlands Government,21,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-701,XM-DAC-701,XM-DAC-701-2,Ministry of Foreign Affairs of Japan,324,agency_of,dac_agency_code,100,yes,XM-DAC-<donor>-<agency> under same donor
+XM-DAC-742,XM-DAC-742,KR-GOV-010,Republic of Korea,137,same,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-801,XM-DAC-801,AU-5,Australia - Department of  Foreign Affairs and Trade,99,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-820,XM-DAC-820,NZ-1,New Zealand - Ministry of Foreign Affairs and Trade - New Zealand Aid Programme,46,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,XI-IATI-EC_ECHO,European Commission - Humanitarian Aid & Civil Protection,303,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,XI-IATI-EC_DEVCO,European Commission - Directorate-General for International Cooperation and Development,149,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,name:EU - Food Security,EU - Food Security,124,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,name:EU - European Development Fund,EU - European Development Fund,60,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,XI-IATI-EC_NEAR,European Commission - Neighbourhood and Enlargement Negotiations,38,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,name:EU Trust Fund in Response to Syria Cris,EU Trust Fund in Response to Syria Cris,17,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,name:EU - Cofinancing,EU - Cofinancing,7,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,name:EU - Non-State Actors & LAs,EU - Non-State Actors & LAs,6,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,name:EU - European Neighbourhood & Partnershp,EU - European Neighbourhood & Partnershp,5,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-918-1,XM-DAC-918-1,name:EU - EIDHR,EU - EIDHR,2,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+name:UN Office for the Co-ord of Hum Affairs,name:UN Office for the Co-ord of Hum Affairs,XM-OCHA-CERF,United Nations Central Emergency Response Fund (CERF),249,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+name:UN Office for the Co-ord of Hum Affairs,name:UN Office for the Co-ord of Hum Affairs,XM-OCHA-CBPF,OCHA Country Based Pooled Funds,81,agency_of,curated_only,100,yes,hand-checked; not caught by detection rules
+XM-DAC-552,XM-DAC-552,XM-DAC-46002,African Development Bank,8,same,shared_acronym,90,no,both carry acronym ADB; review
+name:Action Against Hunger (ACF),name:Action Against Hunger (ACF),name:ACF Spain,ACF Spain,3,same,shared_acronym,90,no,both carry acronym ACF; review

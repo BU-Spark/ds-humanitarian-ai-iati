@@ -1,0 +1,650 @@
+{
+  "snapshot_id": "430caabd5a8ae1d0816a9941a4a8f730484c4c0b35360ee17983a76c3297658f",
+  "runs": [
+    {
+      "summary": {
+        "run_name": "sqlite_baseline_not_an_LLM",
+        "questions_submitted": 20,
+        "questions_total": 20,
+        "correctness_pct": 100.0,
+        "evidence_f1_pct": 100.0,
+        "behavior_pct": 100.0,
+        "overall_pct": 100.0,
+        "latency_samples": 20,
+        "mean_latency_ms": 3.337
+      },
+      "questions": [
+        {
+          "id": "Q01",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.608
+        },
+        {
+          "id": "Q02",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 1.2
+        },
+        {
+          "id": "Q03",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.519
+        },
+        {
+          "id": "Q04",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 3.722
+        },
+        {
+          "id": "Q05",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 2.43
+        },
+        {
+          "id": "Q06",
+          "category": "quality",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.412
+        },
+        {
+          "id": "Q07",
+          "category": "sectors",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.295
+        },
+        {
+          "id": "Q08",
+          "category": "time",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.339
+        },
+        {
+          "id": "Q09",
+          "category": "time",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.416
+        },
+        {
+          "id": "Q10",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 2.482
+        },
+        {
+          "id": "Q11",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 1.766
+        },
+        {
+          "id": "Q12",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 1.993
+        },
+        {
+          "id": "Q13",
+          "category": "quality",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 49.779
+        },
+        {
+          "id": "Q14",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.304
+        },
+        {
+          "id": "Q15",
+          "category": "sectors",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.111
+        },
+        {
+          "id": "Q16",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 1.0,
+          "behavior": null,
+          "score": 1.0,
+          "latency_ms": 0.363
+        },
+        {
+          "id": "Q17",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 0.003
+        },
+        {
+          "id": "Q18",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 0.002
+        },
+        {
+          "id": "Q19",
+          "category": "ambiguous",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 0.001
+        },
+        {
+          "id": "Q20",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": 0.001
+        }
+      ]
+    },
+    {
+      "summary": {
+        "run_name": "deliberately_wrong_control",
+        "questions_submitted": 20,
+        "questions_total": 20,
+        "correctness_pct": 0.0,
+        "evidence_f1_pct": 0.0,
+        "behavior_pct": 0.0,
+        "overall_pct": 0.0,
+        "latency_samples": 0,
+        "mean_latency_ms": null
+      },
+      "questions": [
+        {
+          "id": "Q01",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q02",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q03",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q04",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q05",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q06",
+          "category": "quality",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q07",
+          "category": "sectors",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q08",
+          "category": "time",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q09",
+          "category": "time",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q10",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q11",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q12",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q13",
+          "category": "quality",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q14",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q15",
+          "category": "sectors",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q16",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q17",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q18",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q19",
+          "category": "ambiguous",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q20",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 0.0,
+          "evidence_f1": null,
+          "behavior": 0.0,
+          "score": 0.0,
+          "latency_ms": null
+        }
+      ]
+    },
+    {
+      "summary": {
+        "run_name": "correct_values_without_evidence_control",
+        "questions_submitted": 20,
+        "questions_total": 20,
+        "correctness_pct": 100.0,
+        "evidence_f1_pct": 0.0,
+        "behavior_pct": 100.0,
+        "overall_pct": 76.0,
+        "latency_samples": 0,
+        "mean_latency_ms": null
+      },
+      "questions": [
+        {
+          "id": "Q01",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q02",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q03",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q04",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q05",
+          "category": "organizations",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q06",
+          "category": "quality",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q07",
+          "category": "sectors",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q08",
+          "category": "time",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q09",
+          "category": "time",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q10",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q11",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q12",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q13",
+          "category": "quality",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q14",
+          "category": "funding",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q15",
+          "category": "sectors",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q16",
+          "category": "geography",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": 0.0,
+          "behavior": null,
+          "score": 0.7,
+          "latency_ms": null
+        },
+        {
+          "id": "Q17",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q18",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q19",
+          "category": "ambiguous",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": null
+        },
+        {
+          "id": "Q20",
+          "category": "unsupported",
+          "submitted": true,
+          "correctness": 1.0,
+          "evidence_f1": null,
+          "behavior": 1.0,
+          "score": 1.0,
+          "latency_ms": null
+        }
+      ]
+    }
+  ]
+}

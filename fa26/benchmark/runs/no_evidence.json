@@ -1,0 +1,296 @@
+{
+  "run_name": "correct_values_without_evidence_control",
+  "snapshot_id": "430caabd5a8ae1d0816a9941a4a8f730484c4c0b35360ee17983a76c3297658f",
+  "answers": [
+    {
+      "id": "Q01",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "412",
+          "evidence": []
+        },
+        "oxfamus": {
+          "value": "11",
+          "evidence": []
+        },
+        "wfp": {
+          "value": "82",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q02",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "12",
+          "evidence": []
+        },
+        "oxfamus": {
+          "value": "6",
+          "evidence": []
+        },
+        "wfp": {
+          "value": "13",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q03",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "29",
+          "evidence": []
+        },
+        "oxfamus": {
+          "value": "2",
+          "evidence": []
+        },
+        "wfp": {
+          "value": "6",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q04",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "US-EIN-23-7069110": {
+          "value": "49",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q05",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "1": {
+          "value": "181",
+          "evidence": []
+        },
+        "2": {
+          "value": "1",
+          "evidence": []
+        },
+        "3": {
+          "value": "1",
+          "evidence": []
+        },
+        "4": {
+          "value": "4",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q06",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "keyword": {
+          "value": "430",
+          "evidence": []
+        },
+        "sector": {
+          "value": "75",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q07",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "count": {
+          "value": "66",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q08",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "96",
+          "evidence": []
+        },
+        "wfp": {
+          "value": "39",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q09",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "2026-05-27",
+          "evidence": []
+        },
+        "oxfamus": {
+          "value": "2020-07-23",
+          "evidence": []
+        },
+        "wfp": {
+          "value": "2026-07-06",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q10",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "total": {
+          "value": "0",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q11",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "total": {
+          "value": "12260328.3000000001",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q12",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "total": {
+          "value": "3781832.44",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q13",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "oxfamgb": {
+          "value": "2102",
+          "evidence": []
+        },
+        "wfp": {
+          "value": "3235",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q14",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "total": {
+          "value": "3816360.25",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q15",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "2:17": {
+          "value": "5",
+          "evidence": []
+        },
+        "2:2": {
+          "value": "77",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q16",
+      "status": "answer",
+      "reasons": [],
+      "facts": {
+        "wfp": {
+          "value": "82",
+          "evidence": []
+        }
+      },
+      "latency_ms": null
+    },
+    {
+      "id": "Q17",
+      "status": "abstain",
+      "reasons": [
+        "NEEDS_DATA_MISSING"
+      ],
+      "facts": {},
+      "latency_ms": null
+    },
+    {
+      "id": "Q18",
+      "status": "abstain",
+      "reasons": [
+        "HISTORY_UNAVAILABLE"
+      ],
+      "facts": {},
+      "latency_ms": null
+    },
+    {
+      "id": "Q19",
+      "status": "clarify",
+      "reasons": [
+        "FUNDING_DEFINITION_REQUIRED",
+        "CURRENCY_BASIS_REQUIRED",
+        "PERIOD_REQUIRED"
+      ],
+      "facts": {},
+      "latency_ms": null
+    },
+    {
+      "id": "Q20",
+      "status": "abstain",
+      "reasons": [
+        "RAW_XML_UNAVAILABLE"
+      ],
+      "facts": {},
+      "latency_ms": null
+    }
+  ]
+}

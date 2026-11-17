@@ -1,0 +1,19 @@
+# secrets
+.env
+# data (keep folder structure only)
+data/raw/*
+data/interim/*
+data/processed/*
+!data/**/.gitkeep
+# python / jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+# macOS
+.DS_Store
+# Anaconda Jupyter local cache
+anaconda_projects/
+
+# live benchmark runs (regenerate with notebook 05)
+benchmark/results/live_*/

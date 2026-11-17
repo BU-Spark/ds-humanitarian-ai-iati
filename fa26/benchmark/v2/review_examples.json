@@ -1,0 +1,16 @@
+{
+  "question_ids": [
+    "V2Q001",
+    "V2Q002",
+    "V2Q021",
+    "V2Q022",
+    "V2Q041",
+    "V2Q042",
+    "V2Q056",
+    "V2Q057",
+    "V2Q071",
+    "V2Q072"
+  ],
+  "automated_check": "Python and SQLite agree",
+  "human_review": "pending"
+}

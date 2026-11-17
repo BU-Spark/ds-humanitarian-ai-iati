@@ -1,0 +1,442 @@
+[
+  {
+    "id": "Q01",
+    "question": "How many retained activities does each publisher have?",
+    "value_type": "integer",
+    "contract": "Count distinct iati_identifier, grouped by publisher."
+  },
+  {
+    "id": "Q02",
+    "question": "How many distinct hotspot countries does each publisher target?",
+    "value_type": "integer",
+    "contract": "Use rel_targets_country where is_hotspot=true; count distinct country_code by activity publisher."
+  },
+  {
+    "id": "Q03",
+    "question": "How many retained activities target Somalia for each publisher?",
+    "value_type": "integer",
+    "contract": "Count distinct activity IDs with country_code=SO; include only publishers with matches."
+  },
+  {
+    "id": "Q04",
+    "question": "Which organization references participate in activities from at least two publishers, and how many distinct activities does each participate in?",
+    "value_type": "integer",
+    "contract": "Group rel_participates by org_ref; require at least two distinct activity publishers. Deduplicate activities. Return organization refs, not names."
+  },
+  {
+    "id": "Q05",
+    "question": "How many distinct organization references occur in each participation role?",
+    "value_type": "integer",
+    "contract": "Group by raw role code, counting distinct org_ref. Repeated participation rows do not increase counts."
+  },
+  {
+    "id": "Q06",
+    "question": "How many activities were included by each match basis?",
+    "value_type": "integer",
+    "contract": "Group nodes_activities by match_basis; count distinct activity IDs."
+  },
+  {
+    "id": "Q07",
+    "question": "How many retained WFP activities have activity-level sector 1:72040?",
+    "value_type": "integer",
+    "contract": "Return count under key count. Use rel_classified_as, not text or transaction sectors."
+  },
+  {
+    "id": "Q08",
+    "question": "How many activities per publisher started in 2020 through 2025 inclusive?",
+    "value_type": "integer",
+    "contract": "Use start_actual when nonempty, otherwise start_planned. Require date >=2020-01-01 and <2026-01-01. Omit publishers with zero matches."
+  },
+  {
+    "id": "Q09",
+    "question": "What is the latest publisher-reported update calendar date among retained activities for each publisher?",
+    "value_type": "date",
+    "contract": "Take max of first 10 characters of nonempty last_updated. This is not a download timestamp."
+  },
+  {
+    "id": "Q10",
+    "question": "What is the net sum of WFP incoming funds in USD dated in calendar year 2020?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=1, currency=USD, date >=2020-01-01 and <2021-01-01. Include negative adjustments; no conversion or other types."
+  },
+  {
+    "id": "Q11",
+    "question": "What is the net sum of Oxfam GB disbursements in GBP dated in calendar year 2020?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=3, currency=GBP, date >=2020-01-01 and <2021-01-01. Include negative adjustments."
+  },
+  {
+    "id": "Q12",
+    "question": "What is the net sum of Oxfam America expenditure in USD across all transaction dates in this snapshot?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum type=4 and currency=USD for oxfamus; include negatives. This is not a current-year total."
+  },
+  {
+    "id": "Q13",
+    "question": "How many negative transaction values does each publisher report?",
+    "value_type": "integer",
+    "contract": "Count transaction rows with Decimal(value)<0 by activity publisher. A negative value is not automatically invalid."
+  },
+  {
+    "id": "Q14",
+    "question": "What is the sum of original, committed budget rows denominated in USD across all periods in this snapshot?",
+    "value_type": "decimal",
+    "contract": "Return total. Sum nodes_budgets where type=1,status=2,currency=USD. This explicitly sums rows; it does not select revisions or estimate unique funding."
+  },
+  {
+    "id": "Q15",
+    "question": "How many distinct activities are linked to each SDG key?",
+    "value_type": "integer",
+    "contract": "Count distinct activity IDs in rel_contributes_to by sdg_key. Do not interpret a tag as evidence of achieved results."
+  },
+  {
+    "id": "Q16",
+    "question": "How many distinct activities have at least one location node, by publisher?",
+    "value_type": "integer",
+    "contract": "Join rel_located_at to activities; count distinct activity IDs by publisher. Omit zero groups. A location is not necessarily a beneficiary location."
+  },
+  {
+    "id": "Q17",
+    "question": "Which hotspot country currently needs humanitarian aid the most?",
+    "value_type": "structured",
+    "contract": "Use only the supplied snapshot. Answer when supported; otherwise explain the missing information or request clarification. Use the shared response schema."
+  },
+  {
+    "id": "Q18",
+    "question": "What did these records say on January 1, 2020, before subsequent publisher corrections?",
+    "value_type": "structured",
+    "contract": "Use only the supplied snapshot. Answer when supported; otherwise explain the missing information or request clarification. Use the shared response schema."
+  },
+  {
+    "id": "Q19",
+    "question": "How much total funding did these organizations provide?",
+    "value_type": "structured",
+    "contract": "Use only the supplied snapshot. Answer when supported; otherwise explain the missing information or request clarification. Use the shared response schema."
+  },
+  {
+    "id": "Q20",
+    "question": "Which exact original WFP XML field contained a country code instead of an activity identifier in the summer anomaly?",
+    "value_type": "structured",
+    "contract": "Use only the supplied snapshot. Answer when supported; otherwise explain the missing information or request clarification. Use the shared response schema."
+  },
+  {
+    "id": "V2Q001",
+    "question": "How many activities are recorded in this snapshot?"
+  },
+  {
+    "id": "V2Q002",
+    "question": "How many activities are marked humanitarian?"
+  },
+  {
+    "id": "V2Q003",
+    "question": "How many activities are recorded as completed?"
+  },
+  {
+    "id": "V2Q004",
+    "question": "How many activities have no actual start date?"
+  },
+  {
+    "id": "V2Q005",
+    "question": "How many activities have no actual end date?"
+  },
+  {
+    "id": "V2Q006",
+    "question": "How many activities have a planned start date?"
+  },
+  {
+    "id": "V2Q007",
+    "question": "How many activities have a planned end date?"
+  },
+  {
+    "id": "V2Q008",
+    "question": "How many activities use GBP as their default currency?"
+  },
+  {
+    "id": "V2Q009",
+    "question": "How many distinct organisation references are recorded?"
+  },
+  {
+    "id": "V2Q010",
+    "question": "How many distinct named locations are recorded?"
+  },
+  {
+    "id": "V2Q011",
+    "question": "How many activities are in implementation?"
+  },
+  {
+    "id": "V2Q012",
+    "question": "What is the earliest recorded actual activity start date?"
+  },
+  {
+    "id": "V2Q013",
+    "question": "What is the latest recorded actual activity end date?"
+  },
+  {
+    "id": "V2Q014",
+    "question": "How many activities have no description?"
+  },
+  {
+    "id": "V2Q015",
+    "question": "How many distinct transaction identifiers are recorded?"
+  },
+  {
+    "id": "V2Q016",
+    "question": "How many distinct budget identifiers are recorded?"
+  },
+  {
+    "id": "V2Q017",
+    "question": "How many distinct sector keys are recorded?"
+  },
+  {
+    "id": "V2Q018",
+    "question": "How many organisation references have no name?"
+  },
+  {
+    "id": "V2Q019",
+    "question": "How many locations have no latitude?"
+  },
+  {
+    "id": "V2Q020",
+    "question": "How many activities have a publisher-reported update timestamp?"
+  },
+  {
+    "id": "V2Q021",
+    "question": "How many Oxfam GB activities in Somalia are recorded as completed?"
+  },
+  {
+    "id": "V2Q022",
+    "question": "How many WFP activities in Yemen are in implementation?"
+  },
+  {
+    "id": "V2Q023",
+    "question": "How many activities targeting Afghanistan have a recorded location?"
+  },
+  {
+    "id": "V2Q024",
+    "question": "How many activities targeting South Sudan have a funding organisation listed?"
+  },
+  {
+    "id": "V2Q025",
+    "question": "How many WFP activities have both a sector classification and an implementing organisation?"
+  },
+  {
+    "id": "V2Q026",
+    "question": "How many Oxfam GB activities have both a recorded location and an implementing organisation?"
+  },
+  {
+    "id": "V2Q027",
+    "question": "How many activities targeting Yemen have an SDG link?"
+  },
+  {
+    "id": "V2Q028",
+    "question": "How many activities targeting Somalia have an actual start date before 2020?"
+  },
+  {
+    "id": "V2Q029",
+    "question": "How many activities with a funding organisation have an actual end date before 2022?"
+  },
+  {
+    "id": "V2Q030",
+    "question": "How many Oxfam America activities have a transaction and a budget?"
+  },
+  {
+    "id": "V2Q031",
+    "question": "How many activities have both a negative transaction and an implementing organisation?"
+  },
+  {
+    "id": "V2Q032",
+    "question": "How many activities have both a commitment and an expenditure transaction?"
+  },
+  {
+    "id": "V2Q033",
+    "question": "How many activities have both incoming funds and disbursements?"
+  },
+  {
+    "id": "V2Q034",
+    "question": "How many activities have both USD and GBP transactions?"
+  },
+  {
+    "id": "V2Q035",
+    "question": "How many activities with a revised budget are marked completed?"
+  },
+  {
+    "id": "V2Q036",
+    "question": "How many activities with a committed budget have an actual start date in 2021?"
+  },
+  {
+    "id": "V2Q037",
+    "question": "How many activities have a location link but no actual start date?"
+  },
+  {
+    "id": "V2Q038",
+    "question": "How many activities with sector 1:72040 also have an SDG link?"
+  },
+  {
+    "id": "V2Q039",
+    "question": "How many activities with incoming funds have no actual end date?"
+  },
+  {
+    "id": "V2Q040",
+    "question": "How many activities with an implementing organisation have a publisher-reported update in 2025?"
+  },
+  {
+    "id": "V2Q041",
+    "question": "How much did the UK give?"
+  },
+  {
+    "id": "V2Q042",
+    "question": "Show the total funding from Oxfam."
+  },
+  {
+    "id": "V2Q043",
+    "question": "How much did America contribute?"
+  },
+  {
+    "id": "V2Q044",
+    "question": "Which Congo projects did we support?"
+  },
+  {
+    "id": "V2Q045",
+    "question": "How much funding came from the UN?"
+  },
+  {
+    "id": "V2Q046",
+    "question": "How much did the government spend in Yemen?"
+  },
+  {
+    "id": "V2Q047",
+    "question": "How much did our partners spend last year?"
+  },
+  {
+    "id": "V2Q048",
+    "question": "How much did the ministry contribute?"
+  },
+  {
+    "id": "V2Q049",
+    "question": "How many activities does the World Food Programme report?"
+  },
+  {
+    "id": "V2Q050",
+    "question": "How many activities does Oxfam America report?"
+  },
+  {
+    "id": "V2Q051",
+    "question": "How many activities does Oxfam Great Britain report?"
+  },
+  {
+    "id": "V2Q052",
+    "question": "How many activities list GB-CHC-202918 as an implementing organisation?"
+  },
+  {
+    "id": "V2Q053",
+    "question": "How many activities list GB-CHC-202918 as a funding organisation?"
+  },
+  {
+    "id": "V2Q054",
+    "question": "How many activities list GB-CHC-202918 as an extending organisation?"
+  },
+  {
+    "id": "V2Q055",
+    "question": "How many activities target the Democratic Republic of the Congo?"
+  },
+  {
+    "id": "V2Q056",
+    "question": "What is the signed total of negative WFP incoming-fund transactions in USD?"
+  },
+  {
+    "id": "V2Q057",
+    "question": "What is the total of positive WFP incoming-fund transactions in USD?"
+  },
+  {
+    "id": "V2Q058",
+    "question": "How many zero-value transactions are recorded?"
+  },
+  {
+    "id": "V2Q059",
+    "question": "What is the net GBP expenditure recorded for Oxfam GB across the snapshot?"
+  },
+  {
+    "id": "V2Q060",
+    "question": "What is the net USD commitment amount recorded for WFP across the snapshot?"
+  },
+  {
+    "id": "V2Q061",
+    "question": "What is the net USD expenditure recorded for WFP across the snapshot?"
+  },
+  {
+    "id": "V2Q062",
+    "question": "How many Oxfam GB disbursement transactions have negative values?"
+  },
+  {
+    "id": "V2Q063",
+    "question": "What is the net incoming-fund amount by currency across all publishers?"
+  },
+  {
+    "id": "V2Q064",
+    "question": "What is the net expenditure by currency across all publishers?"
+  },
+  {
+    "id": "V2Q065",
+    "question": "What is the net USD incoming-fund amount for activities targeting Somalia?"
+  },
+  {
+    "id": "V2Q066",
+    "question": "What is the net GBP disbursement amount for activities targeting Yemen?"
+  },
+  {
+    "id": "V2Q067",
+    "question": "What is the net USD expenditure dated in 2022 for activities targeting Afghanistan?"
+  },
+  {
+    "id": "V2Q068",
+    "question": "What is the total value of revised indicative GBP budget rows across all periods?"
+  },
+  {
+    "id": "V2Q069",
+    "question": "What is the net USD incoming-fund amount dated before 2000?"
+  },
+  {
+    "id": "V2Q070",
+    "question": "What is the net EUR expenditure across the snapshot?"
+  },
+  {
+    "id": "V2Q071",
+    "question": "How many people were lifted out of hunger by these projects?"
+  },
+  {
+    "id": "V2Q072",
+    "question": "Which project reduced child mortality the most?"
+  },
+  {
+    "id": "V2Q073",
+    "question": "How much funding was lost to corruption?"
+  },
+  {
+    "id": "V2Q074",
+    "question": "What is the current bank balance of each implementing partner?"
+  },
+  {
+    "id": "V2Q075",
+    "question": "What are the real names behind every Oxfam Partner(s) entry?"
+  },
+  {
+    "id": "V2Q076",
+    "question": "Which country will have the worst hunger crisis next year?"
+  },
+  {
+    "id": "V2Q077",
+    "question": "Which publisher is the most effective per dollar spent?"
+  },
+  {
+    "id": "V2Q078",
+    "question": "Give the funding total converted to euros at today’s exchange rates."
+  },
+  {
+    "id": "V2Q079",
+    "question": "How much did every humanitarian organisation worldwide spend this year?"
+  },
+  {
+    "id": "V2Q080",
+    "question": "What is the home address of the person managing each project?"
+  }
+]
