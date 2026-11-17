@@ -24,10 +24,10 @@ Benchmark v1 (20 questions), one full run per architecture and model.
 | Overall score | scorer output, `Overall %` | `reports/benchmark_runs/2026-10-22_v1_free_text2cypher.md` (nb05 rows, runs ending `_0935` and `_1521`), `reports/benchmark_runs/2026-10-22_v1_hybrid.md` (nb06 rows, runs ending `_1613`) |
 | Mean latency / question | scorer output, `Mean ms` / 1000, rounded to 0.1 s | same files |
 | Wall time, 20 Qs | mean latency x 20 (not separately timed) | derived |
-| LLM calls | one planning call per question; retries were not triggered in these runs | notebook design |
-| Est. cost / run | estimate: approximate input + output tokens per planning call x the provider's list price at the time, x 20. Not metered; read it as an order of magnitude, not a bill | estimate |
+| LLM calls | 20 = one planning call per question. This is the minimum: notebooks 05 and 06 retry a failed query (05 once, 06 up to twice) and retries were not counted | notebook design |
+| Est. cost / run | **not measured**. The scorer output has `cost_usd: null` for every run (notebooks 05 and 06, scoring cell), and no notebook records token usage. The figures in this column were rough estimates made when the table was drawn; the method was not recorded. Do not quote them as results | none |
 
-"verified" marks runs whose answers matched the manual-template run (`templates_manual__neo4j_templates__2026-10-22_1613`, 100%) question by question.
+"verified" marks the two runs that scored 100% overall in `2026-10-22_v1_hybrid.md`.
 
 ## iati_pipeline_validator_2026-11-05.jpg
 
@@ -35,4 +35,4 @@ Architecture diagram, no measured values. It describes the router in `src/ask.py
 
 ## iati_status_map_2026-10-23.png / .pdf / .svg
 
-Team status as of 2026-10-23, drawn by hand from the state of the notebooks and branches on that date. Numbers inside boxes are copied from: graph load counts (loader output, 27,279 nodes / 59,121 relationship rows), nb05 and nb06 scores (the two v1 files above), nb07 cross-check (`reports/benchmark_runs/2026-11-05_07_crosscheck.csv`, 18/18). **This map is outdated**: since then the adapter, schema switch, benchmark v2 and the Ask tab are done. Do not use it for final slides without redrawing.
+Team status as of 2026-10-23, drawn by hand from the state of the notebooks and branches on that date. Numbers inside boxes are copied from: graph load counts (notebook 04 v2 expected counts, 27,279 nodes / 59,121 relationships / 0 isolated), nb05 and nb06 scores (the two v1 files above), nb07 cross-check (`reports/benchmark_runs/2026-11-05_07_crosscheck.csv`, 18/18). **This map is outdated**: since then the adapter, schema switch, benchmark v2 and the Ask tab are done. Do not use it for final slides without redrawing.
