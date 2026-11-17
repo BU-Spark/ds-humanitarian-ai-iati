@@ -1,0 +1,29 @@
+diff --git a/fa26/src/tools/adapter.py b/fa26/src/tools/adapter.py
+index e6f2da4..46686e8 100644
+--- a/fa26/src/tools/adapter.py
++++ b/fa26/src/tools/adapter.py
+@@ -125,8 +125,9 @@ def retrieval_catalog() -> str:
+ 
+ 
+ def catalog_all() -> str:
+-    """Template catalogue first (deterministic Cypher), then the retrieval tools."""
+-    return template_catalog() + "\n" + retrieval_catalog()
++    """Template catalogue first (deterministic Cypher), then the retrieval tools, then KB search."""
++    from kb import tool as kb_tool
++    return template_catalog() + "\n" + retrieval_catalog() + "\n" + kb_tool.catalog_line()
+ 
+ 
+ # ----------------------------------------------------------------------------------- arg handling --
+@@ -277,6 +278,12 @@ def run_any(run_cypher, name: str, args: dict, **kw) -> dict:
+         return run_retrieval(name, args, **kw)
+     if name in TEMPLATE_TOOLS:
+         return run_template(run_cypher, name, args)
++    if name == "kb_search":
++        from kb import tool as kb_tool
++        try:
++            return kb_tool.run(args, **kw)
++        except ValueError as e:
++            raise ToolError(str(e)) from e
+     raise ToolError(f"unknown tool {name!r}")
+ 
+ 

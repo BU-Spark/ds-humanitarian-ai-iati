@@ -87,6 +87,32 @@ To keep the evaluation honest:
 - Change the search, then rerun `python -m kb.evaluate`, and report both numbers.
 - If you tune on these 12 questions, write a fresh set before claiming an improvement.
 
+## How it fits the team's work
+
+The KB is one more tool for the query router on `retrieval-schema-integration` (PR #8: Alex's retrieval tools, George's templates and `src/ask.py`), not a separate system:
+
+| Router tools | Answer | Example |
+|---|---|---|
+| Cypher templates (George) | counts, dates | "How many WFP activities target Yemen?" |
+| Retrieval tools (Alex) | lists, funders, money | "Top funders into Somalia" |
+| **`kb_search` (this)** | **what projects do** | "Which projects provide school meals in Yemen?" |
+
+[`kb/tool.py`](../kb/tool.py) follows the router's conventions without importing its code:
+- **Catalogue entry:** the same `{fn, description, params}` format, so the model sees `kb_search` next to the other tools.
+- **Results:** `{key, value, evidence}` rows, with key = IATI identifier and value = title.
+- **Evidence:** `nodes_activities.csv:row:N` source IDs, the same ones Alex's loader puts on Activity nodes and the format `src/tools/contract.py` checks.
+- **Bad arguments** raise `ValueError`, which the router reports as `ToolError`.
+
+**Wiring it in** is the 11-line change in [`kb/router_wiring.patch`](../kb/router_wiring.patch), to `src/tools/adapter.py`. It was tested on 17 November 2026 in a scratch copy of PR #8 with this branch merged in:
+- The merge was clean.
+- All tests passed: 155 in `tests/` (theirs and ours) plus 29 in `retrieval/tests` and `benchmark`.
+- `run_any(None, "kb_search", {...})` returned rows that the contract's checks accept, and the cited rows were the right activities.
+- `kb_search` appeared in `catalog_all()` and in `ask.build_system()`.
+
+Two things for whoever applies it:
+- **Build the KB from the same CSVs as the graph** the router uses. Row numbers differ between the pinned snapshot (505 activities) and the current pipeline output (439). For the benchmark snapshot, use `python -m kb.build --graph-dir benchmark/snapshot`.
+- **Adding a tool changes the router's prompt.** The frozen held-out score in PR #8 then no longer describes the router, so rerun or label it before quoting numbers.
+
 ## Known limitations
 
 - Many WFP donors are named in French ("Etats-Unis", "Allemagne"), so "United States" does not find them.
