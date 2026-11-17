@@ -228,7 +228,8 @@ class ParserIntegration(unittest.TestCase):
         import subprocess
         env = dict(os.environ, IATI_RAW_DIR='/tmp/iati-test-input', PYTHONPATH=str(Path(s.__file__).parent))
         value = subprocess.check_output([s.os.sys.executable, '-c', 'from config import RAW_DIR; print(RAW_DIR)'], env=env, text=True)
-        self.assertEqual(value.strip(), '/tmp/iati-test-input')
+        # config resolves the path; on macOS /tmp is a symlink to /private/tmp
+        self.assertEqual(value.strip(), str(Path('/tmp/iati-test-input').resolve()))
 
 
 if __name__ == '__main__': unittest.main()
