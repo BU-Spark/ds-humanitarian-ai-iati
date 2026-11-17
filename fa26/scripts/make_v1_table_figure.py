@@ -3,7 +3,9 @@
     python fa26/scripts/make_v1_table_figure.py
 """
 from pathlib import Path
+import logging
 import pandas as pd, matplotlib
+logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import font_manager as fm

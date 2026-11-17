@@ -68,6 +68,13 @@ class ResolverTests(unittest.TestCase):
     def test_exact_name_beats_contained_alias(self):
         self.assertEqual(self.r.resolve("Oxfam Novib")["refs"], ["NL-KVK-27108436"])
 
+    def test_typed_ref_resolves_to_itself(self):
+        # a ref typed as-is must not be read as words ("US-EIN-..." used to resolve to the US government)
+        for ref in ("US-EIN-23-7069110", "us-ein-23-7069110", "GB-CHC-202918", "XM-DAC-41140", "NL-KVK-27108436"):
+            out = self.r.resolve(ref)
+            self.assertEqual(out["refs"], [ref.upper()], ref)
+            self.assertEqual(out["candidates"][0]["via"], "exact-ref", ref)
+
     def test_countries(self):
         self.assertEqual(self.r.resolve("DRC")["refs"], ["CD"])
         self.assertEqual(self.r.resolve("South Sudan")["kind"], "country")

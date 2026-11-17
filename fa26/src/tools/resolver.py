@@ -82,6 +82,13 @@ class OrgResolver:
         """-> {query, kind, group, refs: [...], candidates: [{ref, name, score, via}], note}"""
         q = _norm(text)
         out = {"query": text, "kind": "organisation", "group": None, "refs": [], "candidates": [], "note": ""}
+        raw = text.strip().lower()  # an identifier typed as-is is matched before any word-based rule
+        by_ref = [o for o in self.orgs if o["ref"].lower() == raw and o["ref"] not in _NON_ORG_PLACEHOLDERS]
+        if by_ref:
+            out["candidates"] = [{"ref": o["ref"], "name": o["name"], "score": 1.0, "via": "exact-ref"} for o in by_ref]
+            out["refs"] = [c["ref"] for c in out["candidates"]]
+            out["note"] = "Exact organisation identifier."
+            return out
         country = self.resolve_country(q)
         if country:
             out.update(kind="country", refs=[country["code"]], candidates=[dict(country, score=1.0, via="country-alias")],

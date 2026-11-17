@@ -6,9 +6,15 @@
     out["status"], out["facts"], out["tool"], out["args"], out["latency_ms"]
     eng.evidence_rows(out)                           # the cited snapshot rows, for display
 
-Pipeline (one LLM call, then code): plan -> template | retrieval tool (adapter) | free Cypher -> output-contract
-validation -> format. Same code as notebook 06, so benchmark scores describe this engine. Clarify / abstain
-reasons use the benchmark v2 vocabulary. No benchmark files are read.
+Pipeline: plan (LLM) -> template | retrieval tool (adapter) | free Cypher -> output-contract validation -> format.
+A failed check sends the error back to the planner (up to 2 retries), so one question can take up to 3 LLM calls.
+Clarify / abstain reasons use the benchmark's global reason vocabulary (6 v1 codes + 11 v2 codes).
+
+Relation to notebook 06: same templates, adapter, contract checks and graph shape, but the system prompt is
+built here (build_system) and differs from notebook 06 cell 13. The benchmark scores reported for notebook 06
+therefore do not automatically describe this engine; it has not been scored on the benchmark itself.
+Files read: fa26/benchmark/snapshot (rows shown by evidence_rows; activity ids via tools.adapter) and, via tools.contract,
+fa26/benchmark/manifest.json (valid evidence ids), and fa26/.env (connection and API keys). No questions or answer keys are read.
 """
 from __future__ import annotations
 
@@ -102,7 +108,7 @@ class S(TypedDict, total=False):
 
 
 def build_router(llm, run_cypher, system=None, reason_codes=REASON_CODES, max_retries=2):
-    """LangGraph: plan -> template | free -> format, with retry on a failed check (identical to notebook 06)."""
+    """LangGraph: plan -> template | free -> format, with retry on a failed check (same graph shape as notebook 06)."""
     from langgraph.graph import StateGraph, END
     from langchain_core.messages import SystemMessage, HumanMessage
     system = system or build_system(reason_codes)
