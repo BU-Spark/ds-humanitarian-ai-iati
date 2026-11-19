@@ -45,6 +45,25 @@ python src/parse_filter.py --no-theme                       # coverage scan
 python src/resolve_orgs.py --dry-run                        # resolution preview
 ```
 
+## Live updates (every 1-2 weeks)
+
+`src/live_updates.py` (`LiveUpdater` class) re-downloads the selected IATI
+files when an update is due, replaces only files whose SHA-256 changed,
+and re-runs parse -> resolve only if something changed.
+
+```bash
+python src/live_updates.py                    # runs only if 7+ days since last update
+python src/live_updates.py --interval-days 14 # biweekly
+python src/live_updates.py --force --sync     # now, and copy CSVs to spaces/data
+python src/live_updates.py --status           # last run / next due
+python src/pipeline.py update                 # same, via the pipeline entrypoint
+```
+
+Schedule it **daily**; it does real work only when due. State and a per-run
+JSON log live in `data/live_updates/`; previous versions of changed files go
+to `data/raw_archive/<timestamp>/` (both gitignored). A weekly GitHub Actions
+workflow is in `.github/workflows/iati-live-update.yml`.
+
 Then run the demo locally:
 
 ```bash

@@ -4,19 +4,19 @@
     "include_general_emergency": false
   },
   "counts": {
-    "total_seen": 2858,
-    "dropped_geography": 1869,
+    "total_seen": 2922,
+    "dropped_geography": 1906,
     "dropped_theme_no_signal": 398,
-    "kept": 439,
+    "kept": 449,
     "kept_via_keyword_weak": 124,
     "kept_via_keyword": 203,
     "review_exclude": 6,
     "dropped_by_review": 6,
     "dropped_duplicate": 22,
-    "kept_via_sdg": 11,
-    "kept_via_sector": 75,
-    "kept_via_keyword_over_sector": 26,
-    "dropped_theme_sector_no_match": 124
+    "kept_via_sector": 84,
+    "kept_via_keyword_over_sector": 27,
+    "dropped_theme_sector_no_match": 141,
+    "kept_via_sdg": 11
   },
   "per_publisher_funnel": {
     "oxfamgb": {
@@ -35,22 +35,22 @@
       "dropped_theme_no_signal": 35
     },
     "wfp": {
-      "seen": 1344,
-      "dropped_geography": 1104,
+      "seen": 1408,
+      "dropped_geography": 1141,
+      "kept_via_sector": 84,
+      "kept_via_keyword_over_sector": 27,
+      "dropped_theme_sector_no_match": 141,
       "kept_via_sdg": 11,
-      "dropped_theme_no_signal": 4,
-      "kept_via_sector": 75,
-      "kept_via_keyword_over_sector": 26,
-      "dropped_theme_sector_no_match": 124
+      "dropped_theme_no_signal": 4
     }
   },
   "top_dropped_sector_codes": {
     "oxfamgb": {},
     "oxfamus": {},
     "wfp": {
-      "1:72050": 77,
-      "1:91010": 23,
-      "1:74020": 13,
+      "1:72050": 89,
+      "1:91010": 27,
+      "1:74020": 14,
       "1:73010": 11
     }
   },
@@ -78,18 +78,18 @@
       "YE": 1
     },
     "wfp": {
-      "CD": 9,
-      "MM": 14,
       "AF": 7,
-      "SD": 7,
+      "MM": 15,
+      "SD": 9,
       "SO": 11,
       "SS": 8,
       "HT": 10,
       "LB": 7,
       "PS": 5,
-      "YE": 10,
+      "YE": 14,
+      "CD": 9,
       "MG": 6,
-      "ML": 6,
+      "ML": 9,
       "NG": 12
     }
   },
@@ -129,13 +129,13 @@
       "2023": 22,
       "2024": 13,
       "2026": 3,
-      "2027": 4
+      "2027": 14
     }
   },
   "enrichment_coverage": {
-    "activities_with_budgets": 439,
+    "activities_with_budgets": 449,
     "activities_with_emergency_links": 0,
-    "activities_with_sdg_tags": 112,
+    "activities_with_sdg_tags": 122,
     "activities_with_policy_markers": 0,
     "distinct_emergencies": 0
   },

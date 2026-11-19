@@ -11,3 +11,6 @@ venv/
 
 # Temporary files
 *.tmp
+# Live updates (state, logs, archived raw versions)
+**/data/live_updates/
+**/data/raw_archive/

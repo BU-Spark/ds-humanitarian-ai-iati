@@ -3,6 +3,8 @@ pipeline.py -- one entrypoint for the whole IATI hunger-graph pipeline.
 
 Stages (in order):
   download   fetch activity XML from the IATI Bulk Data Service
+  update     live update: re-download only if due (every 7-14 days),
+             rebuild graph CSVs only if files changed (live_updates.py)
   parse      filter to hunger x hotspot activities, write graph CSVs
   resolve    entity-resolve organisations, fill donor names
   sync       copy graph CSVs into spaces/data/ -- ONLY needed when
@@ -12,6 +14,8 @@ Stages (in order):
 Usage:
     python src/pipeline.py all              # download -> parse -> resolve -> sync
     python src/pipeline.py refresh          # parse -> resolve -> sync (no download)
+    python src/pipeline.py update           # scheduled live update (see live_updates.py)
+    python src/pipeline.py update -- --force --interval-days 14
     python src/pipeline.py parse resolve    # any subset, in the order given
     python src/pipeline.py download -- --publisher wfp --dry-run
                                             # pass args through to one stage
@@ -31,8 +35,9 @@ STAGES = {
     "download": SRC / "download.py",
     "parse": SRC / "parse_filter.py",
     "resolve": SRC / "resolve_orgs.py",
+    "update": SRC / "live_updates.py",
 }
-ORDER = ["download", "parse", "resolve", "sync"]
+ORDER = ["download", "update", "parse", "resolve", "sync"]
 DEFAULT = ["download", "parse", "resolve"]
 
 

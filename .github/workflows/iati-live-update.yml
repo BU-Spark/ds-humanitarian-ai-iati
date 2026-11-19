@@ -1,0 +1,40 @@
+# Weekly IATI live update. Runs Mondays 06:00 UTC (and on demand from the
+# Actions tab). data/raw and the updater's state are cached between runs so
+# only changed files are re-downloaded; the rebuilt graph CSVs are uploaded
+# as a build artifact for review.
+name: IATI live update
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"        # weekly; change to "0 6 1,15 * *" for ~biweekly
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fa26
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore raw data + updater state
+        uses: actions/cache@v4
+        with:
+          path: |
+            fa26/data/raw
+            fa26/data/live_updates
+          key: iati-raw-${{ github.run_id }}
+          restore-keys: iati-raw-
+      - name: Run live update
+        run: python src/live_updates.py --force --sync --no-archive
+      - name: Upload graph CSVs and update log
+        uses: actions/upload-artifact@v4
+        with:
+          name: iati-graph-${{ github.run_number }}
+          path: |
+            fa26/data/graph/
+            fa26/data/live_updates/update_log.jsonl
+            fa26/data/live_updates/live_updates.log
