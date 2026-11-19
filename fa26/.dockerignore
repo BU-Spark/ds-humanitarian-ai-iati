@@ -1,0 +1,14 @@
+.env
+**/.env
+**/__pycache__
+**/*.pyc
+.pytest_cache
+data
+notebooks
+reports
+spaces
+tests
+docs
+scripts
+web/globe
+**/node_modules

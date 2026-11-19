@@ -1,0 +1,11 @@
+# runtime for the Fly.io image (versions tested with the web service); development uses ../requirements.txt
+fastapi==0.165.0
+uvicorn==0.54.0
+pydantic==2.13.5
+langgraph==1.2.21
+langchain-core==1.8.3
+langchain-anthropic==1.7.11
+langchain-openai==1.8.3
+neo4j==6.4.1
+python-dotenv==1.2.3
+rapidfuzz==3.14.6

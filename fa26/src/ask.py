@@ -18,6 +18,7 @@ fa26/benchmark/manifest.json (valid evidence ids), and fa26/.env (connection and
 """
 from __future__ import annotations
 
+import copy
 import csv
 import json
 import os
@@ -104,35 +105,74 @@ def parse_plan(text, reason_codes=REASON_CODES):
 class S(TypedDict, total=False):
     qid: str; question: str; contract: str; value_type: str
     raw: str; status: str; reasons: list; explanation: str; tool: Optional[str]; args: dict; cypher: str
-    error: Optional[str]; retries: int; rows: list; facts: dict; model_calls: int
+    error: Optional[str]; retries: int; rows: list; facts: dict; model_calls: int; timings: dict
+    tokens: dict; cache: dict; plan_out: dict
 
 
-def build_router(llm, run_cypher, system=None, reason_codes=REASON_CODES, max_retries=2):
-    """LangGraph: plan -> template | free -> format, with retry on a failed check (same graph shape as notebook 06)."""
+ROUTES = ("auto",)  # routes open to callers; "template_only" and "free_cypher_only" are reserved for the comparison view
+
+
+def _timed(stage, fn):
+    """Wrap a router node so its wall time is added to state['timings'][stage] (milliseconds, summed over retries)."""
+    def node(st):
+        t = time.perf_counter()
+        out = fn(st) or {}
+        tm = dict(st.get("timings") or {})
+        tm[stage] = round(tm.get(stage, 0.0) + (time.perf_counter() - t) * 1000, 1)
+        out["timings"] = tm
+        return out
+    return node
+
+
+def build_router(llm, run_cypher, system=None, reason_codes=REASON_CODES, max_retries=2, cache=None):
+    """LangGraph: plan -> template | free -> format, with retry on a failed check (same graph shape as notebook 06).
+
+    cache (ablation experiment 1, off by default): {"plan": {}, "result": {}}. A plan is stored only after it ran
+    without error, keyed by the exact (question, contract, value_type); a result is stored per (tool, args) or Cypher
+    text. A hit skips the model call or the database call; retries never read the plan cache."""
     from langgraph.graph import StateGraph, END
     from langchain_core.messages import SystemMessage, HumanMessage
     system = system or build_system(reason_codes)
 
+    def plan_key(st): return (st["question"].strip(), st.get("contract", ""), st.get("value_type", "auto"))
+
     def plan(st):
+        hits = dict(st.get("cache") or {})
+        if cache is not None and not st.get("error") and plan_key(st) in cache["plan"]:
+            p = cache["plan"][plan_key(st)]
+            hits["plan"] = True
+            return {**copy.deepcopy(p), "error": None, "rows": [], "plan_out": p, "cache": hits}
         human = f"Question {st['qid']}: {st['question']}\nContract: {st.get('contract', '')}\nValue type: {st.get('value_type', 'auto')}"
         if st.get("error"):
             human += f"\n\nYour previous attempt failed: {st['error']}\nPrevious choice: tool={st.get('tool')} args={json.dumps(st.get('args'))}\nReturn a corrected JSON object."
         out = llm.invoke([SystemMessage(content=system), HumanMessage(content=human)])
+        um = getattr(out, "usage_metadata", None) or {}
+        tok = dict(st.get("tokens") or {"in": 0, "out": 0})
+        tok["in"] += int(um.get("input_tokens") or 0); tok["out"] += int(um.get("output_tokens") or 0)
         text = out.content if isinstance(out.content, str) else "\n".join(b.get("text", "") for b in out.content if isinstance(b, dict))
         try:
             status, reasons, expl, tool, args, cypher = parse_plan(text, reason_codes)
             if not st["qid"].startswith("Q"): reasons = single_v2_reason(reasons, status)
             err = None if status != "answer" or tool else "no tool chosen"
-            return {"raw": text, "status": status, "reasons": reasons, "explanation": expl, "tool": tool, "args": args,
-                    "cypher": cypher, "error": err, "rows": [], "model_calls": st.get("model_calls", 0) + 1}
+            p = {"raw": text, "status": status, "reasons": reasons, "explanation": expl, "tool": tool, "args": args, "cypher": cypher}
+            return {**p, "args": copy.deepcopy(args), "error": err, "rows": [], "model_calls": st.get("model_calls", 0) + 1,
+                    "tokens": tok, "plan_out": copy.deepcopy(p)}
         except Exception as e:
             return {"raw": text, "status": "answer", "tool": None, "error": f"unparseable JSON: {type(e).__name__}", "rows": [],
-                    "model_calls": st.get("model_calls", 0) + 1}
+                    "model_calls": st.get("model_calls", 0) + 1, "tokens": tok, "plan_out": None}
+
+    def cached_result(key, compute):
+        if cache is None: return compute(), False
+        if key in cache["result"]: return copy.deepcopy(cache["result"][key]), True
+        res = compute(); cache["result"][key] = copy.deepcopy(res); return res, False
 
     def run_template(st):
         try:
-            res = run_any(run_cypher, st["tool"], st["args"])
-            return {"rows": res["rows"], "cypher": res["cypher"], "args": res["params"],
+            key = ("tool", st["tool"], json.dumps(st["args"], sort_keys=True, default=str))
+            res, hit = cached_result(key, lambda: run_any(run_cypher, st["tool"], st["args"]))
+            if hit: st_cache = dict(st.get("cache") or {}); st_cache["result"] = True
+            else: st_cache = st.get("cache") or {}
+            return {"rows": res["rows"], "cypher": res["cypher"], "args": res["params"], "cache": st_cache,
                     "error": None if res["rows"] or st.get("value_type") == "decimal" else "tool returned no rows"}
         except ToolClarification as e:
             ids = [str(c.get("id", c)) for c in e.candidates]
@@ -144,7 +184,9 @@ def build_router(llm, run_cypher, system=None, reason_codes=REASON_CODES, max_re
 
     def run_free(st):
         try:
-            guard_query(st["cypher"]); rows = run_cypher(st["cypher"])
+            guard_query(st["cypher"])
+            rows, hit = cached_result(("cypher", st["cypher"]), lambda: run_cypher(st["cypher"]))
+            st_cache = dict(st.get("cache") or {}, **({"result": True} if hit else {}))
         except Exception as e:
             return {"rows": [], "error": f"free_cypher failed {type(e).__name__}: {str(e)[:300]}"}
         for r in rows:
@@ -152,9 +194,11 @@ def build_router(llm, run_cypher, system=None, reason_codes=REASON_CODES, max_re
                 return {"rows": [], "error": f"free_cypher must return key, value, evidence; got {sorted(r)}"}
         ev_err = evidence_error(rows)
         if ev_err: return {"rows": [], "error": ev_err}
-        return {"rows": rows, "error": None if rows or st.get("value_type") == "decimal" else "free_cypher returned no rows"}
+        return {"rows": rows, "cache": st_cache, "error": None if rows or st.get("value_type") == "decimal" else "free_cypher returned no rows"}
 
     def format_(st):
+        if cache is not None and not st.get("error") and st.get("plan_out"):
+            cache["plan"][plan_key(st)] = copy.deepcopy(st["plan_out"])
         if st["status"] != "answer" or st.get("error"): return {"facts": {}}
         rows = st.get("rows") or [{"key": "total", "value": 0, "evidence": []}]
         for r in rows: r["evidence"] = clean_evidence(r.get("evidence"))[0]
@@ -169,7 +213,8 @@ def build_router(llm, run_cypher, system=None, reason_codes=REASON_CODES, max_re
     def after_exec(st): return ("retry" if st.get("retries", 0) < max_retries else "format") if st.get("error") else "format"
 
     g = StateGraph(S)
-    for n, f in [("plan", plan), ("template", run_template), ("free", run_free), ("format", format_),
+    for n, f in [("plan", _timed("plan_ms", plan)), ("template", _timed("query_ms", run_template)),
+                 ("free", _timed("query_ms", run_free)), ("format", _timed("format_ms", format_)),
                  ("retry", lambda st: {"retries": st.get("retries", 0) + 1})]:
         g.add_node(n, f)
     g.set_entry_point("plan")
@@ -211,7 +256,7 @@ class Engine:
     """One model, one graph, one router. ask() returns the answer contract plus provenance."""
 
     def __init__(self, model: str = DEFAULT_MODEL, env_path: Path = FA26 / ".env", run_cypher=None, llm=None,
-                 snapshot_dir: Path = FA26 / "benchmark" / "snapshot"):
+                 snapshot_dir: Path = FA26 / "benchmark" / "snapshot", cache: bool = False):
         load_dotenv(env_path, override=False)
         self.model = model
         self.llm = llm or make_llm(model)
@@ -219,34 +264,47 @@ class Engine:
         if run_cypher is None:
             self.driver, run_cypher = connect_neo4j()
         self.run_cypher = run_cypher
-        self.router = build_router(self.llm, run_cypher)
+        self.cache = {"plan": {}, "result": {}} if cache else None
+        self.router = build_router(self.llm, run_cypher, cache=self.cache)
         self.snapshot_dir = Path(snapshot_dir)
         self._rows: dict[str, list[dict]] = {}
         self._n = 0
 
-    def ask(self, question: str, qid: str | None = None) -> dict:
+    def ask(self, question: str, qid: str | None = None, route: str = "auto", contract: str = "", value_type: str = "auto") -> dict:
+        """route: only "auto" (the planner decides) is open; other values raise ValueError.
+        contract / value_type: the public benchmark fields (Q01-Q20 carry them); empty for live questions."""
+        if route not in ROUTES:
+            raise ValueError(f"route {route!r} is not enabled; open routes: {list(ROUTES)}")
         self._n += 1
         qid = qid or f"ASK{self._n:04d}"
         t0 = time.time()
         try:
-            st = self.router.invoke({"qid": qid, "question": question, "contract": "", "value_type": "auto", "retries": 0, "model_calls": 0})
+            st = self.router.invoke({"qid": qid, "question": question, "contract": contract or "", "value_type": value_type or "auto",
+                                     "retries": 0, "model_calls": 0, "tokens": {"in": 0, "out": 0}, "cache": {}})
         except Exception as e:
             st = {"status": "answer", "facts": {}, "reasons": [], "error": f"{type(e).__name__}: {str(e)[:200]}", "retries": 0}
+        total_ms = round((time.time() - t0) * 1000, 1)
+        timings = dict(st.get("timings") or {})
+        timings["total_ms"] = total_ms
         status = st.get("status", "answer")
         out = {"id": qid, "question": question, "status": status,
                "facts": st.get("facts", {}) if status == "answer" else {},
                "reasons": st.get("reasons", []) if status != "answer" else [],
                "explanation": st.get("explanation"), "tool": st.get("tool"), "args": st.get("args"),
                "cypher": st.get("cypher"), "error": st.get("error"), "retries": st.get("retries", 0),
-               "model": self.model, "latency_ms": round((time.time() - t0) * 1000, 1)}
+               "model": self.model, "route": route, "latency_ms": total_ms,
+               "model_calls": st.get("model_calls", 0), "timings": timings,
+               "tokens": st.get("tokens") or {"in": 0, "out": 0},
+               "cache": {"plan": bool((st.get("cache") or {}).get("plan")), "result": bool((st.get("cache") or {}).get("result"))},
+               "path": ("free_cypher" if st.get("tool") == "free_cypher" else "tool") if status == "answer" and st.get("tool") else status}
         out["evidence_count"] = sum(len(f["evidence"]) for f in out["facts"].values())
         return out
 
-    def evidence_rows(self, answer: dict, limit: int = 50) -> list[dict]:
-        """Snapshot rows behind the answer: [{id, table, row, **columns}], first `limit` ids."""
+    def evidence_rows(self, answer: dict, limit: int | None = 50) -> list[dict]:
+        """Snapshot rows behind the answer: [{id, table, row, **columns}], first `limit` ids (None = all)."""
         ids = sorted({e for f in answer.get("facts", {}).values() for e in f.get("evidence", []) if not e.startswith("manifest:")})
         out = []
-        for e in ids[:limit]:
+        for e in (ids if limit is None else ids[:limit]):
             table, _, n = e.partition(":row:")
             rows = self._table(table)
             i = int(n) - 1
@@ -265,4 +323,4 @@ class Engine:
         if self.driver: self.driver.close()
 
 
-__all__ = ["Engine", "build_router", "build_system", "make_llm", "connect_neo4j", "REASON_CODES", "DEFAULT_MODEL"]
+__all__ = ["Engine", "build_router", "build_system", "make_llm", "connect_neo4j", "REASON_CODES", "DEFAULT_MODEL", "ROUTES"]

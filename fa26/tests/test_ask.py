@@ -64,11 +64,85 @@ class EngineTests(unittest.TestCase):
         self.assertIn("source_id", out["error"] or "")           # and the last error names the rule
         self.assertEqual(out["facts"], {})                       # no invalid evidence leaks out
 
+    def test_answer_reports_stage_timings_and_calls(self):
+        plan = json.dumps({"status": "answer", "tool": "count_activities", "args": {"publisher": "wfp"}})
+        eng, _ = self.make([plan], [{"key": "count", "value": 82, "evidence": ["nodes_activities.csv:row:2"]}])
+        out = eng.ask("How many WFP activities are there?")
+        self.assertEqual((out["route"], out["model_calls"]), ("auto", 1))
+        for k in ("plan_ms", "query_ms", "format_ms", "total_ms"):
+            self.assertIn(k, out["timings"])
+            self.assertGreaterEqual(out["timings"][k], 0)
+
+    def test_retries_add_up_in_plan_time_and_calls(self):
+        bad = json.dumps({"status": "answer", "tool": "free_cypher", "cypher": "MATCH (a:Activity) RETURN 'count' AS key, count(a) AS value, collect(a.iati_identifier) AS evidence"})
+        eng, _ = self.make([bad, bad, bad], [{"key": "count", "value": 505, "evidence": ["GB-CHC-202918-X"]}])
+        out = eng.ask("How many activities are recorded?")
+        self.assertEqual(out["model_calls"], 3)
+
+    def test_only_auto_route_is_open(self):
+        eng, calls = self.make([], [])
+        with self.assertRaises(ValueError):
+            eng.ask("How many activities?", route="template_only")
+        self.assertEqual(calls, [])
+
     def test_clarify_keeps_one_reason(self):
         plan = json.dumps({"status": "clarify", "reasons": ["organisation_scope", "funding_scope"], "explanation": "Oxfam GB or America?", "tool": None})
         eng, _ = self.make([plan], [])
         out = eng.ask("How much did Oxfam give?")
         self.assertEqual((out["status"], out["reasons"], out["facts"]), ("clarify", ["organisation_scope"], {}))
+
+
+
+class CacheAndUsageTests(unittest.TestCase):
+    """Ablation experiment 1 (plan/result cache) and the token log; both are off or zero by default."""
+    PLAN = json.dumps({"status": "answer", "tool": "count_activities", "args": {"publisher": "wfp"}, "explanation": "count"})
+    ROWS = [{"key": "count", "value": 82, "evidence": ["nodes_activities.csv:row:2"]}]
+
+    def make(self, cache, llm=None):
+        from ask import Engine
+        calls = []
+        def fake_cypher(q, params=None):
+            calls.append(q); return [dict(r) for r in self.ROWS]
+        llm = llm or FakeListChatModel(responses=[self.PLAN] * 3)
+        return Engine(llm=llm, run_cypher=fake_cypher, snapshot_dir=FA26 / "benchmark" / "snapshot", cache=cache), calls
+
+    def test_cache_off_by_default_calls_model_every_time(self):
+        eng, calls = self.make(cache=False)
+        a, b = eng.ask("How many WFP activities?"), eng.ask("How many WFP activities?")
+        self.assertEqual((a["model_calls"], b["model_calls"]), (1, 1))
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(b["cache"], {"plan": False, "result": False})
+
+    def test_cache_replays_plan_and_rows_with_same_answer(self):
+        eng, calls = self.make(cache=True)
+        a, b = eng.ask("How many WFP activities?"), eng.ask("How many WFP activities?")
+        self.assertEqual(a["facts"], b["facts"])
+        self.assertEqual(b["model_calls"], 0)
+        self.assertEqual(b["cache"], {"plan": True, "result": True})
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(b["path"], "tool")
+
+    def test_cache_key_is_exact_question_text(self):
+        eng, _ = self.make(cache=True)
+        eng.ask("How many WFP activities?")
+        c = eng.ask("How many activities does WFP have?")
+        self.assertEqual(c["model_calls"], 1)
+        self.assertFalse(c["cache"]["plan"])
+        self.assertTrue(c["cache"]["result"])      # same tool and args, so the rows are reused
+
+    def test_failed_plan_is_not_cached(self):
+        bad = json.dumps({"status": "answer", "tool": None})
+        eng, _ = self.make(cache=True, llm=FakeListChatModel(responses=[bad] * 6))
+        eng.ask("How many WFP activities?")
+        self.assertEqual(eng.cache["plan"], {})
+
+    def test_tokens_come_from_usage_metadata(self):
+        from langchain_core.language_models.fake_chat_models import GenericFakeChatModel
+        from langchain_core.messages import AIMessage
+        msg = AIMessage(content=self.PLAN, usage_metadata={"input_tokens": 1200, "output_tokens": 80, "total_tokens": 1280})
+        eng, _ = self.make(cache=False, llm=GenericFakeChatModel(messages=iter([msg])))
+        out = eng.ask("How many WFP activities?")
+        self.assertEqual(out["tokens"], {"in": 1200, "out": 80})
 
 
 if __name__ == "__main__":

@@ -1,0 +1,18 @@
+{
+  "name": "iati-atlas-globe",
+  "private": true,
+  "type": "module",
+  "description": "Builds static/vendor/atlas-globe.js and static/globe-pts.bin for the hero globe",
+  "scripts": {
+    "points": "node genpts.mjs",
+    "bundle": "esbuild atlas-globe.js --bundle --minify --format=esm --outfile=../static/vendor/atlas-globe.js",
+    "check:layout": "node ui_layout_check.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0",
+    "playwright": "1.49.1",
+    "three": "0.170.0",
+    "topojson-client": "3.1.0",
+    "world-atlas": "2.0.2"
+  }
+}

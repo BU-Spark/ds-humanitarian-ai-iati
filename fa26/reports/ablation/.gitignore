@@ -1,0 +1,3 @@
+# Bulky per-run outputs stay local; summary, log and question_scores are kept
+*/submissions/
+*/scores/
